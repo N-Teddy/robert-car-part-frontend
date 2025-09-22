@@ -36,7 +36,7 @@ export const updateUserSchema = z.object({
     phoneNumber: z
         .string()
         .regex(/^\+?[\d\s-()]+$/, 'Invalid phone number format')
-        .min(10, 'Phone number must be at least 10 digits')
+        .min(9, 'Phone number must be at least 9 digits')
         .optional(),
     role: z.enum(['ADMIN', 'MANAGER', 'DEV', 'SALES', 'STAFF', 'CUSTOMER', 'UNKNOWN'] as const).optional(),
     isActive: z.boolean().optional(),

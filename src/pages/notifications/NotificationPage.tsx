@@ -22,6 +22,8 @@ import { useNotification } from '../../hooks/notificationHook';
 import type { NotificationTypeEnum } from '../../types/enum';
 import { Button } from '../../components/ui/Button';
 import type { Notification } from '../../types/request/notification';
+import type { DecodedToken } from '../../types/authContext';
+import { jwtDecode } from 'jwt-decode';
 
 export const NotificationsPage: React.FC = () => {
     const { markAsRead, markAllAsRead, deleteNotification, soundEnabled, setSoundEnabled } = useNotificationContext();
@@ -32,12 +34,17 @@ export const NotificationsPage: React.FC = () => {
     const [page, setPage] = useState(1);
     const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
 
+    const token = JSON.parse(localStorage.getItem("authToken") || "null");
+    const decoded = jwtDecode<DecodedToken>(token.accessToken);
+
+
     const filters = {
         page,
         limit: 20,
         isRead: selectedFilter === 'unread' ? false : undefined,
         type: !['all', 'unread'].includes(selectedFilter) ? selectedFilter as NotificationTypeEnum : undefined,
         search: searchTerm || undefined,
+        userId: decoded.sub
     };
 
     const { data, isLoading, refetch } = useGetNotifications(filters);

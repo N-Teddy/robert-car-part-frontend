@@ -6,9 +6,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
-import { Toast } from '../../components/ui/Toast';
 import { resetPasswordSchema, type ResetPasswordFormData } from '../../validation/auth.validation';
 import { useResetPassword } from '../../hooks/authHook';
+import NotificationToast from '../../components/notifications/NotificationToast';
 
 export const ResetPasswordPage: React.FC = () => {
     const navigate = useNavigate();
@@ -16,7 +16,7 @@ export const ResetPasswordPage: React.FC = () => {
     const token = searchParams.get('token');
 
     const [isLoading, setIsLoading] = useState(false);
-    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    const [toast, setToast] = useState<{ message: string; title: string } | null>(null);
     const resetPasswordMutation = useResetPassword();
 
     const {
@@ -36,7 +36,6 @@ export const ResetPasswordPage: React.FC = () => {
         uppercase: /[A-Z]/.test(newPassword || ''),
         lowercase: /[a-z]/.test(newPassword || ''),
         number: /[0-9]/.test(newPassword || ''),
-        special: /[^A-Za-z0-9]/.test(newPassword || ''),
     };
 
     const allPasswordChecksPassed = Object.values(passwordChecks).every(Boolean);
@@ -45,7 +44,7 @@ export const ResetPasswordPage: React.FC = () => {
     const getPasswordStrength = () => {
         const checks = Object.values(passwordChecks).filter(Boolean).length;
         if (checks <= 2) return { label: 'Weak', color: 'bg-red-500', width: '33%' };
-        if (checks <= 4) return { label: 'Medium', color: 'bg-yellow-500', width: '66%' };
+        if (checks <= 3) return { label: 'Medium', color: 'bg-yellow-500', width: '66%' };
         return { label: 'Strong', color: 'bg-green-500', width: '100%' };
     };
 
@@ -53,14 +52,14 @@ export const ResetPasswordPage: React.FC = () => {
 
     useEffect(() => {
         if (!token) {
-            setToast({ message: 'Invalid or missing reset token', type: 'error' });
+            setToast({ message: 'Invalid or missing reset token', title: 'Error' });
             setTimeout(() => navigate('/forgot-password'), 3000);
         }
     }, [token, navigate]);
 
     const onSubmit = async (data: ResetPasswordFormData) => {
         if (!token) {
-            setToast({ message: 'Reset token is missing', type: 'error' });
+            setToast({ message: 'Reset token is missing', title: 'error' });
             return;
         }
 
@@ -70,14 +69,14 @@ export const ResetPasswordPage: React.FC = () => {
                 token,
                 newPassword: data.newPassword,
             });
-            setToast({ message: 'Password reset successfully! Redirecting to login...', type: 'success' });
+            setToast({ message: 'Password reset successfully! Redirecting to login...', title: 'Password Reset' });
             setTimeout(() => {
                 navigate('/login');
             }, 2000);
         } catch (error: any) {
             setToast({
                 message: error.response?.data?.message || 'Failed to reset password. Please try again.',
-                type: 'error',
+                title: 'Reset error',
             });
         } finally {
             setIsLoading(false);
@@ -91,9 +90,8 @@ export const ResetPasswordPage: React.FC = () => {
     return (
         <>
             {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
+                <NotificationToast
+                    notification={toast}
                     onClose={() => setToast(null)}
                 />
             )}
@@ -135,7 +133,7 @@ export const ResetPasswordPage: React.FC = () => {
                                 <div className="flex items-center justify-between">
                                     <span className="text-xs font-medium text-gray-700">Password Strength</span>
                                     <span className={`text-xs font-medium ${passwordStrength.label === 'Strong' ? 'text-green-600' :
-                                            passwordStrength.label === 'Medium' ? 'text-yellow-600' : 'text-red-600'
+                                        passwordStrength.label === 'Medium' ? 'text-yellow-600' : 'text-red-600'
                                         }`}>
                                         {passwordStrength.label}
                                     </span>
@@ -150,6 +148,12 @@ export const ResetPasswordPage: React.FC = () => {
 
                             {/* Compact password requirements */}
                             <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                                <div className="flex items-center justify-between mb-2">
+                                    <p className="text-xs font-medium text-gray-700">Password Requirements</p>
+                                    {allPasswordChecksPassed && (
+                                        <span className="text-xs text-green-600 font-medium">✓ All requirements met</span>
+                                    )}
+                                </div>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                                     <label className="flex items-center text-xs text-gray-600">
                                         {passwordChecks.length ? (
@@ -174,14 +178,6 @@ export const ResetPasswordPage: React.FC = () => {
                                             <Circle size={12} className="mr-1.5 text-gray-400 flex-shrink-0" />
                                         )}
                                         Number
-                                    </label>
-                                    <label className="flex items-center text-xs text-gray-600">
-                                        {passwordChecks.special ? (
-                                            <CheckCircle size={12} className="mr-1.5 text-green-500 flex-shrink-0" />
-                                        ) : (
-                                            <Circle size={12} className="mr-1.5 text-gray-400 flex-shrink-0" />
-                                        )}
-                                        Special character
                                     </label>
                                 </div>
                             </div>

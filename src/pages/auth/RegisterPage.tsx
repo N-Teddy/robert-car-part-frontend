@@ -34,7 +34,6 @@ export const RegisterPage: React.FC = () => {
         uppercase: /[A-Z]/.test(password || ''),
         lowercase: /[a-z]/.test(password || ''),
         number: /[0-9]/.test(password || ''),
-        special: /[^A-Za-z0-9]/.test(password || ''),
     };
 
     const allPasswordChecksPassed = Object.values(passwordChecks).every(Boolean);
@@ -74,7 +73,7 @@ export const RegisterPage: React.FC = () => {
             )}
 
             {/* Wider card for register */}
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 w-full max-w-2xl mx-auto">
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 w-full max-w-3xl mx-auto">
                 {/* Header with icon */}
                 <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center">
@@ -172,14 +171,6 @@ export const RegisterPage: React.FC = () => {
                                         <Circle size={12} className="mr-1.5 text-gray-400 flex-shrink-0" />
                                     )}
                                     Number
-                                </label>
-                                <label className="flex items-center text-xs text-gray-600">
-                                    {passwordChecks.special ? (
-                                        <CheckCircle size={12} className="mr-1.5 text-green-500 flex-shrink-0" />
-                                    ) : (
-                                        <Circle size={12} className="mr-1.5 text-gray-400 flex-shrink-0" />
-                                    )}
-                                    Special character
                                 </label>
                             </div>
                         </div>

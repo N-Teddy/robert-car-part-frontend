@@ -6,16 +6,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
-import { Toast } from '../../components/ui/Toast';
 import { loginSchema, type LoginFormData } from '../../validation/auth.validation';
 import { useAuthContext } from '../../context/AuthContext';
+import NotificationToast from '../../components/notifications/NotificationToast';
 
 export const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { login } = useAuthContext();
     const [isLoading, setIsLoading] = useState(false);
-    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    const [toast, setToast] = useState<{ message: string; title: string } | null>(null);
     const [rememberMe, setRememberMe] = useState(false);
 
     const from = location.state?.from?.pathname || '/dashboard';
@@ -32,14 +32,14 @@ export const LoginPage: React.FC = () => {
         setIsLoading(true);
         try {
             await login(data);
-            setToast({ message: 'Login successful! Redirecting...', type: 'success' });
+            setToast({ message: 'Login successful! Redirecting...', title: 'Login Successful' });
             setTimeout(() => {
                 navigate(from, { replace: true });
             }, 1500);
         } catch (error: any) {
             setToast({
                 message: error.response?.data?.message || 'Invalid email or password',
-                type: 'error',
+                title: 'Login Error',
             });
         } finally {
             setIsLoading(false);
@@ -49,9 +49,8 @@ export const LoginPage: React.FC = () => {
     return (
         <>
             {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
+                <NotificationToast
+                    notification={toast}
                     onClose={() => setToast(null)}
                 />
             )}

@@ -6,14 +6,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
-import { Toast } from '../../components/ui/Toast';
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '../../validation/auth.validation';
 import { useForgotPassword } from '../../hooks/authHook';
+import NotificationToast from '../../components/notifications/NotificationToast';
 
 export const ForgotPasswordPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
-    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    const [toast, setToast] = useState<{ message: string; title: string } | null>(null);
     const forgotPasswordMutation = useForgotPassword();
 
     const {
@@ -32,12 +32,12 @@ export const ForgotPasswordPage: React.FC = () => {
             setIsSuccess(true);
             setToast({
                 message: 'Password reset instructions sent to your email!',
-                type: 'success'
+                title: 'Email Sent',
             });
         } catch (error: any) {
             setToast({
                 message: error.response?.data?.message || 'Failed to send reset email. Please try again.',
-                type: 'error',
+                title: 'Email not Sent',
             });
         } finally {
             setIsLoading(false);
@@ -47,9 +47,8 @@ export const ForgotPasswordPage: React.FC = () => {
     return (
         <>
             {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
+                <NotificationToast
+                   notification={toast}
                     onClose={() => setToast(null)}
                 />
             )}

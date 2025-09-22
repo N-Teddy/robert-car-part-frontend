@@ -21,7 +21,7 @@ export const AuthLayout: React.FC = () => {
             <div className="absolute inset-0 z-0 bg-gradient-to-br from-gray-900/50 via-transparent to-red-900/30" />
 
             {/* Content */}
-            <div className="relative z-10 w-full max-w-md">
+            <div className="relative z-10 w-full max-w-xl">
                 {/* Logo Section */}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-500 to-red-700 rounded-2xl mb-4 shadow-2xl shadow-red-600/20 transform hover:scale-105 transition-transform">

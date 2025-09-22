@@ -3,16 +3,16 @@ import type { NotificationTypeEnum } from '../enum';
 export type NotificationMetadata = Record<string, any> | null;
 
 export interface Notification {
-    id: string;
-    type: NotificationTypeEnum;
+    id?: string;
+    type?: NotificationTypeEnum;
     title: string;
     message: string;
-    isRead: boolean;
-    metadata: NotificationMetadata;
-    userId: string;
-    emailSent: boolean;
-    createdAt: string; // ISO date string
-    updatedAt: string; // ISO date string
+    isRead?: boolean;
+    metadata?: NotificationMetadata;
+    userId?: string;
+    emailSent?: boolean;
+    createdAt?: string; // ISO date string
+    updatedAt?: string; // ISO date string
 }
 
 export interface PaginationMeta {
