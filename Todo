@@ -1,0 +1,8 @@
+1. Add Notification Sounds
+
+Create a public/sounds folder and add these sound files:
+
+    notification.mp3 - Normal notification sound
+    critical-alert.mp3 - Critical notification sound
+
+You can download free notification sounds from sites like Freesound.org or Zapsplat.
