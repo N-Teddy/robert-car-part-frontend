@@ -1,5 +1,5 @@
 // src/layouts/DashboardLayout.tsx
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
     Menu,
@@ -157,9 +157,9 @@ export const DashboardLayout: React.FC = () => {
                             {/* Right side buttons */}
                             <div className="flex items-center space-x-4">
                                 {/* Notifications */}
-                                <button className="relative text-gray-500 hover:text-gray-600">
+                                <div className="relative text-gray-500 hover:text-gray-600">
                                     <NotificationBell />
-                                </button>
+                                </div>
 
                                 {/* Profile dropdown */}
                                 <div className="relative">

@@ -81,13 +81,28 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         }
     }, [queryClient, refetchUnread, playSound, showToast]);
 
-    const { isConnected } = useWebSocket({
+    const { isConnected, isUsingPolling } = useWebSocket({
         onNotification: handleNewNotification,
         onConnect: () => {
             console.log('Notification service connected');
             refetchUnread();
         },
+        onDisconnect: () => {
+            console.log('Notification service disconnected');
+        },
     });
+
+    useEffect(() => {
+        if (isUsingPolling && !isConnected) {
+            // If we're using polling and not "connected" (WebSocket), still refetch periodically
+            const interval = setInterval(() => {
+                refetchUnread();
+            }, 60000); // Refetch unread count every minute
+
+            return () => clearInterval(interval);
+        }
+    }, [isUsingPolling, isConnected, refetchUnread]);
+
 
     const markAsRead = useCallback(async (notificationIds: string[]) => {
         try {
@@ -140,7 +155,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             value={{
                 notifications,
                 unreadCount: unreadData?.count || 0,
-                isConnected,
+                isConnected: isConnected || isUsingPolling, // Consider polling as "connected"
                 markAsRead,
                 markAllAsRead,
                 deleteNotification,
@@ -148,6 +163,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                 soundEnabled,
                 setSoundEnabled,
             }}
+
         >
             {children}
             {showToast && (

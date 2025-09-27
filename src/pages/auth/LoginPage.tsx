@@ -12,13 +12,11 @@ import NotificationToast from '../../components/notifications/NotificationToast'
 
 export const LoginPage: React.FC = () => {
     const navigate = useNavigate();
-    const location = useLocation();
     const { login } = useAuthContext();
     const [isLoading, setIsLoading] = useState(false);
     const [toast, setToast] = useState<{ message: string; title: string } | null>(null);
     const [rememberMe, setRememberMe] = useState(false);
 
-    const from = location.state?.from?.pathname || '/dashboard';
 
     const {
         register,
@@ -34,7 +32,7 @@ export const LoginPage: React.FC = () => {
             await login(data);
             setToast({ message: 'Login successful! Redirecting...', title: 'Login Successful' });
             setTimeout(() => {
-                navigate(from, { replace: true });
+                navigate('/dashboard');
             }, 1500);
         } catch (error: any) {
             setToast({

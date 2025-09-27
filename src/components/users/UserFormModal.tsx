@@ -1,5 +1,5 @@
 // src/components/users/UserFormModal.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     X,
     User as UserIcon,
@@ -11,8 +11,6 @@ import {
     AlertCircle,
     CheckCircle,
     Info,
-    Eye,
-    EyeOff
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,7 +35,6 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     mode,
 }) => {
     const isEditMode = mode === 'edit';
-    const [showPassword, setShowPassword] = useState(false);
 
     const {
         register,
@@ -179,7 +176,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
             <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 {/* Background overlay with blur */}
                 <div
-                    className="fixed inset-0 transition-opacity  bg-opacity-50 backdrop-blur-sm"
+                    className="fixed inset-0 transition-opacity bg-opacity-50 backdrop-blur-sm"
                     onClick={onClose}
                     aria-hidden="true"
                 />
@@ -229,78 +226,32 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                 </div>
 
                                 <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                            Full Name <span className="text-red-500">*</span>
-                                        </label>
-                                        <div className="relative">
-                                            <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                            <input
-                                                {...register('fullName')}
-                                                type="text"
-                                                placeholder="John Doe"
-                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-lg text-sm transition-all ${errors.fullName
-                                                    ? 'border-red-500 focus:ring-2 focus:ring-red-200'
-                                                    : `border-gray-300 ${colorClasses.focusBorder} focus:ring-2 ${colorClasses.focusRing}`
-                                                    } focus:outline-none`}
-                                            />
-                                        </div>
-                                        {errors.fullName && (
-                                            <p className="mt-1 text-xs text-red-600 flex items-center">
-                                                <AlertCircle className="w-3 h-3 mr-1" />
-                                                {errors.fullName.message}
-                                            </p>
-                                        )}
-                                    </div>
+                                    <Input
+                                        label="Full Name"
+                                        icon={<UserIcon size={16} />}
+                                        placeholder="John Doe"
+                                        error={errors.fullName?.message}
+                                        {...register('fullName')}
+                                    />
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                                Email Address <span className="text-red-500">*</span>
-                                            </label>
-                                            <div className="relative">
-                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                                <input
-                                                    {...register('email')}
-                                                    type="email"
-                                                    placeholder="john@example.com"
-                                                    className={`w-full pl-10 pr-4 py-2.5 border rounded-lg text-sm transition-all ${errors.email
-                                                        ? 'border-red-500 focus:ring-2 focus:ring-red-200'
-                                                        : `border-gray-300 ${colorClasses.focusBorder} focus:ring-2 ${colorClasses.focusRing}`
-                                                        } focus:outline-none`}
-                                                />
-                                            </div>
-                                            {errors.email && (
-                                                <p className="mt-1 text-xs text-red-600 flex items-center">
-                                                    <AlertCircle className="w-3 h-3 mr-1" />
-                                                    {errors.email.message}
-                                                </p>
-                                            )}
-                                        </div>
+                                        <Input
+                                            label="Email Address"
+                                            type="email"
+                                            icon={<Mail size={16} />}
+                                            placeholder="john@example.com"
+                                            error={errors.email?.message}
+                                            {...register('email')}
+                                        />
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                                Phone Number <span className="text-red-500">*</span>
-                                            </label>
-                                            <div className="relative">
-                                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                                <input
-                                                    {...register('phoneNumber')}
-                                                    type="tel"
-                                                    placeholder="+1 (555) 123-4567"
-                                                    className={`w-full pl-10 pr-4 py-2.5 border rounded-lg text-sm transition-all ${errors.phoneNumber
-                                                        ? 'border-red-500 focus:ring-2 focus:ring-red-200'
-                                                        : `border-gray-300 ${colorClasses.focusBorder} focus:ring-2 ${colorClasses.focusRing}`
-                                                        } focus:outline-none`}
-                                                />
-                                            </div>
-                                            {errors.phoneNumber && (
-                                                <p className="mt-1 text-xs text-red-600 flex items-center">
-                                                    <AlertCircle className="w-3 h-3 mr-1" />
-                                                    {errors.phoneNumber.message}
-                                                </p>
-                                            )}
-                                        </div>
+                                        <Input
+                                            label="Phone Number"
+                                            type="tel"
+                                            icon={<Phone size={16} />}
+                                            placeholder="+1 (555) 123-4567"
+                                            error={errors.phoneNumber?.message}
+                                            {...register('phoneNumber')}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -364,34 +315,14 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
                                     {!isEditMode && (
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                                Password <span className="text-red-500">*</span>
-                                            </label>
-                                            <div className="relative">
-                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                                <input
-                                                    {...register('password')}
-                                                    type={showPassword ? 'text' : 'password'}
-                                                    placeholder="Enter password"
-                                                    className={`w-full pl-10 pr-10 py-2.5 border rounded-lg text-sm transition-all ${(errors as any).password
-                                                        ? 'border-red-500 focus:ring-2 focus:ring-red-200'
-                                                        : `border-gray-300 ${colorClasses.focusBorder} focus:ring-2 ${colorClasses.focusRing}`
-                                                        } focus:outline-none`}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                                                >
-                                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                                </button>
-                                            </div>
-                                            {(errors as any).password && (
-                                                <p className="mt-1 text-xs text-red-600 flex items-center">
-                                                    <AlertCircle className="w-3 h-3 mr-1" />
-                                                    {(errors as any).password.message}
-                                                </p>
-                                            )}
+                                            <Input
+                                                label="Password"
+                                                type="password"
+                                                icon={<Lock size={16} />}
+                                                placeholder="Enter password"
+                                                error={(errors as any).password?.message}
+                                                {...register('password')}
+                                            />
                                             <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                                                 <p className="text-xs text-amber-800">
                                                     <strong>Password Requirements:</strong> Minimum 8 characters
@@ -446,4 +377,3 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
         </div>
     );
 };
-

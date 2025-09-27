@@ -29,35 +29,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const registerMutation = useRegister();
     const refreshMutation = useRefreshToken();
 
-    /** Decode JWT and set user */
+    /** Decode JWT and set user - Made stable with useCallback */
     const decodeAndSetUser = useCallback((accessToken: string) => {
         try {
             const decoded = jwtDecode<DecodedToken>(accessToken);
             setUser({
                 id: decoded.sub,
                 email: decoded.email,
-                fullName: "", // not in token, but could be fetched if needed
+                fullName: decoded.fullName || '', // Provide default value
                 role: decoded.role as any,
-                isActive: true, // assume active if token is valid
-                phoneNumber: "", // not in token
+                isActive: true,
+                phoneNumber: decoded.phoneNumber || '', // Provide default value
             });
         } catch (err) {
             console.error("Failed to decode token", err);
             setUser(null);
         }
-    }, []);
+    }, []); // Empty dependency array makes this stable
 
-    /** Save tokens to state + storage */
-    const saveTokens = useCallback(
-        (newTokens: Tokens) => {
-            setTokens(newTokens);
-            localStorage.setItem("authToken", JSON.stringify(newTokens));
-            decodeAndSetUser(newTokens.accessToken);
-        },
-        [decodeAndSetUser]
-    );
+    /** Save tokens to state + storage - Made stable */
+    const saveTokens = useCallback((newTokens: Tokens) => {
+        setTokens(newTokens);
+        localStorage.setItem("authToken", JSON.stringify(newTokens));
+        decodeAndSetUser(newTokens.accessToken);
+    }, [decodeAndSetUser]); // Now this only changes when decodeAndSetUser changes (which is stable)
 
-    /** Restore session on mount */
+    /** Restore session on mount - Fixed dependencies */
     useEffect(() => {
         const stored = localStorage.getItem("authToken");
         if (stored) {
@@ -79,9 +76,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             }
         }
         setLoading(false);
-    }, [refreshMutation, saveTokens]);
+    }, []); // Empty dependency array - runs only once on mount
 
-    /** Auto refresh before expiry */
+    /** Auto refresh before expiry - Fixed dependencies */
     useEffect(() => {
         if (!tokens || isRefreshing.current) return;
 
@@ -110,10 +107,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }, Math.max(expiresInMs - 30000, 0));
 
         return () => clearTimeout(timeout);
-    }, [tokens, refreshMutation, saveTokens]);
+    }, [tokens]); // Only depend on tokens, not the mutation or saveTokens
 
-    /** Login */
-    const login = async (data: LoginRequest) => {
+    /** Login - Made stable */
+    const login = useCallback(async (data: LoginRequest) => {
         return new Promise<void>((resolve, reject) => {
             loginMutation.mutate(data, {
                 onSuccess: (res) => {
@@ -123,10 +120,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 onError: (err) => reject(err),
             });
         });
-    };
+    }, [loginMutation, saveTokens]);
 
-    /** Register */
-    const register = async (data: RegisterRequest) => {
+    /** Register - Made stable */
+    const register = useCallback(async (data: RegisterRequest) => {
         return new Promise<void>((resolve, reject) => {
             registerMutation.mutate(data, {
                 onSuccess: (res) => {
@@ -136,28 +133,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 onError: (err) => reject(err),
             });
         });
-    };
+    }, [registerMutation, saveTokens]);
 
-    /** Logout */
-    const logout = () => {
+    /** Logout - Made stable */
+    const logout = useCallback(() => {
         setUser(null);
         setTokens(null);
         localStorage.removeItem("authToken");
-    };
+    }, []);
+
+    // Create a stable context value
+    const contextValue = useCallback((): AuthContextType => ({
+        user,
+        tokens,
+        login,
+        register,
+        logout,
+        isAuthenticated: !!user,
+        loading,
+    }), [user, tokens, login, register, logout, loading]);
 
     return (
-        <AuthContext.Provider
-            value={{
-                user,
-                tokens,
-                login,
-                register,
-                logout,
-                isAuthenticated: !!user,
-                loading,
-            }
-            }
-        >
+        <AuthContext.Provider value={contextValue()}>
             {children}
         </AuthContext.Provider>
     );

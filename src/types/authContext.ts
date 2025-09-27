@@ -7,6 +7,9 @@ export interface DecodedToken {
     role: string;
     exp: number;
     iat: number;
+    fullName: string;
+    isActive: boolean;
+    phoneNumber: string;
 }
 
 export interface Tokens {
