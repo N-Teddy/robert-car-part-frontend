@@ -10,7 +10,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import NotificationToast from '../../components/notifications/NotificationToast';
 
 export const UsersListPage: React.FC = () => {
-    const { useGetAllUsers, useDeleteUser, useUpdateUser } = useUser();
+    const { useGetAllUsers, useDeleteUser, useUpdateUser, useCreateUser } = useUser(); // Added useCreateUser
 
     const [filters, setFilters] = useState<UserFilter>({
         page: 1,
@@ -27,6 +27,7 @@ export const UsersListPage: React.FC = () => {
         mode: 'create',
         user: null,
     });
+    const [selectedImage, setSelectedImage] = useState<File | null>(null); // Added selectedImage state
 
     const debouncedSearch = useDebounce(searchTerm, 500);
 
@@ -37,6 +38,7 @@ export const UsersListPage: React.FC = () => {
 
     const deleteMutation = useDeleteUser();
     const updateMutation = useUpdateUser();
+    const createMutation = useCreateUser(); // Added create mutation
 
     const stats = useMemo(() => {
         if (!data?.items) return { total: 0, active: 0, admins: 0, newThisMonth: 0 };
@@ -53,30 +55,59 @@ export const UsersListPage: React.FC = () => {
     }, [data]);
 
     const handleEdit = (user: User) => {
+        setSelectedImage(null); // Reset image when opening edit modal
         setFormModal({ isOpen: true, mode: 'edit', user });
     };
 
     const handleCreate = () => {
+        setSelectedImage(null); // Reset image when opening create modal
         setFormModal({ isOpen: true, mode: 'create', user: null });
     };
 
     const handleFormSubmit = async (data: any) => {
         try {
+            // Prepare FormData for file upload
+            const formData = new FormData();
+
+            // Append all form fields
+            Object.keys(data).forEach(key => {
+                if (key !== 'image' && data[key] !== undefined && data[key] !== null) {
+                    formData.append(key, data[key]);
+                }
+            });
+
+            // Append image file if selected
+            if (selectedImage) {
+                formData.append('image', selectedImage);
+            }
+
             if (formModal.mode === 'edit' && formModal.user) {
                 await updateMutation.mutateAsync({
                     id: formModal.user.id,
-                    data,
+                    data: formData,
                 });
-                setToast({ message: 'User updated successfully', title: 'User Updated' });
+                setToast({
+                    message: 'User updated successfully',
+                    title: 'User Updated',
+                });
             } else {
-                // Create user logic here
-                setToast({ message: 'User created successfully', title: 'User Created' });
+                // Create user with FormData
+                await createMutation.mutateAsync(formData);
+                setToast({
+                    message: 'User created successfully',
+                    title: 'User Created',
+                });
             }
+
+            // Reset form and close modal
+            setSelectedImage(null);
+            setFormModal({ isOpen: false, mode: 'create', user: null });
             refetch();
         } catch (error) {
+            console.error('Form submission error:', error);
             setToast({
                 message: formModal.mode === 'edit' ? 'Failed to update user' : 'Failed to create user',
-                title: formModal.mode === 'edit' ? 'Update error' : 'Create error'
+                title: formModal.mode === 'edit' ? 'Update error' : 'Create error',
             });
         }
     };
@@ -90,9 +121,16 @@ export const UsersListPage: React.FC = () => {
 
         try {
             await deleteMutation.mutateAsync(deleteConfirm.id);
+            setToast({
+                message: 'User deleted successfully',
+                title: 'User Deleted',
+            });
             refetch();
         } catch (error) {
-            setToast({ message: 'Failed to delete user', title: 'Deletion Error' });
+            setToast({
+                message: 'Failed to delete user',
+                title: 'Deletion Error',
+            });
         } finally {
             setDeleteConfirm(null);
         }
@@ -110,10 +148,14 @@ export const UsersListPage: React.FC = () => {
             });
             refetch();
         } catch (error) {
-            setToast({ message: 'Failed to update user status', title: 'Update Error' });
+            setToast({
+                message: 'Failed to update user status',
+                title: 'Update Error',
+            });
         }
     };
 
+    // Update UserFormModal to pass selectedImage and setSelectedImage
     return (
         <>
             {toast && (
@@ -126,10 +168,15 @@ export const UsersListPage: React.FC = () => {
             {/* User Form Modal */}
             <UserFormModal
                 isOpen={formModal.isOpen}
-                onClose={() => setFormModal({ isOpen: false, mode: 'create', user: null })}
+                onClose={() => {
+                    setSelectedImage(null);
+                    setFormModal({ isOpen: false, mode: 'create', user: null });
+                }}
                 onSubmit={handleFormSubmit}
                 user={formModal.user}
                 mode={formModal.mode}
+                selectedImage={selectedImage}
+                onImageChange={setSelectedImage}
             />
 
             {/* Delete Confirmation Modal */}
@@ -137,9 +184,9 @@ export const UsersListPage: React.FC = () => {
                 <div className="fixed inset-0 z-50 overflow-y-auto">
                     <div className="flex items-center justify-center min-h-screen px-4">
                         <div className="fixed inset-0 bg-gray-500/50" onClick={() => setDeleteConfirm(null)} />
-                        <div className="relative bg-white rounded-lg max-w-md w-full p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Delete</h3>
-                            <p className="text-gray-600 mb-6">
+                        <div className="relative w-full max-w-md p-6 bg-white rounded-lg">
+                            <h3 className="mb-4 text-lg font-semibold text-gray-900">Confirm Delete</h3>
+                            <p className="mb-6 text-gray-600">
                                 Are you sure you want to delete <strong>{deleteConfirm.fullName}</strong>? This action cannot be undone.
                             </p>
                             <div className="flex justify-end space-x-3">
@@ -162,7 +209,7 @@ export const UsersListPage: React.FC = () => {
                 </div>
             )}
 
-            <div className="px-4 sm:px-6 lg:px-8 py-8">
+            <div className="px-4 py-8 sm:px-6 lg:px-8">
                 {/* Page Header */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between">
@@ -183,23 +230,23 @@ export const UsersListPage: React.FC = () => {
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="p-4 mb-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Search className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                             <input
                                 type="text"
                                 placeholder="Search users..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                className="w-full py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                             />
                         </div>
 
                         <select
                             value={filters.role || ''}
                             onChange={(e) => setFilters({ ...filters, role: e.target.value as any || undefined })}
-                            className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                            className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                             <option value="">All Roles</option>
                             <option value="ADMIN">Admin</option>
@@ -216,7 +263,7 @@ export const UsersListPage: React.FC = () => {
                                 ...filters,
                                 isActive: e.target.value === '' ? undefined : e.target.value === 'true'
                             })}
-                            className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                            className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                             <option value="">All Status</option>
                             <option value="true">Active</option>
@@ -229,7 +276,7 @@ export const UsersListPage: React.FC = () => {
                                 const [sortBy, sortOrder] = e.target.value.split('-');
                                 setFilters({ ...filters, sortBy, sortOrder: sortOrder as any });
                             }}
-                            className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                            className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                             <option value="fullName-ASC">Name (A-Z)</option>
                             <option value="fullName-DESC">Name (Z-A)</option>
@@ -242,50 +289,50 @@ export const UsersListPage: React.FC = () => {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Total Users</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.total}</p>
                             </div>
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
                                 <UsersIcon className="w-6 h-6 text-blue-600" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Active Users</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.active}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.active}</p>
                             </div>
-                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg">
                                 <UserCheck className="w-6 h-6 text-green-600" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Administrators</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.admins}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.admins}</p>
                             </div>
-                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg">
                                 <Shield className="w-6 h-6 text-purple-600" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">New This Month</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.newThisMonth}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.newThisMonth}</p>
                             </div>
-                            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <div className="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-lg">
                                 <TrendingUp className="w-6 h-6 text-yellow-600" />
                             </div>
                         </div>
@@ -303,7 +350,7 @@ export const UsersListPage: React.FC = () => {
 
                 {/* Pagination */}
                 {data?.meta && (
-                    <div className="mt-6 flex items-center justify-between">
+                    <div className="flex items-center justify-between mt-6">
                         <div className="text-sm text-gray-700">
                             Showing {((filters.page! - 1) * filters.limit!) + 1} to{' '}
                             {Math.min(filters.page! * filters.limit!, data.meta.total)} of{' '}

@@ -1,5 +1,5 @@
 // src/components/users/UserFormModal.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     X,
     User as UserIcon,
@@ -11,13 +11,17 @@ import {
     AlertCircle,
     CheckCircle,
     Info,
+    Camera,
+    Upload,
+    Trash2,
+    Image as ImageIcon,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
-import type { User } from '../../types/request/user';
-import { createUserSchema, updateUserSchema, type CreateUserFormData, type UpdateUserFormData } from '../../validation/user.validation';
+import type { User, ProfileImage } from '../../types/request/user';
+import { createUserSchema, updateUserSchema, type CreateUserFormData, type UpdateUserFormData, validateImageFile } from '../../validation/user.validation';
 
 interface UserFormModalProps {
     isOpen: boolean;
@@ -25,6 +29,8 @@ interface UserFormModalProps {
     onSubmit: (data: any) => Promise<void>;
     user?: User | null;
     mode: 'create' | 'edit';
+    selectedImage: File | null;
+    onImageChange: (file: File | null) => void;
 }
 
 export const UserFormModal: React.FC<UserFormModalProps> = ({
@@ -33,8 +39,13 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     onSubmit,
     user,
     mode,
+    selectedImage, // Receive from parent
+    onImageChange, // Receive from parent
 }) => {
     const isEditMode = mode === 'edit';
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
 
     const {
         register,
@@ -43,6 +54,8 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
         reset,
         setValue,
         watch,
+        setError,
+        clearErrors,
     } = useForm<CreateUserFormData | UpdateUserFormData>({
         resolver: zodResolver(isEditMode ? updateUserSchema : createUserSchema),
     });
@@ -151,6 +164,81 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
     const colorClasses = getColorClasses(currentColor);
 
+    // Handle image selection - use onImageChange from props
+    const handleImageSelect = (file: File) => {
+        const validationError = validateImageFile(file);
+        if (validationError) {
+            setError('image', {
+                type: 'manual',
+                message: validationError
+            });
+            return;
+        }
+
+        clearErrors('image');
+        onImageChange(file); // Use parent's function instead of local state
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setImagePreview(e.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // Handle file input change
+    const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            handleImageSelect(file);
+        }
+    };
+
+    // Handle drag and drop
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragging(false);
+
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            handleImageSelect(file);
+        }
+    };
+
+    // Remove selected image - use onImageChange from props
+    const handleRemoveImage = () => {
+        onImageChange(null); // Use parent's function instead of local state
+        setImagePreview(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+        clearErrors('image');
+    };
+
+    // Trigger file input click
+    const handleImageClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    // Format file size
+    const formatFileSize = (bytes: number) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
+
     useEffect(() => {
         if (isEditMode && user) {
             setValue('fullName', user.fullName);
@@ -158,15 +246,62 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
             setValue('phoneNumber', user.phoneNumber);
             setValue('role', user.role as any);
             setValue('isActive', user.isActive);
+
+            // Set existing profile image if available
+            if (user.profileImage?.url) {
+                setImagePreview(user.profileImage.url);
+            }
         } else {
             reset();
+            setImagePreview(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         }
     }, [user, isEditMode, setValue, reset]);
 
+    // Update image preview when selectedImage changes from parent
+    useEffect(() => {
+        if (selectedImage) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setImagePreview(e.target?.result as string);
+            };
+            reader.readAsDataURL(selectedImage);
+        } else if (!user?.profileImage?.url) {
+            setImagePreview(null);
+        }
+    }, [selectedImage, user]);
+
     const handleFormSubmit = async (data: any) => {
-        await onSubmit(data);
-        reset();
-        onClose();
+        try {
+            // Prepare form data with image file
+            const formData = new FormData();
+
+            // Append all form fields
+            Object.keys(data).forEach(key => {
+                if (key !== 'image' && data[key] !== undefined && data[key] !== null) {
+                    formData.append(key, data[key]);
+                }
+            });
+
+            // Append image file if selected - using 'image' field name
+            if (selectedImage) {
+                formData.append('image', selectedImage);
+            }
+
+            await onSubmit(formData);
+            reset();
+            onImageChange(null); // Reset image in parent
+            setImagePreview(null);
+            onClose();
+        } catch (error) {
+            console.error('Form submission error:', error);
+            setError('root', {
+                type: 'manual',
+                message: 'Failed to submit form. Please try again.'
+            });
+        }
     };
 
     if (!isOpen) return null;
@@ -176,7 +311,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
             <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 {/* Background overlay with blur */}
                 <div
-                    className="fixed inset-0 transition-opacity bg-opacity-50 backdrop-blur-sm"
+                    className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-50 backdrop-blur-sm"
                     onClick={onClose}
                     aria-hidden="true"
                 />
@@ -187,12 +322,12 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                 </span>
 
                 {/* Modal panel with animation */}
-                <div className="relative inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full animate-in fade-in zoom-in duration-300 z-40">
+                <div className="relative z-40 inline-block overflow-hidden text-left align-bottom transition-all duration-300 transform bg-white shadow-2xl rounded-xl sm:my-8 sm:align-middle sm:max-w-xl sm:w-full animate-in fade-in zoom-in">
                     {/* Header with dynamic gradient */}
                     <div className={`bg-gradient-to-r ${colorClasses.gradient} px-6 py-4`}>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm">
                                     <UserIcon className="w-6 h-6 text-white" />
                                 </div>
                                 <div>
@@ -206,7 +341,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                             </div>
                             <button
                                 onClick={onClose}
-                                className="text-white/80 hover:text-white transition-colors"
+                                className="transition-colors text-white/80 hover:text-white"
                             >
                                 <X size={24} />
                             </button>
@@ -214,11 +349,137 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                     </div>
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit(handleFormSubmit)}>
+                    <form onSubmit={handleSubmit(handleFormSubmit)} encType="multipart/form-data">
                         <div className="px-6 py-6 space-y-6">
+                            {/* Profile Image Section */}
+                            <div>
+                                <div className="flex items-center mb-4 space-x-2">
+                                    <div className={`w-8 h-8 ${colorClasses.bg} rounded-lg flex items-center justify-center`}>
+                                        <Camera className={`w-4 h-4 ${colorClasses.text}`} />
+                                    </div>
+                                    <h4 className="text-sm font-semibold text-gray-900">Profile Image</h4>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {/* Drag and Drop Area */}
+                                    <div
+                                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${isDragging
+                                                ? 'border-red-500 bg-red-50'
+                                                : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+                                            }`}
+                                        onDragOver={handleDragOver}
+                                        onDragLeave={handleDragLeave}
+                                        onDrop={handleDrop}
+                                        onClick={handleImageClick}
+                                    >
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={handleFileInputChange}
+                                            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                            className="hidden"
+                                        />
+
+                                        {imagePreview ? (
+                                            <div className="flex items-center justify-center space-x-6">
+                                                {/* Image Preview */}
+                                                <div className="relative">
+                                                    <div className="w-20 h-20 overflow-hidden bg-white border-2 border-gray-200 rounded-full shadow-sm">
+                                                        <img
+                                                            src={imagePreview}
+                                                            alt="Profile preview"
+                                                            className="object-cover w-full h-full"
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleRemoveImage();
+                                                        }}
+                                                        className="absolute flex items-center justify-center w-6 h-6 text-white transition-colors bg-red-500 rounded-full shadow-lg -top-1 -right-1 hover:bg-red-600"
+                                                    >
+                                                        <Trash2 className="w-3 h-3" />
+                                                    </button>
+                                                </div>
+
+                                                {/* Image Info */}
+                                                <div className="text-left">
+                                                    <p className="text-sm font-medium text-gray-900">Profile image selected</p>
+                                                    {selectedImage && (
+                                                        <p className="mt-1 text-xs text-gray-500">
+                                                            {selectedImage.name} • {formatFileSize(selectedImage.size)}
+                                                        </p>
+                                                    )}
+                                                    <p className="mt-2 text-xs text-gray-400">Click to change image</p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-center w-16 h-16 mx-auto bg-white border-2 border-gray-300 rounded-full">
+                                                    <ImageIcon className="w-8 h-8 text-gray-400" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                        Drag & drop or click to upload
+                                                    </p>
+                                                    <p className="mt-1 text-xs text-gray-500">
+                                                        JPG, PNG, GIF, WebP. Max 5MB.
+                                                    </p>
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    icon={<Upload className="w-4 h-4" />}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    Choose File
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Existing Image Info */}
+                                    {isEditMode && user?.profileImage && !selectedImage && (
+                                        <div className="p-3 border border-blue-200 rounded-lg bg-blue-50">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center space-x-3">
+                                                    <ImageIcon className="w-4 h-4 text-blue-600" />
+                                                    <div>
+                                                        <p className="text-xs font-medium text-blue-900">
+                                                            Current profile image
+                                                        </p>
+                                                        <p className="text-xs text-blue-700">
+                                                            {user.profileImage.format} • {formatFileSize(user.profileImage.size)}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleImageClick}
+                                                    className="text-xs font-medium text-blue-600 hover:text-blue-800"
+                                                >
+                                                    Change
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {errors.image && (
+                                        <div className="p-3 border border-red-200 rounded-lg bg-red-50">
+                                            <p className="flex items-center text-xs text-red-600">
+                                                <AlertCircle className="flex-shrink-0 w-3 h-3 mr-2" />
+                                                {errors.image.message}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
                             {/* Personal Information Section */}
                             <div>
-                                <div className="flex items-center space-x-2 mb-4">
+                                <div className="flex items-center mb-4 space-x-2">
                                     <div className={`w-8 h-8 ${colorClasses.bg} rounded-lg flex items-center justify-center`}>
                                         <Info className={`w-4 h-4 ${colorClasses.text}`} />
                                     </div>
@@ -234,7 +495,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                         {...register('fullName')}
                                     />
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <Input
                                             label="Email Address"
                                             type="email"
@@ -258,7 +519,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
                             {/* Role & Access Section */}
                             <div>
-                                <div className="flex items-center space-x-2 mb-4">
+                                <div className="flex items-center mb-4 space-x-2">
                                     <div className={`w-8 h-8 ${colorClasses.bg} rounded-lg flex items-center justify-center`}>
                                         <Shield className={`w-4 h-4 ${colorClasses.text}`} />
                                     </div>
@@ -267,7 +528,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block mb-2 text-sm font-medium text-gray-700">
                                             User Role <span className="text-red-500">*</span>
                                         </label>
                                         <div className="grid grid-cols-2 gap-3">
@@ -306,7 +567,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                             })}
                                         </div>
                                         {errors.role && (
-                                            <p className="mt-2 text-xs text-red-600 flex items-center">
+                                            <p className="flex items-center mt-2 text-xs text-red-600">
                                                 <AlertCircle className="w-3 h-3 mr-1" />
                                                 {errors.role.message}
                                             </p>
@@ -323,7 +584,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                                 error={(errors as any).password?.message}
                                                 {...register('password')}
                                             />
-                                            <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                            <div className="p-3 mt-2 border rounded-lg bg-amber-50 border-amber-200">
                                                 <p className="text-xs text-amber-800">
                                                     <strong>Password Requirements:</strong> Minimum 8 characters
                                                 </p>
@@ -332,11 +593,11 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                     )}
 
                                     {isEditMode && (
-                                        <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+                                        <div className="flex items-center p-4 rounded-lg bg-gray-50">
                                             <input
                                                 {...register('isActive')}
                                                 type="checkbox"
-                                                className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                                                className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
                                             />
                                             <label className="ml-3">
                                                 <p className="text-sm font-medium text-gray-900">Active Account</p>
@@ -349,7 +610,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                         </div>
 
                         {/* Footer - Fixed to be always visible */}
-                        <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3 border-t border-gray-200">
+                        <div className="flex justify-end px-6 py-4 space-x-3 border-t border-gray-200 bg-gray-50">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -365,7 +626,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                 size="sm"
                                 icon={<Save size={16} />}
                                 isLoading={isSubmitting}
-                                disabled={!isDirty && isEditMode}
+                                disabled={!isDirty && isEditMode && !selectedImage}
                                 className={colorClasses.button}
                             >
                                 {isEditMode ? 'Update User' : 'Create User'}

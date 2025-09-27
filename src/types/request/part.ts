@@ -22,7 +22,7 @@ export interface Part {
 }
 
 export interface CreatePartRequest {
-    images?: File[] | Blob[] | any[];
+    images?: File[] | Blob[];
     name: string;
     description: string;
     price: number; // Sent as number in request

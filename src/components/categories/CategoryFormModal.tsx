@@ -207,7 +207,6 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
             handleClose();
         } catch (error) {
             console.error('Failed to save category:', error);
-            alert('Failed to save category. Please try again.');
         }
     };
 
@@ -245,27 +244,27 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 z-30 overflow-y-auto">
             {/* Background overlay with blur - lower z-index */}
             <div
-                className="fixed inset-0 bg-opacity-50 backdrop-blur-sm z-40"
+                className="fixed inset-0 z-40 bg-opacity-50 backdrop-blur-sm"
                 onClick={handleClose}
                 aria-hidden="true"
             />
 
             {/* Center modal - higher z-index */}
-            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0 z-50 relative">
+            <div className="relative z-50 flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
                     &#8203;
                 </span>
 
                 {/* Modal panel with animation */}
-                <div className="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full relative z-50">
+                <div className="relative z-50 inline-block overflow-hidden text-left align-bottom transition-all transform bg-white shadow-2xl rounded-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     {/* Header with dynamic gradient based on mode */}
                     <div className={`bg-gradient-to-r ${colors.gradient} px-6 py-4`}>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm">
                                     <Folder className="w-6 h-6 text-white" />
                                 </div>
                                 <div>
@@ -298,7 +297,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                                     className={`w-full px-4 py-2.5 border rounded-lg text-sm ${errors.name ? 'border-red-500 focus:ring-2 focus:ring-red-200' : `border-gray-300 ${colors.focusBorder} focus:ring-2 ${colors.focusRing}`} focus:outline-none`}
                                 />
                                 {errors.name && (
-                                    <p className="mt-1 text-xs text-red-600 flex items-center">
+                                    <p className="flex items-center mt-1 text-xs text-red-600">
                                         <AlertCircle className="w-3 h-3 mr-1" />
                                         {errors.name.message}
                                     </p>
@@ -317,7 +316,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                                     className={`w-full px-4 py-2.5 border rounded-lg text-sm ${errors.description ? 'border-red-500 focus:ring-2 focus:ring-red-200' : `border-gray-300 ${colors.focusBorder} focus:ring-2 ${colors.focusRing}`} focus:outline-none`}
                                 />
                                 {errors.description && (
-                                    <p className="mt-1 text-xs text-red-600 flex items-center">
+                                    <p className="flex items-center mt-1 text-xs text-red-600">
                                         <AlertCircle className="w-3 h-3 mr-1" />
                                         {errors.description.message}
                                     </p>
@@ -359,19 +358,19 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                                             <img
                                                 src={imagePreview}
                                                 alt="Preview"
-                                                className="mx-auto h-32 w-32 object-cover rounded-lg"
+                                                className="object-cover w-32 h-32 mx-auto rounded-lg"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={removeImage}
-                                                className="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                                className="absolute top-0 right-0 p-1 -mt-2 -mr-2 text-white bg-red-500 rounded-full hover:bg-red-600"
                                             >
                                                 <X size={16} />
                                             </button>
                                         </div>
                                     ) : (
                                         <>
-                                            <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                                            <ImageIcon className="w-12 h-12 mx-auto text-gray-400" />
                                             <p className="mt-2 text-sm text-gray-600">
                                                 Drop image here or{' '}
                                                 <label className={`${colors.text} hover:opacity-80 cursor-pointer`}>
@@ -384,11 +383,11 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                                                     />
                                                 </label>
                                             </p>
-                                            <p className="text-xs text-gray-500 mt-1">
+                                            <p className="mt-1 text-xs text-gray-500">
                                                 JPEG, PNG, GIF, WebP up to 5MB
                                             </p>
                                             {mode === 'create' && !imagePreview && (
-                                                <p className="text-xs text-red-500 mt-2">
+                                                <p className="mt-2 text-xs text-red-500">
                                                     Image is required for new categories
                                                 </p>
                                             )}
@@ -396,7 +395,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                                     )}
                                 </div>
                                 {mode === 'edit' && isImageRemoved && (
-                                    <p className="text-xs text-blue-500 mt-2">
+                                    <p className="mt-2 text-xs text-blue-500">
                                         Image will be removed when you save changes
                                     </p>
                                 )}
@@ -404,7 +403,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                         </div>
 
                         {/* Footer */}
-                        <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3 border-t border-gray-200">
+                        <div className="flex justify-end px-6 py-4 space-x-3 border-t border-gray-200 bg-gray-50">
                             <Button
                                 type="button"
                                 variant="outline"

@@ -26,7 +26,7 @@ export interface Vehicle {
 
 // Request types
 export interface CreateVehicleRequest {
-    images?: File[] | Blob[] | any[];
+    images?: File[] | Blob[];
     make: string;
     model: string;
     year: number;

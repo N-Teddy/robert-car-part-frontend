@@ -39,7 +39,6 @@ export const DashboardLayout: React.FC = () => {
         { name: 'Orders', href: '/orders', icon: ShoppingCart },
         { name: 'Reports', href: '/reports', icon: BarChart3 },
         { name: 'Notifications', href: '/notifications', icon: Bell },
-        { name: 'Settings', href: '/settings', icon: Settings },
     ];
 
     const isActive = (path: string) => {

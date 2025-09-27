@@ -1,9 +1,11 @@
+// src/hooks/userHook.ts
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
     UpdateProfileRequest,
     AssignRoleRequest,
     UpdateUserRequest,
     UserFilter,
+    CreateUserRequest,
 } from '../types/request/user';
 import type { User } from '../types/request/user';
 import { userApi } from '../api/userApi';
@@ -59,10 +61,17 @@ export const useUser = () => {
         });
     };
 
-    // Mutation for updating user by ID
+    // Mutation for updating user by ID - Updated to handle FormData
     const useUpdateUser = () => {
-        return useMutation<User, Error, { id: string; data: UpdateUserRequest }>({
+        return useMutation<User, Error, { id: string; data: UpdateUserRequest | FormData }>({
             mutationFn: ({ id, data }) => userApi.updateUser(id, data),
+        });
+    };
+
+    // Mutation for creating user - New mutation
+    const useCreateUser = () => {
+        return useMutation<User, Error, CreateUserRequest | FormData>({
+            mutationFn: userApi.createUser,
         });
     };
 
@@ -81,6 +90,7 @@ export const useUser = () => {
         useGetUsersWithoutRole,
         useGetUserById,
         useUpdateUser,
+        useCreateUser, // Added this
         useDeleteUser,
     };
 };

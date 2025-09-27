@@ -10,6 +10,15 @@ export interface ProfileImage {
     updatedAt: string;
 }
 
+export interface CreateUserRequest {
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+    role: UserRoleEnum;
+    password: string;
+    image?: File | Blob;
+}
+
 export interface User {
     id: string;
     email: string;

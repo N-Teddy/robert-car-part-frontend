@@ -1,3 +1,4 @@
+// src/api/userApi.ts
 import { apiClient } from '../provider/AxiosClient';
 import type {
     User,
@@ -5,6 +6,7 @@ import type {
     AssignRoleRequest,
     UpdateUserRequest,
     UserFilter,
+    CreateUserRequest,
 } from '../types/request/user';
 import type {
     UserProfileResponse,
@@ -52,9 +54,31 @@ export const userApi = {
         return response.data.data;
     },
 
-    // Update user by ID
-    updateUser: async (id: string, data: UpdateUserRequest): Promise<User> => {
-        const response = await apiClient.put<UpdateUserResponse>(`/users/${id}`, data);
+    // Update user by ID - Updated to handle FormData
+    updateUser: async (id: string, data: UpdateUserRequest | FormData): Promise<User> => {
+        const config = data instanceof FormData
+            ? { headers: { 'Content-Type': 'multipart/form-data' } }
+            : {};
+
+        const response = await apiClient.put<UpdateUserResponse>(
+            `/users/${id}`,
+            data,
+            config
+        );
+        return response.data.data;
+    },
+
+    // Create user - New function to handle FormData
+    createUser: async (data: CreateUserRequest | FormData): Promise<User> => {
+        const config = data instanceof FormData
+            ? { headers: { 'Content-Type': 'multipart/form-data' } }
+            : {};
+
+        const response = await apiClient.post<UpdateUserResponse>(
+            '/users',
+            data,
+            config
+        );
         return response.data.data;
     },
 
