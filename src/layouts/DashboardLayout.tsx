@@ -1,5 +1,5 @@
 // src/layouts/DashboardLayout.tsx
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
     Menu,
@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext';
 import { NotificationBell } from '../components/notifications/NotificationBell';
+import { NavLink } from 'react-router-dom';
 
 export const DashboardLayout: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -97,7 +98,7 @@ export const DashboardLayout: React.FC = () => {
                             const Icon = item.icon;
                             const active = isActive(item.href);
                             return (
-                                <Link
+                                <NavLink
                                     key={item.name}
                                     to={item.href}
                                     className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${active
@@ -107,7 +108,7 @@ export const DashboardLayout: React.FC = () => {
                                 >
                                     <Icon className="w-5 h-5 mr-3" />
                                     {item.name}
-                                </Link>
+                                </NavLink>
                             );
                         })}
                     </nav>

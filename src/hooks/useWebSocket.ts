@@ -12,15 +12,19 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
     const socketRef = useRef<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [reconnectAttempt, setReconnectAttempt] = useState(0);
+
+    // Use useMemo to prevent unnecessary recreations of options
     const optionsRef = useRef(options);
+    optionsRef.current = options;
 
-    // Update options ref when options change
-    useEffect(() => {
-        optionsRef.current = options;
-    }, [options]);
-
+    // Memoize the connect function to prevent infinite re-renders
     const connect = useCallback(() => {
-        // Get fresh tokens on each connect attempt
+        // Prevent multiple connection attempts
+        if (socketRef.current?.connected) {
+            return;
+        }
+
+        // Get fresh tokens
         const stored = localStorage.getItem("authToken");
         const tokens = stored ? JSON.parse(stored) : null;
 
@@ -32,18 +36,22 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
         // Disconnect existing socket if any
         if (socketRef.current) {
             socketRef.current.disconnect();
+            socketRef.current = null;
         }
 
-        const socket = io(`${import.meta.env.VITE_WS_URL}/notifications`, {
+        // Use VITE_API_URL or fallback to localhost
+        const wsUrl = import.meta.env.VITE_API_BASE_URL?.replace('http', 'ws') || 'ws://localhost:3000';
+
+        const socket = io(`${wsUrl}/notifications`, {
             auth: {
                 token: tokens.accessToken,
             },
-            transports: ['websocket', 'polling'], // Allow both transports
+            transports: ['websocket', 'polling'],
             reconnection: true,
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
-            timeout: 20000,
+            timeout: 10000,
             autoConnect: true,
         });
 
@@ -58,12 +66,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
             console.log('WebSocket disconnected:', reason);
             setIsConnected(false);
             optionsRef.current.onDisconnect?.();
-
-            // Only attempt reconnection for unexpected disconnects
-            if (reason === 'io server disconnect') {
-                // The server explicitly disconnected, don't try to reconnect automatically
-                console.log('Server explicitly disconnected, manual reconnect required');
-            }
         });
 
         socket.on('notification', (notification) => {
@@ -72,7 +74,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
 
         socket.on('connect_error', (error) => {
             console.error('WebSocket connection error:', error);
-            setReconnectAttempt(prev => prev + 1);
+            setIsConnected(false);
         });
 
         socket.on('reconnect', (attempt) => {
@@ -83,6 +85,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
 
         socket.on('reconnect_attempt', (attempt) => {
             console.log(`WebSocket reconnect attempt ${attempt}`);
+            setReconnectAttempt(attempt);
         });
 
         socket.on('reconnect_error', (error) => {
@@ -96,10 +99,8 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
 
         socketRef.current = socket;
 
-        return () => {
-            socket.disconnect();
-        };
-    }, []);
+        return socket;
+    }, []); // Empty dependency array since we're using refs
 
     const disconnect = useCallback(() => {
         if (socketRef.current) {
@@ -115,37 +116,22 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
         }
     }, []);
 
-    // Only connect once on mount and disconnect on unmount
+    // Main connection effect - runs once on mount
     useEffect(() => {
         connect();
 
         return () => {
             disconnect();
         };
-    }, [connect, disconnect]);
+    }, [connect, disconnect]); // Now these are stable
 
-    // Reconnect when auth token changes
+    // Effect to handle auth token changes
     useEffect(() => {
-        const checkAuthToken = () => {
-            const stored = localStorage.getItem("authToken");
-            const tokens = stored ? JSON.parse(stored) : null;
-
-            if (tokens?.accessToken && !isConnected) {
-                // If we have a token but are not connected, try to connect
-                connect();
-            } else if (!tokens?.accessToken && isConnected) {
-                // If we lose the token while connected, disconnect
-                disconnect();
-            }
-        };
-
-        // Check auth token initially
-        checkAuthToken();
-
-        // Listen for storage changes (like token updates in other tabs)
         const handleStorageChange = (e: StorageEvent) => {
             if (e.key === "authToken") {
-                checkAuthToken();
+                // Disconnect and reconnect with new token
+                disconnect();
+                setTimeout(() => connect(), 100);
             }
         };
 
@@ -154,7 +140,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
         return () => {
             window.removeEventListener('storage', handleStorageChange);
         };
-    }, [isConnected, connect, disconnect]);
+    }, [connect, disconnect]);
 
     return {
         socket: socketRef.current,

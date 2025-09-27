@@ -39,10 +39,10 @@ export const AppRoutes = () => {
                 <Route path="/users" element={<UsersListPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/vehicles" element={<VehiclesPage />} />
-                <Route path="parts" element={<PartsPage />} />
-                <Route path="orders" element={<OrdersPage />} />
+                <Route path="/parts" element={<PartsPage />} />
+                <Route path="/orders" element={<OrdersPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
-                <Route path="categories" element={<CategoriesPage />} />
+                <Route path="/categories" element={<CategoriesPage />} />
             </Route>
         </Routes>
     );

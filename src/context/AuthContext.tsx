@@ -5,6 +5,7 @@ import {
     useState,
     useCallback,
     type ReactNode,
+    useRef,
 } from "react";
 import { jwtDecode } from "jwt-decode";
 import type {
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [tokens, setTokens] = useState<Tokens | null>(null);
     const [loading, setLoading] = useState(true);
+    const isRefreshing = useRef(false);
 
     const loginMutation = useLogin();
     const registerMutation = useRegister();
@@ -81,17 +83,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     /** Auto refresh before expiry */
     useEffect(() => {
-        if (!tokens) return;
+        if (!tokens || isRefreshing.current) return;
+
         const decoded = jwtDecode<DecodedToken>(tokens.accessToken);
         const expiresInMs = decoded.exp * 1000 - Date.now();
 
+        // Don't refresh if token has more than 5 minutes left
+        if (expiresInMs > 300000) return;
+
         // refresh 30s before expiry
         const timeout = setTimeout(() => {
+            isRefreshing.current = true;
             refreshMutation.mutate(
                 { refreshToken: tokens.refreshToken } as RefreshTokenRequest,
                 {
-                    onSuccess: (res) => saveTokens(res.data),
-                    onError: () => logout(),
+                    onSuccess: (res) => {
+                        saveTokens(res.data);
+                        isRefreshing.current = false;
+                    },
+                    onError: () => {
+                        logout();
+                        isRefreshing.current = false;
+                    },
                 }
             );
         }, Math.max(expiresInMs - 30000, 0));
