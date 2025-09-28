@@ -8,7 +8,8 @@ import {
     Download,
     FolderTree,
     Package,
-    Layers
+    Layers,
+    RefreshCw
 } from 'lucide-react';
 import { CategoryTree } from '../../components/categories/CategoryTree';
 import { CategoryGrid } from '../../components/categories/CategoryGrid';
@@ -29,6 +30,7 @@ export const CategoriesPage: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState<CategoryWithChildren | null>(null);
     const [expandedNodes, setExpandedNodes] = useState<string[]>([]);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     // Modal states
     const [formModal, setFormModal] = useState<{
@@ -59,7 +61,13 @@ export const CategoriesPage: React.FC = () => {
         category: null,
     });
 
-    const { data, isLoading, refetch } = useGetCategoryTree({
+    const {
+        data,
+        isLoading,
+        refetch,
+        isFetching,
+        error
+    } = useGetCategoryTree({
         search: searchTerm || undefined,
     });
 
@@ -91,6 +99,19 @@ export const CategoriesPage: React.FC = () => {
 
         return countCategories(categories);
     }, [categories]);
+
+    // Handle manual refresh
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        try {
+            await refetch();
+            setToast({ message: 'Categories refreshed successfully', type: 'success' });
+        } catch (error) {
+            setToast({ message: 'Failed to refresh categories', type: 'error' });
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
 
     // Filter categories based on search
     const filteredCategories = useMemo(() => {
@@ -159,7 +180,7 @@ export const CategoriesPage: React.FC = () => {
         try {
             await deleteMutation.mutateAsync(deleteModal.category.id);
             setToast({ message: 'Category deleted successfully', type: 'success' });
-            refetch();
+            await refetch(); // Ensure data is refreshed after deletion
             setDeleteModal({ isOpen: false, category: null });
         } catch (error) {
             setToast({ message: 'Failed to delete category', type: 'error' });
@@ -233,8 +254,8 @@ export const CategoriesPage: React.FC = () => {
                 category={formModal.category}
                 parentId={formModal.parentId}
                 onClose={() => setFormModal({ isOpen: false, mode: 'create', category: null })}
-                onSuccess={() => {
-                    refetch();
+                onSuccess={async () => {
+                    await refetch(); // Refresh data after successful form submission
                     setFormModal({ isOpen: false, mode: 'create', category: null });
                     setToast({
                         message: formModal.mode === 'create' ? 'Category created successfully' : 'Category updated successfully',
@@ -264,7 +285,7 @@ export const CategoriesPage: React.FC = () => {
                 onConfirm={confirmDelete}
             />
 
-            <div className="px-4 sm:px-6 lg:px-8 py-8">
+            <div className="px-4 py-8 sm:px-6 lg:px-8">
                 {/* Page Header */}
                 <div className="mb-8">
                     <div className="flex items-center justify-between">
@@ -275,6 +296,15 @@ export const CategoriesPage: React.FC = () => {
                             </p>
                         </div>
                         <div className="flex items-center space-x-3">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                icon={<RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />}
+                                onClick={handleRefresh}
+                                disabled={isRefreshing || isFetching}
+                            >
+                                {isRefreshing ? 'Refreshing...' : 'Refresh'}
+                            </Button>
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -295,38 +325,38 @@ export const CategoriesPage: React.FC = () => {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-3">
+                    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Total Categories</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.total}</p>
                             </div>
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
                                 <FolderTree className="w-6 h-6 text-blue-600" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Parent Categories</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.withChildren}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.withChildren}</p>
                             </div>
-                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg">
                                 <Layers className="w-6 h-6 text-green-600" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Total Products</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.products}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.products}</p>
                             </div>
-                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg">
                                 <Package className="w-6 h-6 text-purple-600" />
                             </div>
                         </div>
@@ -334,17 +364,17 @@ export const CategoriesPage: React.FC = () => {
                 </div>
 
                 {/* Filters and View Toggle */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="p-4 mb-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex-1 max-w-md">
                             <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <Search className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                                 <input
                                     type="text"
                                     placeholder="Search categories..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                    className="w-full py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                                 />
                             </div>
                         </div>
@@ -369,12 +399,12 @@ export const CategoriesPage: React.FC = () => {
                                 </>
                             )}
 
-                            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                            <div className="flex items-center p-1 bg-gray-100 rounded-lg">
                                 <button
                                     onClick={() => setViewMode('tree')}
                                     className={`p-2 rounded transition-colors ${viewMode === 'tree'
-                                            ? 'bg-white text-red-600 shadow-sm'
-                                            : 'text-gray-500 hover:text-gray-700'
+                                        ? 'bg-white text-red-600 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
                                         }`}
                                     title="Tree View"
                                 >
@@ -383,8 +413,8 @@ export const CategoriesPage: React.FC = () => {
                                 <button
                                     onClick={() => setViewMode('grid')}
                                     className={`p-2 rounded transition-colors ${viewMode === 'grid'
-                                            ? 'bg-white text-red-600 shadow-sm'
-                                            : 'text-gray-500 hover:text-gray-700'
+                                        ? 'bg-white text-red-600 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
                                         }`}
                                     title="Grid View"
                                 >
@@ -395,71 +425,95 @@ export const CategoriesPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Content Area */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                    {isLoading ? (
-                        <div className="p-8">
-                            <div className="animate-pulse space-y-4">
-                                {[...Array(5)].map((_, i) => (
-                                    <div key={i} className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 bg-gray-200 rounded"></div>
-                                        <div className="flex-1">
-                                            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                                            <div className="h-3 bg-gray-200 rounded w-1/3 mt-2"></div>
-                                        </div>
-                                    </div>
-                                ))}
+                {/* Loading State */}
+                {(isLoading || isRefreshing) && (
+                    <div className="p-8 mb-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+                        <div className="flex items-center justify-center space-x-2">
+                            <RefreshCw className="w-5 h-5 text-gray-400 animate-spin" />
+                            <span className="text-sm text-gray-600">
+                                {isRefreshing ? 'Refreshing categories...' : 'Loading categories...'}
+                            </span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Error State */}
+                {error && !isLoading && (
+                    <div className="p-4 mb-6 border border-red-200 rounded-lg bg-red-50">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-red-800">
+                                    Failed to load categories
+                                </p>
+                                <p className="mt-1 text-sm text-red-600">
+                                    {error.message || 'Please try refreshing the page'}
+                                </p>
                             </div>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                icon={<RefreshCw size={14} />}
+                                onClick={handleRefresh}
+                            >
+                                Retry
+                            </Button>
                         </div>
-                    ) : filteredCategories.length === 0 ? (
-                        <div className="p-12 text-center">
-                            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-1">No categories found</h3>
-                            <p className="text-sm text-gray-500">
-                                {searchTerm ? 'Try adjusting your search' : 'Get started by creating your first category'}
-                            </p>
-                            {!searchTerm && (
-                                <Button
-                                    variant="primary"
-                                    size="sm"
-                                    icon={<Plus size={16} />}
-                                    onClick={() => handleCreate()}
-                                    className="mt-4"
-                                >
-                                    Create Category
-                                </Button>
-                            )}
-                        </div>
-                    ) : (
-                        <>
-                            {viewMode === 'tree' ? (
-                                <CategoryTree
-                                    categories={filteredCategories}
-                                    expandedNodes={expandedNodes}
-                                    onToggleExpand={(nodeId) => {
-                                        setExpandedNodes(prev =>
-                                            prev.includes(nodeId)
-                                                ? prev.filter(id => id !== nodeId)
-                                                : [...prev, nodeId]
-                                        );
-                                    }}
-                                    onView={handleView}
-                                    onEdit={handleEdit}
-                                    onDelete={handleDelete}
-                                    onAddSubcategory={handleCreate}
-                                />
-                            ) : (
-                                <CategoryGrid
-                                    categories={filteredCategories}
-                                    onView={handleView}
-                                    onEdit={handleEdit}
-                                    onDelete={handleDelete}
-                                    onAddSubcategory={handleCreate}
-                                />
-                            )}
-                        </>
-                    )}
-                </div>
+                    </div>
+                )}
+
+                {/* Content Area */}
+                {!isLoading && !error && (
+                    <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+                        {filteredCategories.length === 0 ? (
+                            <div className="p-12 text-center">
+                                <Package className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                                <h3 className="mb-1 text-lg font-medium text-gray-900">No categories found</h3>
+                                <p className="text-sm text-gray-500">
+                                    {searchTerm ? 'Try adjusting your search' : 'Get started by creating your first category'}
+                                </p>
+                                {!searchTerm && (
+                                    <Button
+                                        variant="primary"
+                                        size="sm"
+                                        icon={<Plus size={16} />}
+                                        onClick={() => handleCreate()}
+                                        className="mt-4"
+                                    >
+                                        Create Category
+                                    </Button>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                {viewMode === 'tree' ? (
+                                    <CategoryTree
+                                        categories={filteredCategories}
+                                        expandedNodes={expandedNodes}
+                                        onToggleExpand={(nodeId) => {
+                                            setExpandedNodes(prev =>
+                                                prev.includes(nodeId)
+                                                    ? prev.filter(id => id !== nodeId)
+                                                    : [...prev, nodeId]
+                                            );
+                                        }}
+                                        onView={handleView}
+                                        onEdit={handleEdit}
+                                        onDelete={handleDelete}
+                                        onAddSubcategory={handleCreate}
+                                    />
+                                ) : (
+                                    <CategoryGrid
+                                        categories={filteredCategories}
+                                        onView={handleView}
+                                        onEdit={handleEdit}
+                                        onDelete={handleDelete}
+                                        onAddSubcategory={handleCreate}
+                                    />
+                                )}
+                            </>
+                        )}
+                    </div>
+                )}
             </div>
         </>
     );

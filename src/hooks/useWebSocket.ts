@@ -106,7 +106,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
         pollingRef.current = setInterval(async () => {
             try {
                 // You'll need to implement an API endpoint to check for new notifications
-                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/notifications`, {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/notifications`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('authToken')}`
                     }

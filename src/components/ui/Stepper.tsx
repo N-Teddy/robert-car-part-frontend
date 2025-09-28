@@ -23,14 +23,13 @@ export const Stepper: React.FC<StepperProps> = ({
 }) => {
     const handleStepClick = (stepId: number) => {
         if (allowNavigation && onStepClick && stepId < currentStep) {
-            // src/components/ui/Stepper.tsx (continued)
             onStepClick(stepId);
         }
     };
 
     return (
         <div className="w-full">
-            <div className="flex items-center justify-between relative">
+            <div className="relative flex items-center justify-between">
                 {steps.map((step, index) => {
                     const isActive = currentStep === step.id;
                     const isCompleted = currentStep > step.id;
