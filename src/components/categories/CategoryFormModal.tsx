@@ -9,7 +9,10 @@ import type { CategoryWithChildren } from '../../types/request/category';
 import { useCategory } from '../../hooks/categoryHook';
 
 const categorySchema = z.object({
-    name: z.string().min(1, 'Category name is required').max(50, 'Name must be less than 50 characters'),
+    name: z
+        .string()
+        .min(1, 'Category name is required')
+        .max(50, 'Name must be less than 50 characters'),
     description: z.string().max(200, 'Description must be less than 200 characters').optional(),
     parentId: z.string().optional(),
 });
@@ -53,7 +56,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
             text: 'text-green-600',
             border: 'border-green-500',
             ring: 'ring-green-200',
-            button: 'bg-green-600 hover:bg-green-700'
+            button: 'bg-green-600 hover:bg-green-700',
         },
         edit: {
             gradient: 'from-blue-500 to-blue-600',
@@ -63,8 +66,8 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
             text: 'text-blue-600',
             border: 'border-blue-500',
             ring: 'ring-blue-200',
-            button: 'bg-blue-600 hover:bg-blue-700'
-        }
+            button: 'bg-blue-600 hover:bg-blue-700',
+        },
     };
 
     const colors = colorConfig[mode];
@@ -199,7 +202,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
             } else if (category) {
                 await updateMutation.mutateAsync({
                     id: category.id,
-                    data: formData as any
+                    data: formData as any,
                 });
             }
 
@@ -229,7 +232,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
             const excludeIds = new Set<string>([category.id]);
             const addChildrenIds = (cat: CategoryWithChildren) => {
                 if (cat.children) {
-                    cat.children.forEach(child => {
+                    cat.children.forEach((child) => {
                         excludeIds.add(child.id);
                         addChildrenIds(child);
                     });
@@ -237,7 +240,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
             };
             addChildrenIds(category);
 
-            return categoriesData.items.filter(cat => !excludeIds.has(cat.id));
+            return categoriesData.items.filter((cat) => !excludeIds.has(cat.id));
         }
 
         return categoriesData.items;
@@ -254,7 +257,10 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
 
             {/* Center modal - higher z-index */}
             <div className="relative z-50 flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+                <span
+                    className="hidden sm:inline-block sm:align-middle sm:h-screen"
+                    aria-hidden="true"
+                >
                     &#8203;
                 </span>
 
@@ -272,11 +278,16 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                                         {mode === 'create' ? 'Create Category' : 'Edit Category'}
                                     </h3>
                                     <p className="text-xs text-white/80">
-                                        {mode === 'create' ? 'Add a new category to organize your inventory' : 'Update category information'}
+                                        {mode === 'create'
+                                            ? 'Add a new category to organize your inventory'
+                                            : 'Update category information'}
                                     </p>
                                 </div>
                             </div>
-                            <button onClick={handleClose} className="text-white/80 hover:text-white">
+                            <button
+                                onClick={handleClose}
+                                className="text-white/80 hover:text-white"
+                            >
                                 <X size={24} />
                             </button>
                         </div>
@@ -344,7 +355,8 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                             {/* Image Upload */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Category Image {mode === 'create' && <span className="text-red-500">*</span>}
+                                    Category Image{' '}
+                                    {mode === 'create' && <span className="text-red-500">*</span>}
                                 </label>
                                 <div
                                     className={`relative border-2 border-dashed rounded-lg p-6 text-center ${dragActive ? `${colors.border} ${colors.bg}` : 'border-gray-300'}`}
@@ -373,7 +385,9 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                                             <ImageIcon className="w-12 h-12 mx-auto text-gray-400" />
                                             <p className="mt-2 text-sm text-gray-600">
                                                 Drop image here or{' '}
-                                                <label className={`${colors.text} hover:opacity-80 cursor-pointer`}>
+                                                <label
+                                                    className={`${colors.text} hover:opacity-80 cursor-pointer`}
+                                                >
                                                     browse
                                                     <input
                                                         type="file"

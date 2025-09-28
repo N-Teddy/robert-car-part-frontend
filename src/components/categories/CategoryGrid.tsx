@@ -18,10 +18,13 @@ export const CategoryGrid: React.FC<CategoryGridProps> = ({
     onDelete,
     onAddSubcategory,
 }) => {
-    const flattenCategories = (cats: CategoryWithChildren[], level = 0): Array<CategoryWithChildren & { level: number }> => {
+    const flattenCategories = (
+        cats: CategoryWithChildren[],
+        level = 0
+    ): Array<CategoryWithChildren & { level: number }> => {
         const result: Array<CategoryWithChildren & { level: number }> = [];
 
-        cats.forEach(cat => {
+        cats.forEach((cat) => {
             result.push({ ...cat, level });
             if (cat.children && cat.children.length > 0) {
                 result.push(...flattenCategories(cat.children, level + 1));

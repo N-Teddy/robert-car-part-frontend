@@ -56,29 +56,19 @@ export const userApi = {
 
     // Update user by ID - Updated to handle FormData
     updateUser: async (id: string, data: UpdateUserRequest | FormData): Promise<User> => {
-        const config = data instanceof FormData
-            ? { headers: { 'Content-Type': 'multipart/form-data' } }
-            : {};
+        const config =
+            data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
 
-        const response = await apiClient.put<UpdateUserResponse>(
-            `/users/${id}`,
-            data,
-            config
-        );
+        const response = await apiClient.put<UpdateUserResponse>(`/users/${id}`, data, config);
         return response.data.data;
     },
 
     // Create user - New function to handle FormData
     createUser: async (data: CreateUserRequest | FormData): Promise<User> => {
-        const config = data instanceof FormData
-            ? { headers: { 'Content-Type': 'multipart/form-data' } }
-            : {};
+        const config =
+            data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
 
-        const response = await apiClient.post<UpdateUserResponse>(
-            '/users',
-            data,
-            config
-        );
+        const response = await apiClient.post<UpdateUserResponse>('/users', data, config);
         return response.data.data;
     },
 

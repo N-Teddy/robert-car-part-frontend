@@ -15,7 +15,7 @@ import {
     Mail,
     Truck,
     ChevronRight,
-    ChevronLeft
+    ChevronLeft,
 } from 'lucide-react';
 import type { Part } from '../../types/request/part';
 import type { OrderResponse } from '../../types/response/order';
@@ -65,12 +65,14 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                 deliveryMethod: order.deliveryMethod,
                 notes: order.notes || '',
             });
-            setOrderItems(order.items.map(item => ({
-                partId: item.part.id,
-                quantity: item.quantity,
-                unitPrice: Number(item.unitPrice),
-                discount: Number(item.discount),
-            })));
+            setOrderItems(
+                order.items.map((item) => ({
+                    partId: item.part.id,
+                    quantity: item.quantity,
+                    unitPrice: Number(item.unitPrice),
+                    discount: Number(item.discount),
+                }))
+            );
         } else {
             // Reset for create mode
             setFormData({
@@ -86,17 +88,19 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
         setErrors({});
     }, [mode, order, isOpen]);
 
-    const filteredParts = parts.filter(part =>
-        part.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        part.partNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredParts = parts.filter(
+        (part) =>
+            part.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            part.partNumber.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const filteredCustomers = savedCustomers.filter(customer =>
-        customer.name.toLowerCase().includes(formData.customerName.toLowerCase()) ||
-        customer.phone.includes(formData.customerPhone)
+    const filteredCustomers = savedCustomers.filter(
+        (customer) =>
+            customer.name.toLowerCase().includes(formData.customerName.toLowerCase()) ||
+            customer.phone.includes(formData.customerPhone)
     );
 
-    const handleCustomerSelect = (customer: typeof savedCustomers[0]) => {
+    const handleCustomerSelect = (customer: (typeof savedCustomers)[0]) => {
         setFormData({
             ...formData,
             customerName: customer.name,
@@ -107,7 +111,7 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
     };
 
     const handleAddItem = (part: Part) => {
-        const existingItem = orderItems.find(item => item.partId === part.id);
+        const existingItem = orderItems.find((item) => item.partId === part.id);
 
         if (existingItem) {
             // Check stock
@@ -116,28 +120,31 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                 return;
             }
             // Increment quantity
-            setOrderItems(orderItems.map(item =>
-                item.partId === part.id
-                    ? { ...item, quantity: item.quantity + 1 }
-                    : item
-            ));
+            setOrderItems(
+                orderItems.map((item) =>
+                    item.partId === part.id ? { ...item, quantity: item.quantity + 1 } : item
+                )
+            );
         } else {
             // Add new item
             if (part.quantity === 0) {
                 alert('This part is out of stock');
                 return;
             }
-            setOrderItems([...orderItems, {
-                partId: part.id,
-                quantity: 1,
-                unitPrice: Number(part.price),
-                discount: 0,
-            }]);
+            setOrderItems([
+                ...orderItems,
+                {
+                    partId: part.id,
+                    quantity: 1,
+                    unitPrice: Number(part.price),
+                    discount: 0,
+                },
+            ]);
         }
     };
 
     const handleUpdateQuantity = (partId: string, quantity: number) => {
-        const part = parts.find(p => p.id === partId);
+        const part = parts.find((p) => p.id === partId);
         if (!part) return;
 
         if (quantity > part.quantity) {
@@ -146,18 +153,18 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
         }
 
         if (quantity === 0) {
-            setOrderItems(orderItems.filter(item => item.partId !== partId));
+            setOrderItems(orderItems.filter((item) => item.partId !== partId));
         } else {
-            setOrderItems(orderItems.map(item =>
-                item.partId === partId ? { ...item, quantity } : item
-            ));
+            setOrderItems(
+                orderItems.map((item) => (item.partId === partId ? { ...item, quantity } : item))
+            );
         }
     };
 
     const handleUpdateDiscount = (partId: string, discount: number) => {
-        setOrderItems(orderItems.map(item =>
-            item.partId === partId ? { ...item, discount } : item
-        ));
+        setOrderItems(
+            orderItems.map((item) => (item.partId === partId ? { ...item, discount } : item))
+        );
     };
 
     const calculateTotal = () => {
@@ -173,7 +180,8 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
         if (step === 1) {
             if (!formData.customerName.trim()) newErrors.customerName = 'Customer name is required';
-            if (!formData.customerPhone.trim()) newErrors.customerPhone = 'Phone number is required';
+            if (!formData.customerPhone.trim())
+                newErrors.customerPhone = 'Phone number is required';
             if (formData.customerEmail && !formData.customerEmail.includes('@')) {
                 newErrors.customerEmail = 'Invalid email format';
             }
@@ -302,16 +310,23 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                     <div>
                                         <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                                             <User className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Customer Name <span className="text-red-500 ml-1">*</span>
+                                            Customer Name{' '}
+                                            <span className="text-red-500 ml-1">*</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={formData.customerName}
-                                            onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.customerName
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData,
+                                                    customerName: e.target.value,
+                                                })
+                                            }
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.customerName
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-purple-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="John Doe"
                                         />
                                         {errors.customerName && (
@@ -325,16 +340,23 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                     <div>
                                         <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                                             <Phone className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Phone Number <span className="text-red-500 ml-1">*</span>
+                                            Phone Number{' '}
+                                            <span className="text-red-500 ml-1">*</span>
                                         </label>
                                         <input
                                             type="tel"
                                             value={formData.customerPhone}
-                                            onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.customerPhone
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData,
+                                                    customerPhone: e.target.value,
+                                                })
+                                            }
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.customerPhone
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-purple-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="+237 6XX XXX XXX"
                                         />
                                         {errors.customerPhone && (
@@ -353,11 +375,17 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                         <input
                                             type="email"
                                             value={formData.customerEmail}
-                                            onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.customerEmail
+                                            onChange={(e) =>
+                                                setFormData({
+                                                    ...formData,
+                                                    customerEmail: e.target.value,
+                                                })
+                                            }
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.customerEmail
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-purple-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="john@example.com (optional)"
                                         />
                                         {errors.customerEmail && (
@@ -371,44 +399,67 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                     <div>
                                         <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                                             <Truck className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Delivery Method <span className="text-red-500 ml-1">*</span>
+                                            Delivery Method{' '}
+                                            <span className="text-red-500 ml-1">*</span>
                                         </label>
                                         <div className="grid grid-cols-2 gap-2">
-                                            <label className={`relative flex items-center justify-center px-4 py-2.5 border-2 rounded-lg cursor-pointer transition-all ${formData.deliveryMethod === 'PICKUP'
-                                                    ? 'border-purple-500 bg-purple-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
-                                                }`}>
+                                            <label
+                                                className={`relative flex items-center justify-center px-4 py-2.5 border-2 rounded-lg cursor-pointer transition-all ${
+                                                    formData.deliveryMethod === 'PICKUP'
+                                                        ? 'border-purple-500 bg-purple-50'
+                                                        : 'border-gray-200 hover:border-gray-300'
+                                                }`}
+                                            >
                                                 <input
                                                     type="radio"
                                                     name="deliveryMethod"
                                                     value="PICKUP"
                                                     checked={formData.deliveryMethod === 'PICKUP'}
-                                                    onChange={(e) => setFormData({ ...formData, deliveryMethod: 'PICKUP' })}
+                                                    onChange={(e) =>
+                                                        setFormData({
+                                                            ...formData,
+                                                            deliveryMethod: 'PICKUP',
+                                                        })
+                                                    }
                                                     className="sr-only"
                                                 />
-                                                <span className={`text-sm font-medium ${formData.deliveryMethod === 'PICKUP'
-                                                        ? 'text-purple-700'
-                                                        : 'text-gray-700'
-                                                    }`}>
+                                                <span
+                                                    className={`text-sm font-medium ${
+                                                        formData.deliveryMethod === 'PICKUP'
+                                                            ? 'text-purple-700'
+                                                            : 'text-gray-700'
+                                                    }`}
+                                                >
                                                     🏪 Pickup
                                                 </span>
                                             </label>
-                                            <label className={`relative flex items-center justify-center px-4 py-2.5 border-2 rounded-lg cursor-pointer transition-all ${formData.deliveryMethod === 'SHIPPING'
-                                                    ? 'border-purple-500 bg-purple-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
-                                                }`}>
+                                            <label
+                                                className={`relative flex items-center justify-center px-4 py-2.5 border-2 rounded-lg cursor-pointer transition-all ${
+                                                    formData.deliveryMethod === 'SHIPPING'
+                                                        ? 'border-purple-500 bg-purple-50'
+                                                        : 'border-gray-200 hover:border-gray-300'
+                                                }`}
+                                            >
                                                 <input
                                                     type="radio"
                                                     name="deliveryMethod"
                                                     value="SHIPPING"
                                                     checked={formData.deliveryMethod === 'SHIPPING'}
-                                                    onChange={(e) => setFormData({ ...formData, deliveryMethod: 'SHIPPING' })}
+                                                    onChange={(e) =>
+                                                        setFormData({
+                                                            ...formData,
+                                                            deliveryMethod: 'SHIPPING',
+                                                        })
+                                                    }
                                                     className="sr-only"
                                                 />
-                                                <span className={`text-sm font-medium ${formData.deliveryMethod === 'SHIPPING'
-                                                        ? 'text-purple-700'
-                                                        : 'text-gray-700'
-                                                    }`}>
+                                                <span
+                                                    className={`text-sm font-medium ${
+                                                        formData.deliveryMethod === 'SHIPPING'
+                                                            ? 'text-purple-700'
+                                                            : 'text-gray-700'
+                                                    }`}
+                                                >
                                                     🚚 Shipping
                                                 </span>
                                             </label>
@@ -423,7 +474,9 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                     <textarea
                                         rows={3}
                                         value={formData.notes}
-                                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                        onChange={(e) =>
+                                            setFormData({ ...formData, notes: e.target.value })
+                                        }
                                         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
                                         placeholder="Additional notes or special instructions..."
                                     />
@@ -456,9 +509,11 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
                                 {/* Available Parts */}
                                 <div className="mb-6">
-                                    <h4 className="text-sm font-medium text-gray-700 mb-2">Available Parts</h4>
+                                    <h4 className="text-sm font-medium text-gray-700 mb-2">
+                                        Available Parts
+                                    </h4>
                                     <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg">
-                                        {filteredParts.map(part => (
+                                        {filteredParts.map((part) => (
                                             <div
                                                 key={part.id}
                                                 className="flex items-center justify-between p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
@@ -468,20 +523,30 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                         {part.name}
                                                     </p>
                                                     <p className="text-xs text-gray-500">
-                                                        #{part.partNumber} • {formatCurrency(part.price)} •
-                                                        <span className={part.quantity === 0 ? 'text-red-600' : part.quantity < 5 ? 'text-yellow-600' : 'text-green-600'}>
-                                                            {' '}{part.quantity} in stock
+                                                        #{part.partNumber} •{' '}
+                                                        {formatCurrency(part.price)} •
+                                                        <span
+                                                            className={
+                                                                part.quantity === 0
+                                                                    ? 'text-red-600'
+                                                                    : part.quantity < 5
+                                                                      ? 'text-yellow-600'
+                                                                      : 'text-green-600'
+                                                            }
+                                                        >
+                                                            {' '}
+                                                            {part.quantity} in stock
                                                         </span>
                                                     </p>
                                                 </div>
                                                 <button
                                                     onClick={() => handleAddItem(part)}
                                                     disabled={part.quantity === 0}
-
-                                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${part.quantity === 0
+                                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                                        part.quantity === 0
                                                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                                             : 'bg-purple-600 text-white hover:bg-purple-700'
-                                                        }`}
+                                                    }`}
                                                 >
                                                     <Plus size={16} className="inline" />
                                                 </button>
@@ -492,7 +557,9 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
                                 {/* Selected Items */}
                                 <div>
-                                    <h4 className="text-sm font-medium text-gray-700 mb-2">Order Items</h4>
+                                    <h4 className="text-sm font-medium text-gray-700 mb-2">
+                                        Order Items
+                                    </h4>
                                     {errors.items && (
                                         <div className="mb-2 p-3 bg-red-50 border border-red-200 rounded-lg">
                                             <p className="text-sm text-red-800 flex items-center">
@@ -504,19 +571,30 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                     {orderItems.length === 0 ? (
                                         <div className="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                                             <Package className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                                            <p className="text-sm text-gray-500">No items added yet</p>
-                                            <p className="text-xs text-gray-400 mt-1">Search and add parts above</p>
+                                            <p className="text-sm text-gray-500">
+                                                No items added yet
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-1">
+                                                Search and add parts above
+                                            </p>
                                         </div>
                                     ) : (
                                         <div className="space-y-2">
                                             {orderItems.map((item, index) => {
-                                                const part = parts.find(p => p.id === item.partId);
+                                                const part = parts.find(
+                                                    (p) => p.id === item.partId
+                                                );
                                                 if (!part) return null;
 
-                                                const itemTotal = (item.quantity * item.unitPrice) - (item.discount || 0);
+                                                const itemTotal =
+                                                    item.quantity * item.unitPrice -
+                                                    (item.discount || 0);
 
                                                 return (
-                                                    <div key={item.partId} className="bg-white border border-gray-200 rounded-lg p-4">
+                                                    <div
+                                                        key={item.partId}
+                                                        className="bg-white border border-gray-200 rounded-lg p-4"
+                                                    >
                                                         <div className="flex items-start justify-between">
                                                             <div className="flex-1">
                                                                 <p className="font-medium text-gray-900">
@@ -527,7 +605,15 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                                 </p>
                                                             </div>
                                                             <button
-                                                                onClick={() => setOrderItems(orderItems.filter(i => i.partId !== item.partId))}
+                                                                onClick={() =>
+                                                                    setOrderItems(
+                                                                        orderItems.filter(
+                                                                            (i) =>
+                                                                                i.partId !==
+                                                                                item.partId
+                                                                        )
+                                                                    )
+                                                                }
                                                                 className="text-red-600 hover:text-red-700"
                                                             >
                                                                 <X size={18} />
@@ -536,10 +622,17 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
                                                         <div className="mt-3 grid grid-cols-4 gap-3">
                                                             <div>
-                                                                <label className="text-xs text-gray-600">Quantity</label>
+                                                                <label className="text-xs text-gray-600">
+                                                                    Quantity
+                                                                </label>
                                                                 <div className="flex items-center mt-1">
                                                                     <button
-                                                                        onClick={() => handleUpdateQuantity(item.partId, item.quantity - 1)}
+                                                                        onClick={() =>
+                                                                            handleUpdateQuantity(
+                                                                                item.partId,
+                                                                                item.quantity - 1
+                                                                            )
+                                                                        }
                                                                         className="p-1 border border-gray-300 rounded-l hover:bg-gray-100"
                                                                     >
                                                                         <Minus size={14} />
@@ -547,12 +640,27 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                                     <input
                                                                         type="number"
                                                                         value={item.quantity}
-                                                                        onChange={(e) => handleUpdateQuantity(item.partId, parseInt(e.target.value) || 0)}
+                                                                        onChange={(e) =>
+                                                                            handleUpdateQuantity(
+                                                                                item.partId,
+                                                                                parseInt(
+                                                                                    e.target.value
+                                                                                ) || 0
+                                                                            )
+                                                                        }
                                                                         className="w-16 px-2 py-1 border-t border-b border-gray-300 text-center text-sm"
                                                                     />
                                                                     <button
-                                                                        onClick={() => handleUpdateQuantity(item.partId, item.quantity + 1)}
-                                                                        disabled={item.quantity >= part.quantity}
+                                                                        onClick={() =>
+                                                                            handleUpdateQuantity(
+                                                                                item.partId,
+                                                                                item.quantity + 1
+                                                                            )
+                                                                        }
+                                                                        disabled={
+                                                                            item.quantity >=
+                                                                            part.quantity
+                                                                        }
                                                                         className="p-1 border border-gray-300 rounded-r hover:bg-gray-100 disabled:opacity-50"
                                                                     >
                                                                         <Plus size={14} />
@@ -564,25 +672,38 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                             </div>
 
                                                             <div>
-                                                                <label className="text-xs text-gray-600">Unit Price</label>
+                                                                <label className="text-xs text-gray-600">
+                                                                    Unit Price
+                                                                </label>
                                                                 <p className="mt-1 text-sm font-medium">
                                                                     {formatCurrency(item.unitPrice)}
                                                                 </p>
                                                             </div>
 
                                                             <div>
-                                                                <label className="text-xs text-gray-600">Discount</label>
+                                                                <label className="text-xs text-gray-600">
+                                                                    Discount
+                                                                </label>
                                                                 <input
                                                                     type="number"
                                                                     value={item.discount || 0}
-                                                                    onChange={(e) => handleUpdateDiscount(item.partId, parseFloat(e.target.value) || 0)}
+                                                                    onChange={(e) =>
+                                                                        handleUpdateDiscount(
+                                                                            item.partId,
+                                                                            parseFloat(
+                                                                                e.target.value
+                                                                            ) || 0
+                                                                        )
+                                                                    }
                                                                     className="w-full mt-1 px-2 py-1 border border-gray-300 rounded text-sm"
                                                                     placeholder="0"
                                                                 />
                                                             </div>
 
                                                             <div>
-                                                                <label className="text-xs text-gray-600">Total</label>
+                                                                <label className="text-xs text-gray-600">
+                                                                    Total
+                                                                </label>
                                                                 <p className="mt-1 text-sm font-bold text-purple-600">
                                                                     {formatCurrency(itemTotal)}
                                                                 </p>
@@ -599,7 +720,9 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                 {orderItems.length > 0 && (
                                     <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-sm font-medium text-purple-900">Subtotal:</span>
+                                            <span className="text-sm font-medium text-purple-900">
+                                                Subtotal:
+                                            </span>
                                             <span className="text-lg font-bold text-purple-900">
                                                 {formatCurrency(calculateTotal())}
                                             </span>
@@ -620,33 +743,45 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
                                 {/* Customer Summary */}
                                 <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                                    <h4 className="text-sm font-medium text-gray-700 mb-3">Customer Information</h4>
+                                    <h4 className="text-sm font-medium text-gray-700 mb-3">
+                                        Customer Information
+                                    </h4>
                                     <div className="grid grid-cols-2 gap-3 text-sm">
                                         <div>
                                             <span className="text-gray-500">Name:</span>
-                                            <p className="font-medium text-gray-900">{formData.customerName}</p>
+                                            <p className="font-medium text-gray-900">
+                                                {formData.customerName}
+                                            </p>
                                         </div>
                                         <div>
                                             <span className="text-gray-500">Phone:</span>
-                                            <p className="font-medium text-gray-900">{formData.customerPhone}</p>
+                                            <p className="font-medium text-gray-900">
+                                                {formData.customerPhone}
+                                            </p>
                                         </div>
                                         {formData.customerEmail && (
                                             <div>
                                                 <span className="text-gray-500">Email:</span>
-                                                <p className="font-medium text-gray-900">{formData.customerEmail}</p>
+                                                <p className="font-medium text-gray-900">
+                                                    {formData.customerEmail}
+                                                </p>
                                             </div>
                                         )}
                                         <div>
                                             <span className="text-gray-500">Delivery:</span>
                                             <p className="font-medium text-gray-900">
-                                                {formData.deliveryMethod === 'PICKUP' ? '🏪 Pickup' : '🚚 Shipping'}
+                                                {formData.deliveryMethod === 'PICKUP'
+                                                    ? '🏪 Pickup'
+                                                    : '🚚 Shipping'}
                                             </p>
                                         </div>
                                     </div>
                                     {formData.notes && (
                                         <div className="mt-3">
                                             <span className="text-sm text-gray-500">Notes:</span>
-                                            <p className="text-sm text-gray-700 mt-1">{formData.notes}</p>
+                                            <p className="text-sm text-gray-700 mt-1">
+                                                {formData.notes}
+                                            </p>
                                         </div>
                                     )}
                                 </div>
@@ -654,14 +789,18 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                 {/* Items Summary */}
                                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                                        <h4 className="text-sm font-medium text-gray-700">Order Items</h4>
+                                        <h4 className="text-sm font-medium text-gray-700">
+                                            Order Items
+                                        </h4>
                                     </div>
                                     <div className="divide-y divide-gray-200">
                                         {orderItems.map((item, index) => {
-                                            const part = parts.find(p => p.id === item.partId);
+                                            const part = parts.find((p) => p.id === item.partId);
                                             if (!part) return null;
 
-                                            const itemTotal = (item.quantity * item.unitPrice) - (item.discount || 0);
+                                            const itemTotal =
+                                                item.quantity * item.unitPrice -
+                                                (item.discount || 0);
 
                                             return (
                                                 <div key={item.partId} className="px-4 py-3">
@@ -671,8 +810,10 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                                 {index + 1}. {part.name}
                                                             </p>
                                                             <p className="text-xs text-gray-500">
-                                                                {item.quantity} × {formatCurrency(item.unitPrice)}
-                                                                {item.discount > 0 && ` - ${formatCurrency(item.discount)} discount`}
+                                                                {item.quantity} ×{' '}
+                                                                {formatCurrency(item.unitPrice)}
+                                                                {item.discount > 0 &&
+                                                                    ` - ${formatCurrency(item.discount)} discount`}
                                                             </p>
                                                         </div>
                                                         <p className="text-sm font-semibold text-gray-900">
@@ -685,7 +826,9 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                     </div>
                                     <div className="bg-purple-50 px-4 py-3 border-t border-purple-200">
                                         <div className="flex justify-between items-center">
-                                            <span className="text-base font-semibold text-purple-900">Total Amount:</span>
+                                            <span className="text-base font-semibold text-purple-900">
+                                                Total Amount:
+                                            </span>
                                             <span className="text-xl font-bold text-purple-900">
                                                 {formatCurrency(calculateTotal())}
                                             </span>
@@ -730,10 +873,11 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                 <button
                                     onClick={handleSubmit}
                                     disabled={isSubmitting}
-                                    className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${isSubmitting
+                                    className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${
+                                        isSubmitting
                                             ? 'bg-gray-400 cursor-not-allowed'
                                             : 'bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600'
-                                        }`}
+                                    }`}
                                 >
                                     {isSubmitting ? (
                                         <>
@@ -743,7 +887,11 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                     ) : (
                                         <>
                                             <Check className="w-4 h-4" />
-                                            <span>{mode === 'create' ? 'Create Order' : 'Update Order'}</span>
+                                            <span>
+                                                {mode === 'create'
+                                                    ? 'Create Order'
+                                                    : 'Update Order'}
+                                            </span>
                                         </>
                                     )}
                                 </button>

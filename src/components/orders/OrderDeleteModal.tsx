@@ -31,11 +31,10 @@ export const OrderDeleteModal: React.FC<OrderDeleteModalProps> = ({
                             </div>
                         </div>
                         <div className="ml-4 flex-1">
-                            <h3 className="text-lg font-semibold text-gray-900">
-                                Cancel Order
-                            </h3>
+                            <h3 className="text-lg font-semibold text-gray-900">Cancel Order</h3>
                             <p className="mt-1 text-sm text-gray-600">
-                                Are you sure you want to cancel this order? This will restore inventory levels.
+                                Are you sure you want to cancel this order? This will restore
+                                inventory levels.
                             </p>
                         </div>
                         <button
@@ -60,7 +59,8 @@ export const OrderDeleteModal: React.FC<OrderDeleteModalProps> = ({
                                     Customer: {order.customerName}
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                    Items: {order.items.length} • Total: {formatCurrency(order.totalAmount)}
+                                    Items: {order.items.length} • Total:{' '}
+                                    {formatCurrency(order.totalAmount)}
                                 </p>
                             </div>
                         </div>
@@ -72,14 +72,19 @@ export const OrderDeleteModal: React.FC<OrderDeleteModalProps> = ({
                                 <AlertTriangle className="w-5 h-5 text-amber-600" />
                             </div>
                             <div className="ml-3">
-                                <h4 className="text-sm font-medium text-amber-800">
-                                    Important
-                                </h4>
+                                <h4 className="text-sm font-medium text-amber-800">Important</h4>
                                 <div className="mt-1 text-sm text-amber-700">
                                     <p>Cancelling this order will:</p>
                                     <ul className="list-disc list-inside mt-1">
                                         <li>Change order status to CANCELLED</li>
-                                        <li>Restore {order.items.reduce((sum, item) => sum + item.quantity, 0)} items to inventory</li>
+                                        <li>
+                                            Restore{' '}
+                                            {order.items.reduce(
+                                                (sum, item) => sum + item.quantity,
+                                                0
+                                            )}{' '}
+                                            items to inventory
+                                        </li>
                                         <li>This action cannot be undone</li>
                                     </ul>
                                 </div>

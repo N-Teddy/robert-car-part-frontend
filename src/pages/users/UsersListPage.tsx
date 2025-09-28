@@ -22,7 +22,11 @@ export const UsersListPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [toast, setToast] = useState<{ message: string; title: string } | null>(null);
     const [deleteConfirm, setDeleteConfirm] = useState<User | null>(null);
-    const [formModal, setFormModal] = useState<{ isOpen: boolean; mode: 'create' | 'edit'; user?: User | null }>({
+    const [formModal, setFormModal] = useState<{
+        isOpen: boolean;
+        mode: 'create' | 'edit';
+        user?: User | null;
+    }>({
         isOpen: false,
         mode: 'create',
         user: null,
@@ -48,9 +52,9 @@ export const UsersListPage: React.FC = () => {
 
         return {
             total: data.meta?.total || data.items.length,
-            active: data.items.filter(u => u.isActive).length,
-            admins: data.items.filter(u => u.role === 'ADMIN').length,
-            newThisMonth: data.items.filter(u => new Date(u.createdAt) >= startOfMonth).length,
+            active: data.items.filter((u) => u.isActive).length,
+            admins: data.items.filter((u) => u.role === 'ADMIN').length,
+            newThisMonth: data.items.filter((u) => new Date(u.createdAt) >= startOfMonth).length,
         };
     }, [data]);
 
@@ -70,7 +74,7 @@ export const UsersListPage: React.FC = () => {
             const formData = new FormData();
 
             // Append all form fields
-            Object.keys(data).forEach(key => {
+            Object.keys(data).forEach((key) => {
                 if (key !== 'image' && data[key] !== undefined && data[key] !== null) {
                     formData.append(key, data[key]);
                 }
@@ -106,7 +110,8 @@ export const UsersListPage: React.FC = () => {
         } catch (error) {
             console.error('Form submission error:', error);
             setToast({
-                message: formModal.mode === 'edit' ? 'Failed to update user' : 'Failed to create user',
+                message:
+                    formModal.mode === 'edit' ? 'Failed to update user' : 'Failed to create user',
                 title: formModal.mode === 'edit' ? 'Update error' : 'Create error',
             });
         }
@@ -158,12 +163,7 @@ export const UsersListPage: React.FC = () => {
     // Update UserFormModal to pass selectedImage and setSelectedImage
     return (
         <>
-            {toast && (
-                <NotificationToast
-                    notification={toast}
-                    onClose={() => setToast(null)}
-                />
-            )}
+            {toast && <NotificationToast notification={toast} onClose={() => setToast(null)} />}
 
             {/* User Form Modal */}
             <UserFormModal
@@ -183,17 +183,21 @@ export const UsersListPage: React.FC = () => {
             {deleteConfirm && (
                 <div className="fixed inset-0 z-50 overflow-y-auto">
                     <div className="flex items-center justify-center min-h-screen px-4">
-                        <div className="fixed inset-0 bg-gray-500/50" onClick={() => setDeleteConfirm(null)} />
+                        <div
+                            className="fixed inset-0 bg-gray-500/50"
+                            onClick={() => setDeleteConfirm(null)}
+                        />
                         <div className="relative w-full max-w-md p-6 bg-white rounded-lg">
-                            <h3 className="mb-4 text-lg font-semibold text-gray-900">Confirm Delete</h3>
+                            <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                                Confirm Delete
+                            </h3>
                             <p className="mb-6 text-gray-600">
-                                Are you sure you want to delete <strong>{deleteConfirm.fullName}</strong>? This action cannot be undone.
+                                Are you sure you want to delete{' '}
+                                <strong>{deleteConfirm.fullName}</strong>? This action cannot be
+                                undone.
                             </p>
                             <div className="flex justify-end space-x-3">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setDeleteConfirm(null)}
-                                >
+                                <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
                                     Cancel
                                 </Button>
                                 <Button
@@ -219,11 +223,7 @@ export const UsersListPage: React.FC = () => {
                                 Manage system users and their roles
                             </p>
                         </div>
-                        <Button
-                            variant="primary"
-                            icon={<Plus size={20} />}
-                            onClick={handleCreate}
-                        >
+                        <Button variant="primary" icon={<Plus size={20} />} onClick={handleCreate}>
                             Add New User
                         </Button>
                     </div>
@@ -245,7 +245,12 @@ export const UsersListPage: React.FC = () => {
 
                         <select
                             value={filters.role || ''}
-                            onChange={(e) => setFilters({ ...filters, role: e.target.value as any || undefined })}
+                            onChange={(e) =>
+                                setFilters({
+                                    ...filters,
+                                    role: (e.target.value as any) || undefined,
+                                })
+                            }
                             className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                             <option value="">All Roles</option>
@@ -258,11 +263,18 @@ export const UsersListPage: React.FC = () => {
                         </select>
 
                         <select
-                            value={filters.isActive === undefined ? '' : filters.isActive.toString()}
-                            onChange={(e) => setFilters({
-                                ...filters,
-                                isActive: e.target.value === '' ? undefined : e.target.value === 'true'
-                            })}
+                            value={
+                                filters.isActive === undefined ? '' : filters.isActive.toString()
+                            }
+                            onChange={(e) =>
+                                setFilters({
+                                    ...filters,
+                                    isActive:
+                                        e.target.value === ''
+                                            ? undefined
+                                            : e.target.value === 'true',
+                                })
+                            }
                             className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                         >
                             <option value="">All Status</option>
@@ -294,7 +306,9 @@ export const UsersListPage: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Total Users</p>
-                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.total}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">
+                                    {stats.total}
+                                </p>
                             </div>
                             <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
                                 <UsersIcon className="w-6 h-6 text-blue-600" />
@@ -306,7 +320,9 @@ export const UsersListPage: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Active Users</p>
-                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.active}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">
+                                    {stats.active}
+                                </p>
                             </div>
                             <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg">
                                 <UserCheck className="w-6 h-6 text-green-600" />
@@ -318,7 +334,9 @@ export const UsersListPage: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Administrators</p>
-                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.admins}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">
+                                    {stats.admins}
+                                </p>
                             </div>
                             <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg">
                                 <Shield className="w-6 h-6 text-purple-600" />
@@ -330,7 +348,9 @@ export const UsersListPage: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">New This Month</p>
-                                <p className="mt-1 text-2xl font-bold text-gray-900">{stats.newThisMonth}</p>
+                                <p className="mt-1 text-2xl font-bold text-gray-900">
+                                    {stats.newThisMonth}
+                                </p>
                             </div>
                             <div className="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-lg">
                                 <TrendingUp className="w-6 h-6 text-yellow-600" />
@@ -352,7 +372,7 @@ export const UsersListPage: React.FC = () => {
                 {data?.meta && (
                     <div className="flex items-center justify-between mt-6">
                         <div className="text-sm text-gray-700">
-                            Showing {((filters.page! - 1) * filters.limit!) + 1} to{' '}
+                            Showing {(filters.page! - 1) * filters.limit! + 1} to{' '}
                             {Math.min(filters.page! * filters.limit!, data.meta.total)} of{' '}
                             {data.meta.total} results
                         </div>

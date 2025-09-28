@@ -53,7 +53,7 @@ export const ProfilePage: React.FC = () => {
     const getInitials = (name: string) => {
         return name
             .split(' ')
-            .map(n => n[0])
+            .map((n) => n[0])
             .join('')
             .toUpperCase()
             .slice(0, 2);
@@ -72,11 +72,7 @@ export const ProfilePage: React.FC = () => {
     return (
         <>
             {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
+                <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
             )}
 
             <div className="px-4 sm:px-6 lg:px-8 py-8">
@@ -132,15 +128,23 @@ export const ProfilePage: React.FC = () => {
                                                 <Calendar className="w-4 h-4 text-gray-400 mr-3" />
                                                 <span className="text-gray-600">Joined:</span>
                                                 <span className="ml-2 text-gray-900">
-                                                    {currentProfile?.createdAt && formatDate(currentProfile.createdAt)}
+                                                    {currentProfile?.createdAt &&
+                                                        formatDate(currentProfile.createdAt)}
                                                 </span>
                                             </div>
                                             <div className="flex items-center text-sm">
-                                                <div className={`w-2 h-2 rounded-full mr-3 ml-1 ${currentProfile?.isActive ? 'bg-green-500' : 'bg-red-500'
-                                                    }`} />
+                                                <div
+                                                    className={`w-2 h-2 rounded-full mr-3 ml-1 ${
+                                                        currentProfile?.isActive
+                                                            ? 'bg-green-500'
+                                                            : 'bg-red-500'
+                                                    }`}
+                                                />
                                                 <span className="text-gray-600">Status:</span>
                                                 <span className="ml-2 text-gray-900">
-                                                    {currentProfile?.isActive ? 'Active' : 'Inactive'}
+                                                    {currentProfile?.isActive
+                                                        ? 'Active'
+                                                        : 'Inactive'}
                                                 </span>
                                             </div>
                                         </div>
@@ -263,9 +267,7 @@ export const ProfilePage: React.FC = () => {
                                                 >
                                                     Cancel
                                                 </Button>
-                                                <Button variant="primary">
-                                                    Update Password
-                                                </Button>
+                                                <Button variant="primary">Update Password</Button>
                                             </div>
                                         </div>
                                     )}
@@ -281,21 +283,29 @@ export const ProfilePage: React.FC = () => {
                                     <div className="flex items-start">
                                         <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></div>
                                         <div>
-                                            <p className="text-sm text-gray-900">Login successful</p>
-                                            <p className="text-xs text-gray-500">Today at 9:00 AM</p>
+                                            <p className="text-sm text-gray-900">
+                                                Login successful
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                                Today at 9:00 AM
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="flex items-start">
                                         <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
                                         <div>
                                             <p className="text-sm text-gray-900">Profile updated</p>
-                                            <p className="text-xs text-gray-500">Yesterday at 3:45 PM</p>
+                                            <p className="text-xs text-gray-500">
+                                                Yesterday at 3:45 PM
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="flex items-start">
                                         <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-3"></div>
                                         <div>
-                                            <p className="text-sm text-gray-900">Password changed</p>
+                                            <p className="text-sm text-gray-900">
+                                                Password changed
+                                            </p>
                                             <p className="text-xs text-gray-500">3 days ago</p>
                                         </div>
                                     </div>

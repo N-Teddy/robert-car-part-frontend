@@ -6,7 +6,9 @@ interface PasswordStrengthIndicatorProps {
     password: string;
 }
 
-export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({ password }) => {
+export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
+    password,
+}) => {
     const requirements = useMemo(() => {
         return [
             { label: 'At least 8 characters', met: password.length >= 8 },
@@ -18,7 +20,7 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
     }, [password]);
 
     const strength = useMemo(() => {
-        const metCount = requirements.filter(req => req.met).length;
+        const metCount = requirements.filter((req) => req.met).length;
         if (metCount === 0) return { label: '', color: '', width: '0%' };
         if (metCount <= 2) return { label: 'Weak', color: 'bg-red-500', width: '33%' };
         if (metCount <= 4) return { label: 'Medium', color: 'bg-yellow-500', width: '66%' };
@@ -34,10 +36,15 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
                 <div className="flex justify-between items-center mb-1">
                     <span className="text-xs text-gray-600">Password Strength</span>
                     {strength.label && (
-                        <span className={`text-xs font-medium ${strength.color === 'bg-green-500' ? 'text-green-600' :
-                                strength.color === 'bg-yellow-500' ? 'text-yellow-600' :
-                                    'text-red-600'
-                            }`}>
+                        <span
+                            className={`text-xs font-medium ${
+                                strength.color === 'bg-green-500'
+                                    ? 'text-green-600'
+                                    : strength.color === 'bg-yellow-500'
+                                      ? 'text-yellow-600'
+                                      : 'text-red-600'
+                            }`}
+                        >
                             {strength.label}
                         </span>
                     )}

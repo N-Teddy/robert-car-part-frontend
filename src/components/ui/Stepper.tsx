@@ -13,6 +13,7 @@ interface StepperProps {
     currentStep: number;
     onStepClick?: (step: number) => void;
     allowNavigation?: boolean;
+    mode?: 'create' | 'edit'; // Add mode prop
 }
 
 export const Stepper: React.FC<StepperProps> = ({
@@ -20,7 +21,26 @@ export const Stepper: React.FC<StepperProps> = ({
     currentStep,
     onStepClick,
     allowNavigation = true,
+    mode = 'create', // Default to create mode
 }) => {
+    // Define colors based on mode
+    const colors = {
+        create: {
+            active: 'red',
+            completed: 'red',
+            ring: 'red',
+            text: 'red',
+        },
+        edit: {
+            active: 'blue',
+            completed: 'blue',
+            ring: 'blue',
+            text: 'blue',
+        },
+    };
+
+    const currentColors = colors[mode];
+
     const handleStepClick = (stepId: number) => {
         if (allowNavigation && onStepClick && stepId < currentStep) {
             onStepClick(stepId);
@@ -42,12 +62,15 @@ export const Stepper: React.FC<StepperProps> = ({
                                 {/* Line connector */}
                                 {index !== steps.length - 1 && (
                                     <div
-                                        className={`absolute top-5 left-1/2 w-full h-0.5 transition-all duration-300 ${isCompleted ? 'bg-purple-600' : 'bg-gray-300'
-                                            }`}
+                                        className={`absolute top-5 left-1/2 w-full h-0.5 transition-all duration-300 ${
+                                            isCompleted
+                                                ? `bg-${currentColors.completed}-600`
+                                                : 'bg-gray-300'
+                                        }`}
                                         style={{
                                             left: '50%',
                                             right: '-50%',
-                                            width: 'calc(100% - 2.5rem)'
+                                            width: 'calc(100% - 2.5rem)',
                                         }}
                                     />
                                 )}
@@ -56,15 +79,17 @@ export const Stepper: React.FC<StepperProps> = ({
                                 <button
                                     onClick={() => handleStepClick(step.id)}
                                     disabled={!isClickable}
-                                    className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${isActive
-                                            ? 'bg-purple-600 text-white ring-4 ring-purple-100'
+                                    className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                                        isActive
+                                            ? `bg-${currentColors.active}-600 text-white ring-4 ring-${currentColors.ring}-100`
                                             : isCompleted
-                                                ? 'bg-purple-600 text-white'
-                                                : 'bg-gray-300 text-gray-600'
-                                        } ${isClickable
-                                            ? 'cursor-pointer hover:ring-4 hover:ring-purple-100'
+                                              ? `bg-${currentColors.completed}-600 text-white`
+                                              : 'bg-gray-300 text-gray-600'
+                                    } ${
+                                        isClickable
+                                            ? `cursor-pointer hover:ring-4 hover:ring-${currentColors.ring}-100`
                                             : 'cursor-default'
-                                        }`}
+                                    }`}
                                 >
                                     {isCompleted ? (
                                         <Check size={20} className="text-white" />
@@ -77,10 +102,13 @@ export const Stepper: React.FC<StepperProps> = ({
 
                                 {/* Step label */}
                                 <div className="mt-2 text-center">
-                                    <p className={`text-xs font-medium transition-colors ${isActive || isCompleted
-                                            ? 'text-purple-600'
-                                            : 'text-gray-500'
-                                        }`}>
+                                    <p
+                                        className={`text-xs font-medium transition-colors ${
+                                            isActive || isCompleted
+                                                ? `text-${currentColors.text}-600`
+                                                : 'text-gray-500'
+                                        }`}
+                                    >
                                         {step.label}
                                     </p>
                                 </div>

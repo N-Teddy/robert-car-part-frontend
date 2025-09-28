@@ -65,12 +65,8 @@ export const PartDeleteModal: React.FC<PartDeleteModalProps> = ({
                                 )}
                             </div>
                             <div className="flex-1">
-                                <p className="text-sm font-semibold text-gray-900">
-                                    {part.name}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    Part #: {part.partNumber}
-                                </p>
+                                <p className="text-sm font-semibold text-gray-900">{part.name}</p>
+                                <p className="text-sm text-gray-600">Part #: {part.partNumber}</p>
                                 <p className="text-xs text-gray-500 mt-1">
                                     Stock: {part.quantity} units • {formatCurrency(part.price)}
                                 </p>
@@ -84,9 +80,7 @@ export const PartDeleteModal: React.FC<PartDeleteModalProps> = ({
                                 <AlertTriangle className="w-5 h-5 text-amber-600" />
                             </div>
                             <div className="ml-3">
-                                <h4 className="text-sm font-medium text-amber-800">
-                                    Warning
-                                </h4>
+                                <h4 className="text-sm font-medium text-amber-800">Warning</h4>
                                 <div className="mt-1 text-sm text-amber-700">
                                     <p>Deleting this part will:</p>
                                     <ul className="list-disc list-inside mt-1">

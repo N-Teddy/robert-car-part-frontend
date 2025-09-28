@@ -69,13 +69,17 @@ export const ResetPasswordPage: React.FC = () => {
                 token,
                 newPassword: data.newPassword,
             });
-            setToast({ message: 'Password reset successfully! Redirecting to login...', title: 'Password Reset' });
+            setToast({
+                message: 'Password reset successfully! Redirecting to login...',
+                title: 'Password Reset',
+            });
             setTimeout(() => {
                 navigate('/login');
             }, 2000);
         } catch (error: any) {
             setToast({
-                message: error.response?.data?.message || 'Failed to reset password. Please try again.',
+                message:
+                    error.response?.data?.message || 'Failed to reset password. Please try again.',
                 title: 'Reset error',
             });
         } finally {
@@ -89,12 +93,7 @@ export const ResetPasswordPage: React.FC = () => {
 
     return (
         <>
-            {toast && (
-                <NotificationToast
-                    notification={toast}
-                    onClose={() => setToast(null)}
-                />
-            )}
+            {toast && <NotificationToast notification={toast} onClose={() => setToast(null)} />}
 
             <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8">
                 <div className="flex items-center gap-3 mb-6">
@@ -103,7 +102,9 @@ export const ResetPasswordPage: React.FC = () => {
                     </div>
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900">Set New Password</h2>
-                        <p className="text-sm text-gray-600">Create a strong password for your account</p>
+                        <p className="text-sm text-gray-600">
+                            Create a strong password for your account
+                        </p>
                     </div>
                 </div>
 
@@ -131,10 +132,18 @@ export const ResetPasswordPage: React.FC = () => {
                             {/* Password Strength Bar */}
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs font-medium text-gray-700">Password Strength</span>
-                                    <span className={`text-xs font-medium ${passwordStrength.label === 'Strong' ? 'text-green-600' :
-                                        passwordStrength.label === 'Medium' ? 'text-yellow-600' : 'text-red-600'
-                                        }`}>
+                                    <span className="text-xs font-medium text-gray-700">
+                                        Password Strength
+                                    </span>
+                                    <span
+                                        className={`text-xs font-medium ${
+                                            passwordStrength.label === 'Strong'
+                                                ? 'text-green-600'
+                                                : passwordStrength.label === 'Medium'
+                                                  ? 'text-yellow-600'
+                                                  : 'text-red-600'
+                                        }`}
+                                    >
                                         {passwordStrength.label}
                                     </span>
                                 </div>
@@ -149,33 +158,55 @@ export const ResetPasswordPage: React.FC = () => {
                             {/* Compact password requirements */}
                             <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
                                 <div className="flex items-center justify-between mb-2">
-                                    <p className="text-xs font-medium text-gray-700">Password Requirements</p>
+                                    <p className="text-xs font-medium text-gray-700">
+                                        Password Requirements
+                                    </p>
                                     {allPasswordChecksPassed && (
-                                        <span className="text-xs text-green-600 font-medium">✓ All requirements met</span>
+                                        <span className="text-xs text-green-600 font-medium">
+                                            ✓ All requirements met
+                                        </span>
                                     )}
                                 </div>
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                                     <label className="flex items-center text-xs text-gray-600">
                                         {passwordChecks.length ? (
-                                            <CheckCircle size={12} className="mr-1.5 text-green-500 flex-shrink-0" />
+                                            <CheckCircle
+                                                size={12}
+                                                className="mr-1.5 text-green-500 flex-shrink-0"
+                                            />
                                         ) : (
-                                            <Circle size={12} className="mr-1.5 text-gray-400 flex-shrink-0" />
+                                            <Circle
+                                                size={12}
+                                                className="mr-1.5 text-gray-400 flex-shrink-0"
+                                            />
                                         )}
                                         8+ characters
                                     </label>
                                     <label className="flex items-center text-xs text-gray-600">
                                         {passwordChecks.uppercase ? (
-                                            <CheckCircle size={12} className="mr-1.5 text-green-500 flex-shrink-0" />
+                                            <CheckCircle
+                                                size={12}
+                                                className="mr-1.5 text-green-500 flex-shrink-0"
+                                            />
                                         ) : (
-                                            <Circle size={12} className="mr-1.5 text-gray-400 flex-shrink-0" />
+                                            <Circle
+                                                size={12}
+                                                className="mr-1.5 text-gray-400 flex-shrink-0"
+                                            />
                                         )}
                                         Uppercase letter
                                     </label>
                                     <label className="flex items-center text-xs text-gray-600">
                                         {passwordChecks.number ? (
-                                            <CheckCircle size={12} className="mr-1.5 text-green-500 flex-shrink-0" />
+                                            <CheckCircle
+                                                size={12}
+                                                className="mr-1.5 text-green-500 flex-shrink-0"
+                                            />
                                         ) : (
-                                            <Circle size={12} className="mr-1.5 text-gray-400 flex-shrink-0" />
+                                            <Circle
+                                                size={12}
+                                                className="mr-1.5 text-gray-400 flex-shrink-0"
+                                            />
                                         )}
                                         Number
                                     </label>

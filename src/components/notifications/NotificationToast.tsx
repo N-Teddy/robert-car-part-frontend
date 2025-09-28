@@ -26,7 +26,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
     }, [onClose]);
 
     const getIcon = () => {
-        const iconClass = "w-5 h-5";
+        const iconClass = 'w-5 h-5';
         switch (notification.type) {
             case 'PART_LOW_STOCK':
                 return <AlertTriangle className={`${iconClass} text-yellow-500`} />;
@@ -63,20 +63,18 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
     };
 
     return (
-        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
-            <div className="bg-white rounded-lg shadow-2xl border border-gray-200 p-4 max-w-sm w-96">
+        <div className="fixed duration-300 z-[100] top-4 right-4 animate-in slide-in-from-right">
+            <div className="max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow-2xl w-96">
                 <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 mt-0.5">
-                        {getIcon()}
-                    </div>
+                    <div className="flex-shrink-0 mt-0.5">{getIcon()}</div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-900 truncate">
                             {notification.title}
                         </p>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                        <p className="mt-1 text-sm text-gray-600 line-clamp-2">
                             {notification.message}
                         </p>
-                        <div className="mt-3 flex items-center space-x-2">
+                        <div className="flex items-center mt-3 space-x-2">
                             <button
                                 onClick={handleAction}
                                 className="text-xs font-medium text-red-600 hover:text-red-700"

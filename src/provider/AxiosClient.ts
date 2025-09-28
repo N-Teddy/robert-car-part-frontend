@@ -1,5 +1,5 @@
 // src/provider/axiosClient.ts
-import axios from "axios";
+import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -7,14 +7,14 @@ export const apiClient = axios.create({
     baseURL: BASE_URL,
     timeout: 10000,
     headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
     },
 });
 
 // Request interceptor
 apiClient.interceptors.request.use(
     (config) => {
-        const stored = localStorage.getItem("authToken");
+        const stored = localStorage.getItem('authToken');
         if (stored) {
             try {
                 const tokens = JSON.parse(stored);
@@ -22,7 +22,7 @@ apiClient.interceptors.request.use(
                     config.headers.Authorization = `Bearer ${tokens.accessToken}`;
                 }
             } catch (err) {
-                console.error("Failed to parse auth token", err);
+                console.error('Failed to parse auth token', err);
             }
         }
         return config;
@@ -33,7 +33,7 @@ apiClient.interceptors.request.use(
 // Response interceptor
 apiClient.interceptors.response.use(
     (response) => {
-        console.log("Response from:", response.config.url, response.data);
+        console.log('Response from:', response.config.url, response.data);
         return response;
     },
     (error) => {

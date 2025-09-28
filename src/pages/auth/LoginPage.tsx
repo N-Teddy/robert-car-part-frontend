@@ -17,7 +17,6 @@ export const LoginPage: React.FC = () => {
     const [toast, setToast] = useState<{ message: string; title: string } | null>(null);
     const [rememberMe, setRememberMe] = useState(false);
 
-
     const {
         register,
         handleSubmit,
@@ -46,12 +45,7 @@ export const LoginPage: React.FC = () => {
 
     return (
         <>
-            {toast && (
-                <NotificationToast
-                    notification={toast}
-                    onClose={() => setToast(null)}
-                />
-            )}
+            {toast && <NotificationToast notification={toast} onClose={() => setToast(null)} />}
 
             <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8">
                 {/* Header with icon */}

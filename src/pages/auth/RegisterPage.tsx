@@ -65,11 +65,7 @@ export const RegisterPage: React.FC = () => {
     return (
         <>
             {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
+                <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
             )}
 
             {/* Wider card for register */}
@@ -81,7 +77,9 @@ export const RegisterPage: React.FC = () => {
                     </div>
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900">Create Account</h2>
-                        <p className="text-sm text-gray-600">Join our inventory management system</p>
+                        <p className="text-sm text-gray-600">
+                            Join our inventory management system
+                        </p>
                     </div>
                 </div>
 
@@ -142,33 +140,55 @@ export const RegisterPage: React.FC = () => {
                     {password && (
                         <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
                             <div className="flex items-center justify-between mb-2">
-                                <p className="text-xs font-medium text-gray-700">Password Requirements</p>
+                                <p className="text-xs font-medium text-gray-700">
+                                    Password Requirements
+                                </p>
                                 {allPasswordChecksPassed && (
-                                    <span className="text-xs text-green-600 font-medium">✓ All requirements met</span>
+                                    <span className="text-xs text-green-600 font-medium">
+                                        ✓ All requirements met
+                                    </span>
                                 )}
                             </div>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                                 <label className="flex items-center text-xs text-gray-600">
                                     {passwordChecks.length ? (
-                                        <CheckCircle size={12} className="mr-1.5 text-green-500 flex-shrink-0" />
+                                        <CheckCircle
+                                            size={12}
+                                            className="mr-1.5 text-green-500 flex-shrink-0"
+                                        />
                                     ) : (
-                                        <Circle size={12} className="mr-1.5 text-gray-400 flex-shrink-0" />
+                                        <Circle
+                                            size={12}
+                                            className="mr-1.5 text-gray-400 flex-shrink-0"
+                                        />
                                     )}
                                     8+ characters
                                 </label>
                                 <label className="flex items-center text-xs text-gray-600">
                                     {passwordChecks.uppercase ? (
-                                        <CheckCircle size={12} className="mr-1.5 text-green-500 flex-shrink-0" />
+                                        <CheckCircle
+                                            size={12}
+                                            className="mr-1.5 text-green-500 flex-shrink-0"
+                                        />
                                     ) : (
-                                        <Circle size={12} className="mr-1.5 text-gray-400 flex-shrink-0" />
+                                        <Circle
+                                            size={12}
+                                            className="mr-1.5 text-gray-400 flex-shrink-0"
+                                        />
                                     )}
                                     Uppercase letter
                                 </label>
                                 <label className="flex items-center text-xs text-gray-600">
                                     {passwordChecks.number ? (
-                                        <CheckCircle size={12} className="mr-1.5 text-green-500 flex-shrink-0" />
+                                        <CheckCircle
+                                            size={12}
+                                            className="mr-1.5 text-green-500 flex-shrink-0"
+                                        />
                                     ) : (
-                                        <Circle size={12} className="mr-1.5 text-gray-400 flex-shrink-0" />
+                                        <Circle
+                                            size={12}
+                                            className="mr-1.5 text-gray-400 flex-shrink-0"
+                                        />
                                     )}
                                     Number
                                 </label>

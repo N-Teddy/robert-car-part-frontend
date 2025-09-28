@@ -34,12 +34,6 @@ export type UserRoleEnum = 'ADMIN' | 'MANAGER' | 'DEV' | 'SALES' | 'STAFF' | 'CU
 
 export type SortOrder = 'ASC' | 'DESC';
 
-export type OrderStatusEnum =
-    | 'PENDING'
-    | 'PROCESSING'
-    | 'COMPLETED'
-    | 'CANCELLED';
+export type OrderStatusEnum = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED';
 
-export type DeliveryMethodEnum =
-    | 'PICKUP'
-    | 'SHIPPING';
+export type DeliveryMethodEnum = 'PICKUP' | 'SHIPPING';

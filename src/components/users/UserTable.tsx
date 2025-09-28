@@ -40,7 +40,7 @@ export const UserTable: React.FC<UserTableProps> = ({
     const getInitials = (name: string) => {
         return name
             .split(' ')
-            .map(n => n[0])
+            .map((n) => n[0])
             .join('')
             .toUpperCase()
             .slice(0, 2);
@@ -137,7 +137,9 @@ export const UserTable: React.FC<UserTableProps> = ({
                                                 <div className="text-sm font-medium text-gray-900">
                                                     {user.fullName}
                                                 </div>
-                                                <div className="text-sm text-gray-500">{user.email}</div>
+                                                <div className="text-sm text-gray-500">
+                                                    {user.email}
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -151,10 +153,11 @@ export const UserTable: React.FC<UserTableProps> = ({
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <button
                                             onClick={() => onStatusToggle(user)}
-                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${user.isActive
+                                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                                                user.isActive
                                                     ? 'bg-green-100 text-green-800 hover:bg-green-200'
                                                     : 'bg-red-100 text-red-800 hover:bg-red-200'
-                                                }`}
+                                            }`}
                                         >
                                             {user.isActive ? 'Active' : 'Inactive'}
                                         </button>

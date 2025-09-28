@@ -13,7 +13,7 @@ import {
     TrendingDown,
     Filter,
     QrCode,
-    Camera
+    Camera,
 } from 'lucide-react';
 import { PartsGrid } from '../../components/parts/PartsGrid';
 import { PartsList } from '../../components/parts/PartsList';
@@ -67,7 +67,7 @@ export const PartsPage: React.FC = () => {
         useDeletePart,
         useGetPartStatistics,
         useGetCategoryStatistics,
-        useGetLowStockParts
+        useGetLowStockParts,
     } = usePart();
 
     const { useGetAllVehicles } = useVehicle();
@@ -94,7 +94,7 @@ export const PartsPage: React.FC = () => {
 
         const groups: Record<string, Part[]> = {};
 
-        partsData.items.forEach(part => {
+        partsData.items.forEach((part) => {
             const key = groupBy === 'vehicle' ? part.vehicleId : part.categoryId;
             if (!groups[key]) {
                 groups[key] = [];
@@ -107,20 +107,20 @@ export const PartsPage: React.FC = () => {
 
     // Handlers
     const handleFilterChange = (newFilters: Partial<PartFilterDto>) => {
-        setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
+        setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
     };
 
     const handlePageChange = (page: number) => {
-        setFilters(prev => ({ ...prev, page }));
+        setFilters((prev) => ({ ...prev, page }));
     };
 
     const openModal = (modal: keyof typeof modals, part?: Part) => {
         if (part) setSelectedPart(part);
-        setModals(prev => ({ ...prev, [modal]: true }));
+        setModals((prev) => ({ ...prev, [modal]: true }));
     };
 
     const closeModal = (modal: keyof typeof modals) => {
-        setModals(prev => ({ ...prev, [modal]: false }));
+        setModals((prev) => ({ ...prev, [modal]: false }));
         if (modal !== 'view') setSelectedPart(null);
     };
 
@@ -160,7 +160,7 @@ export const PartsPage: React.FC = () => {
     };
 
     const handleQRScanned = (partId: string) => {
-        const part = partsData?.items.find(p => p.id === partId);
+        const part = partsData?.items.find((p) => p.id === partId);
         if (part) {
             setSelectedPart(part);
             closeModal('scanner');
@@ -174,19 +174,31 @@ export const PartsPage: React.FC = () => {
         if (!partsData?.items?.length) return;
 
         const csvContent = [
-            ['Name', 'Part Number', 'Vehicle', 'Category', 'Price (FCFA)', 'Quantity', 'Condition', 'Status'],
-            ...partsData.items.map(p => [
+            [
+                'Name',
+                'Part Number',
+                'Vehicle',
+                'Category',
+                'Price (FCFA)',
+                'Quantity',
+                'Condition',
+                'Status',
+            ],
+            ...partsData.items.map((p) => [
                 p.name,
                 p.partNumber,
-                vehiclesData?.items.find(v => v.id === p.vehicleId)?.make + ' ' +
-                vehiclesData?.items.find(v => v.id === p.vehicleId)?.model || '',
-                categoriesData?.items.find(c => c.id === p.categoryId)?.name || '',
+                vehiclesData?.items.find((v) => v.id === p.vehicleId)?.make +
+                    ' ' +
+                    vehiclesData?.items.find((v) => v.id === p.vehicleId)?.model || '',
+                categoriesData?.items.find((c) => c.id === p.categoryId)?.name || '',
                 p.price,
                 p.quantity,
                 p.condition || 'N/A',
-                p.quantity === 0 ? 'Out of Stock' : p.quantity < 5 ? 'Low Stock' : 'In Stock'
-            ])
-        ].map(row => row.join(',')).join('\n');
+                p.quantity === 0 ? 'Out of Stock' : p.quantity < 5 ? 'Low Stock' : 'In Stock',
+            ]),
+        ]
+            .map((row) => row.join(','))
+            .join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
@@ -202,11 +214,7 @@ export const PartsPage: React.FC = () => {
     return (
         <div className="px-4 sm:px-6 lg:px-8 py-8">
             {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
+                <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
             )}
 
             {/* Header */}
@@ -370,7 +378,7 @@ export const PartsPage: React.FC = () => {
                     vehicles={vehiclesData?.items || []}
                     categories={categoriesData?.items || []}
                     onView={(part) => openModal('view', part)}
-                        onEdit={(part) => openModal('edit', part)}
+                    onEdit={(part) => openModal('edit', part)}
                     onDelete={(part) => openModal('delete', part)}
                 />
             )}
@@ -426,8 +434,8 @@ export const PartsPage: React.FC = () => {
             <PartViewModal
                 isOpen={modals.view}
                 part={selectedPart}
-                vehicle={vehiclesData?.items.find(v => v.id === selectedPart?.vehicleId)}
-                category={categoriesData?.items.find(c => c.id === selectedPart?.categoryId)}
+                vehicle={vehiclesData?.items.find((v) => v.id === selectedPart?.vehicleId)}
+                category={categoriesData?.items.find((c) => c.id === selectedPart?.categoryId)}
                 onClose={() => closeModal('view')}
                 onEdit={() => {
                     closeModal('view');
@@ -437,8 +445,6 @@ export const PartsPage: React.FC = () => {
                     closeModal('view');
                     openModal('delete', selectedPart!);
                 }}
-
-
             />
 
             <PartDeleteModal

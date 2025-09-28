@@ -54,7 +54,6 @@ export interface PartFilterDto {
     limit?: number;
 }
 
-
 // src/types/request/part.ts
 export interface Vehicle {
     id: string;

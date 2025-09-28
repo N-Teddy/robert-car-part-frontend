@@ -17,7 +17,7 @@ import {
     Sparkles,
     Plus,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import type { Vehicle } from '../../types/request/vehicle';
@@ -99,32 +99,37 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
         setCurrentStep(1);
     }, [mode, vehicle, isOpen]);
 
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-        const validFiles = acceptedFiles.filter(file => {
-            if (file.size > MAX_IMAGE_SIZE) {
-                alert(`File ${file.name} is too large. Max size is 5MB.`);
-                return false;
-            }
-            if (file.type === 'image/svg+xml') {
-                alert(`SVG files are not allowed.`);
-                return false;
-            }
-            return true;
-        });
+    const onDrop = useCallback(
+        (acceptedFiles: File[]) => {
+            const validFiles = acceptedFiles.filter((file) => {
+                if (file.size > MAX_IMAGE_SIZE) {
+                    alert(`File ${file.name} is too large. Max size is 5MB.`);
+                    return false;
+                }
+                if (file.type === 'image/svg+xml') {
+                    alert(`SVG files are not allowed.`);
+                    return false;
+                }
+                return true;
+            });
 
-        const totalImages = images.length + existingImages.length + validFiles.length;
-        if (totalImages > MAX_IMAGES) {
-            alert(`Maximum ${MAX_IMAGES} images allowed. You can add ${MAX_IMAGES - images.length - existingImages.length} more.`);
-            return;
-        }
+            const totalImages = images.length + existingImages.length + validFiles.length;
+            if (totalImages > MAX_IMAGES) {
+                alert(
+                    `Maximum ${MAX_IMAGES} images allowed. You can add ${MAX_IMAGES - images.length - existingImages.length} more.`
+                );
+                return;
+            }
 
-        setImages(prev => [...prev, ...validFiles]);
-    }, [images.length, existingImages.length]);
+            setImages((prev) => [...prev, ...validFiles]);
+        },
+        [images.length, existingImages.length]
+    );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         accept: {
-            'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
+            'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp'],
         },
         maxFiles: MAX_IMAGES,
         noClick: false,
@@ -132,11 +137,11 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
     });
 
     const removeImage = (index: number) => {
-        setImages(prev => prev.filter((_, i) => i !== index));
+        setImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     const removeExistingImage = (index: number) => {
-        setExistingImages(prev => prev.filter((_, i) => i !== index));
+        setExistingImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     // Step-specific validation
@@ -146,7 +151,11 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
         if (step === 1) {
             if (!formData.make.trim()) newErrors.make = 'Make is required';
             if (!formData.model.trim()) newErrors.model = 'Model is required';
-            if (!formData.year || formData.year < 1900 || formData.year > new Date().getFullYear()) {
+            if (
+                !formData.year ||
+                formData.year < 1900 ||
+                formData.year > new Date().getFullYear()
+            ) {
                 newErrors.year = `Year must be between 1900 and ${new Date().getFullYear()}`;
             }
             if (!formData.vin.trim()) newErrors.vin = 'VIN is required';
@@ -160,7 +169,8 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
         }
 
         if (step === 3) {
-            if (images.length === 0 && existingImages.length === 0) {
+            // Make images optional for editing if images already exist
+            if (mode === 'create' && images.length === 0) {
                 newErrors.images = 'At least one image is required';
             }
         }
@@ -170,18 +180,18 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
     };
 
     const handleChange = (field: keyof typeof formData, value: any) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-        setErrors(prev => ({ ...prev, [field]: '' }));
+        setFormData((prev) => ({ ...prev, [field]: value }));
+        setErrors((prev) => ({ ...prev, [field]: '' }));
     };
 
     const handleNext = () => {
         if (validateStep(currentStep)) {
-            setCurrentStep(prev => Math.min(prev + 1, steps.length));
+            setCurrentStep((prev) => Math.min(prev + 1, steps.length));
         }
     };
 
     const handleBack = () => {
-        setCurrentStep(prev => Math.max(prev - 1, 1));
+        setCurrentStep((prev) => Math.max(prev - 1, 1));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -234,16 +244,18 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
 
     const totalImages = images.length + existingImages.length;
     const canAddMore = totalImages < MAX_IMAGES;
-    const primaryColor = mode === 'create' ? 'red' : 'blue';
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
                 {/* Enhanced Header */}
-                <div className={`relative overflow-hidden ${mode === 'create'
-                    ? 'bg-gradient-to-br from-red-600 via-red-500 to-orange-500'
-                    : 'bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500'
-                    }`}>
+                <div
+                    className={`relative overflow-hidden ${
+                        mode === 'create'
+                            ? 'bg-gradient-to-br from-red-600 via-red-500 to-orange-500'
+                            : 'bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500'
+                    }`}
+                >
                     {/* Decorative Pattern */}
                     <div className="absolute inset-0 opacity-10">
                         <div className="absolute w-24 h-24 bg-white rounded-full -top-4 -right-4"></div>
@@ -253,8 +265,11 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                     <div className="relative px-6 py-5">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                                <div className={`p-2.5 rounded-xl ${mode === 'create' ? 'bg-white/20' : 'bg-white/20'
-                                    } backdrop-blur-sm`}>
+                                <div
+                                    className={`p-2.5 rounded-xl ${
+                                        mode === 'create' ? 'bg-white/20' : 'bg-white/20'
+                                    } backdrop-blur-sm`}
+                                >
                                     {mode === 'create' ? (
                                         <Sparkles className="w-6 h-6 text-white" />
                                     ) : (
@@ -289,11 +304,16 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                         currentStep={currentStep}
                         onStepClick={setCurrentStep}
                         allowNavigation={true}
+                        mode={mode}
                     />
                 </div>
 
                 {/* Form Content */}
-                <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="overflow-y-auto max-h-[calc(90vh-200px)]">
+                <div
+                    onSubmit={handleSubmit}
+                    onKeyDown={handleKeyDown}
+                    className="overflow-y-auto max-h-[calc(90vh-200px)]"
+                >
                     <div className="p-6">
                         {/* Step 1: Basic Info */}
                         {currentStep === 1 && (
@@ -308,10 +328,11 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                             type="text"
                                             value={formData.make}
                                             onChange={(e) => handleChange('make', e.target.value)}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.make
-                                                ? 'border-red-300 focus:ring-red-500'
-                                                : 'border-gray-300 focus:ring-blue-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.make
+                                                    ? 'border-red-300 focus:ring-red-500'
+                                                    : 'border-gray-300 focus:ring-blue-500'
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="e.g., Toyota"
                                         />
                                         {errors.make && (
@@ -331,10 +352,11 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                             type="text"
                                             value={formData.model}
                                             onChange={(e) => handleChange('model', e.target.value)}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.model
-                                                ? 'border-red-300 focus:ring-red-500'
-                                                : 'border-gray-300 focus:ring-blue-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.model
+                                                    ? 'border-red-300 focus:ring-red-500'
+                                                    : 'border-gray-300 focus:ring-blue-500'
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="e.g., Camry"
                                         />
                                         {errors.model && (
@@ -355,11 +377,14 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                             min={1900}
                                             max={new Date().getFullYear()}
                                             value={formData.year}
-                                            onChange={(e) => handleChange('year', Number(e.target.value))}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.year
-                                                ? 'border-red-300 focus:ring-red-500'
-                                                : 'border-gray-300 focus:ring-blue-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            onChange={(e) =>
+                                                handleChange('year', Number(e.target.value))
+                                            }
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.year
+                                                    ? 'border-red-300 focus:ring-red-500'
+                                                    : 'border-gray-300 focus:ring-blue-500'
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                         />
                                         {errors.year && (
                                             <p className="mt-1.5 text-xs text-red-600 flex items-center">
@@ -377,11 +402,14 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                         <input
                                             type="text"
                                             value={formData.vin}
-                                            onChange={(e) => handleChange('vin', e.target.value.toUpperCase())}
-                                            className={`w-full px-4 py-2.5 rounded-lg border font-mono ${errors.vin
-                                                ? 'border-red-300 focus:ring-red-500'
-                                                : 'border-gray-300 focus:ring-blue-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            onChange={(e) =>
+                                                handleChange('vin', e.target.value.toUpperCase())
+                                            }
+                                            className={`w-full px-4 py-2.5 rounded-lg border font-mono ${
+                                                errors.vin
+                                                    ? 'border-red-300 focus:ring-red-500'
+                                                    : 'border-gray-300 focus:ring-blue-500'
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="Vehicle Identification Number"
                                         />
                                         {errors.vin && (
@@ -401,7 +429,9 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                     <textarea
                                         rows={4}
                                         value={formData.description}
-                                        onChange={(e) => handleChange('description', e.target.value)}
+                                        onChange={(e) =>
+                                            handleChange('description', e.target.value)
+                                        }
                                         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                                         placeholder="Additional details about the vehicle (condition, features, history, etc.)"
                                     />
@@ -419,7 +449,8 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                     <div>
                                         <label className="flex items-center mb-2 text-sm font-medium text-gray-700">
                                             <DollarSign className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Purchase Price (FCFA) <span className="ml-1 text-red-500">*</span>
+                                            Purchase Price (FCFA){' '}
+                                            <span className="ml-1 text-red-500">*</span>
                                         </label>
                                         <div className="relative">
                                             <input
@@ -427,11 +458,14 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                                 min={0}
                                                 step={1000}
                                                 value={formData.purchasePrice}
-                                                onChange={(e) => handleChange('purchasePrice', e.target.value)}
-                                                className={`w-full pl-12 pr-4 py-2.5 rounded-lg border ${errors.purchasePrice
-                                                    ? 'border-red-300 focus:ring-red-500'
-                                                    : 'border-gray-300 focus:ring-blue-500'
-                                                    } focus:ring-2 focus:border-transparent transition-all`}
+                                                onChange={(e) =>
+                                                    handleChange('purchasePrice', e.target.value)
+                                                }
+                                                className={`w-full pl-12 pr-4 py-2.5 rounded-lg border ${
+                                                    errors.purchasePrice
+                                                        ? 'border-red-300 focus:ring-red-500'
+                                                        : 'border-gray-300 focus:ring-blue-500'
+                                                } focus:ring-2 focus:border-transparent transition-all`}
                                                 placeholder="0"
                                             />
                                             <span className="absolute font-medium text-gray-500 -translate-y-1/2 left-3 top-1/2">
@@ -446,7 +480,11 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                         )}
                                         {formData.purchasePrice && (
                                             <p className="mt-1 text-xs text-gray-600">
-                                                ≈ {Number(formData.purchasePrice).toLocaleString('fr-FR')} FCFA
+                                                ≈{' '}
+                                                {Number(formData.purchasePrice).toLocaleString(
+                                                    'fr-FR'
+                                                )}{' '}
+                                                FCFA
                                             </p>
                                         )}
                                     </div>
@@ -454,17 +492,21 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                     <div>
                                         <label className="flex items-center mb-2 text-sm font-medium text-gray-700">
                                             <Calendar className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Purchase Date <span className="ml-1 text-red-500">*</span>
+                                            Purchase Date{' '}
+                                            <span className="ml-1 text-red-500">*</span>
                                         </label>
                                         <input
                                             type="date"
                                             value={formData.purchaseDate}
-                                            onChange={(e) => handleChange('purchaseDate', e.target.value)}
+                                            onChange={(e) =>
+                                                handleChange('purchaseDate', e.target.value)
+                                            }
                                             max={new Date().toISOString().split('T')[0]}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.purchaseDate
-                                                ? 'border-red-300 focus:ring-red-500'
-                                                : 'border-gray-300 focus:ring-blue-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.purchaseDate
+                                                    ? 'border-red-300 focus:ring-red-500'
+                                                    : 'border-gray-300 focus:ring-blue-500'
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                         />
                                         {errors.purchaseDate && (
                                             <p className="mt-1.5 text-xs text-red-600 flex items-center">
@@ -479,12 +521,16 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                     <label className="flex items-center mb-2 text-sm font-medium text-gray-700">
                                         <Tag className="w-4 h-4 mr-1.5 text-gray-400" />
                                         Auction Name
-                                        <span className="ml-2 text-xs text-gray-500">(Optional)</span>
+                                        <span className="ml-2 text-xs text-gray-500">
+                                            (Optional)
+                                        </span>
                                     </label>
                                     <input
                                         type="text"
                                         value={formData.auctionName}
-                                        onChange={(e) => handleChange('auctionName', e.target.value)}
+                                        onChange={(e) =>
+                                            handleChange('auctionName', e.target.value)
+                                        }
                                         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                         placeholder="e.g., Copart, IAAI, Manheim"
                                     />
@@ -495,7 +541,9 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                         <input
                                             type="checkbox"
                                             checked={formData.isPartedOut}
-                                            onChange={(e) => handleChange('isPartedOut', e.target.checked)}
+                                            onChange={(e) =>
+                                                handleChange('isPartedOut', e.target.checked)
+                                            }
                                             className="w-5 h-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
                                         />
                                         <div className="ml-3">
@@ -503,7 +551,8 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                                 Mark as Parted Out
                                             </span>
                                             <p className="text-xs text-gray-500 mt-0.5">
-                                                Check this if the vehicle has already been dismantled for parts
+                                                Check this if the vehicle has already been
+                                                dismantled for parts
                                             </p>
                                         </div>
                                     </label>
@@ -518,12 +567,20 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                     <div className="flex">
                                         <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                                         <div className="ml-3">
-                                            <p className="text-sm text-blue-800">Image Guidelines</p>
+                                            <p className="text-sm text-blue-800">
+                                                Image Guidelines
+                                            </p>
                                             <ul className="mt-1 text-xs text-blue-700 space-y-0.5">
                                                 <li>• Maximum {MAX_IMAGES} images allowed</li>
-                                                <li>• Accepted formats: JPEG, PNG, GIF, WebP (no SVG)</li>
+                                                <li>
+                                                    • Accepted formats: JPEG, PNG, GIF, WebP (no
+                                                    SVG)
+                                                </li>
                                                 <li>• Maximum file size: 5MB per image</li>
-                                                <li>• First image will be used as the primary display image</li>
+                                                <li>
+                                                    • First image will be used as the primary
+                                                    display image
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -533,20 +590,31 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                 {canAddMore && (
                                     <div
                                         {...getRootProps()}
-                                        className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${isDragActive
-                                            ? 'border-blue-500 bg-blue-50'
-                                            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                                            }`}
+                                        className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+                                            isDragActive
+                                                ? 'border-blue-500 bg-blue-50'
+                                                : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                                        }`}
                                     >
                                         <input {...getInputProps()} />
                                         <div className="flex flex-col items-center">
-                                            <div className={`p-3 rounded-full ${isDragActive ? 'bg-blue-100' : 'bg-gray-100'
-                                                }`}>
-                                                <Upload className={`w-8 h-8 ${isDragActive ? 'text-blue-600' : 'text-gray-400'
-                                                    }`} />
+                                            <div
+                                                className={`p-3 rounded-full ${
+                                                    isDragActive ? 'bg-blue-100' : 'bg-gray-100'
+                                                }`}
+                                            >
+                                                <Upload
+                                                    className={`w-8 h-8 ${
+                                                        isDragActive
+                                                            ? 'text-blue-600'
+                                                            : 'text-gray-400'
+                                                    }`}
+                                                />
                                             </div>
                                             <p className="mt-3 text-sm font-medium text-gray-700">
-                                                {isDragActive ? 'Drop images here' : 'Drag & drop images here'}
+                                                {isDragActive
+                                                    ? 'Drop images here'
+                                                    : 'Drag & drop images here'}
                                             </p>
                                             <p className="mt-1 text-xs text-gray-500">
                                                 or click to browse from your computer
@@ -612,7 +680,10 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                                         </div>
                                                         <div className="absolute bottom-2 left-2 right-2">
                                                             <p className="text-xs text-white bg-black/50 rounded px-1 py-0.5 truncate">
-                                                                {(file.size / 1024 / 1024).toFixed(1)}MB
+                                                                {(file.size / 1024 / 1024).toFixed(
+                                                                    1
+                                                                )}
+                                                                MB
                                                             </p>
                                                         </div>
                                                         <button
@@ -669,22 +740,25 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                     <button
                                         type="button"
                                         onClick={handleNext}
-                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${mode === 'create'
-                                            ? 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600'
-                                            : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'
-                                            }`}
+                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${
+                                            mode === 'create'
+                                                ? 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600'
+                                                : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'
+                                        }`}
                                     >
                                         <span>Next</span>
                                         <ChevronRight className="w-4 h-4" />
                                     </button>
                                 ) : (
                                     <button
-                                        type="submit"
+                                        type="button"
+                                        onClick={handleSubmit}
                                         disabled={isSubmitting}
-                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${mode === 'create'
-                                            ? 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600'
-                                            : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'
-                                            } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${
+                                            mode === 'create'
+                                                ? 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600'
+                                                : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'
+                                        } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         {isSubmitting ? (
                                             <>
@@ -694,7 +768,11 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                                         ) : (
                                             <>
                                                 <Check className="w-4 h-4" />
-                                                <span>{mode === 'create' ? 'Create Vehicle' : 'Update Vehicle'}</span>
+                                                <span>
+                                                    {mode === 'create'
+                                                        ? 'Create Vehicle'
+                                                        : 'Update Vehicle'}
+                                                </span>
                                             </>
                                         )}
                                     </button>
@@ -702,7 +780,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );

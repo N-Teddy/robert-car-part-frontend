@@ -1,17 +1,6 @@
 // src/pages/vehicles/VehiclesPage.tsx
 import React, { useState, useMemo } from 'react';
-import {
-    Plus,
-    Search,
-    Grid3x3,
-    List,
-    Download,
-    Car,
-    DollarSign,
-    Calendar,
-    Filter,
-    ChevronDown
-} from 'lucide-react';
+import { Plus, Download, Car, DollarSign } from 'lucide-react';
 import { VehicleGrid } from '../../components/vehicles/VehicleGrid';
 import { VehicleTable } from '../../components/vehicles/VehicleTable';
 import { VehicleFormModal } from '../../components/vehicles/VehicleFormModal';
@@ -20,10 +9,10 @@ import { VehicleDeleteModal } from '../../components/vehicles/VehicleDeleteModal
 import { VehicleStats } from '../../components/vehicles/VehicleStats';
 import { VehicleFilters } from '../../components/vehicles/VehicleFilters';
 import { Button } from '../../components/ui/Button';
-import { Toast } from '../../components/ui/Toast';
 import type { Vehicle, VehicleFilterDto } from '../../types/request/vehicle';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { useVehicle } from '../../hooks/vehicleHook';
+import NotificationToast from '../../components/notifications/NotificationToast';
 
 type ViewMode = 'grid' | 'list';
 
@@ -37,7 +26,7 @@ export const VehiclesPage: React.FC = () => {
     });
 
     const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
-    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    const [toast, setToast] = useState<{ message: string; title: string } | null>(null);
 
     // Modal states
     const [modals, setModals] = useState({
@@ -50,13 +39,12 @@ export const VehiclesPage: React.FC = () => {
     // Hooks
     const {
         useGetAllVehicles,
-        useGetVehicleById,
         useCreateVehicle,
         useUpdateVehicle,
         useDeleteVehicle,
         useMarkAsPartedOut,
         useGetVehicleStatistics,
-        useGetMakeModelStatistics
+        useGetMakeModelStatistics,
     } = useVehicle();
 
     // Queries
@@ -79,31 +67,34 @@ export const VehiclesPage: React.FC = () => {
 
     // Handlers
     const handleFilterChange = (newFilters: Partial<VehicleFilterDto>) => {
-        setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
+        setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
     };
 
     const handlePageChange = (page: number) => {
-        setFilters(prev => ({ ...prev, page }));
+        setFilters((prev) => ({ ...prev, page }));
     };
 
     const openModal = (modal: keyof typeof modals, vehicle?: Vehicle) => {
         if (vehicle) setSelectedVehicle(vehicle);
-        setModals(prev => ({ ...prev, [modal]: true }));
+        setModals((prev) => ({ ...prev, [modal]: true }));
     };
 
     const closeModal = (modal: keyof typeof modals) => {
-        setModals(prev => ({ ...prev, [modal]: false }));
+        setModals((prev) => ({ ...prev, [modal]: false }));
         if (modal !== 'view') setSelectedVehicle(null);
     };
 
     const handleCreate = async (data: any) => {
         try {
             await createMutation.mutateAsync(data);
-            setToast({ message: 'Vehicle created successfully', type: 'success' });
+            // setToast({ message: 'Vehicle created successfully', title: 'vehicle created' });
             closeModal('create');
             refetch();
         } catch (error: any) {
-            setToast({ message: error.message || 'Failed to create vehicle', type: 'error' });
+            setToast({
+                message: error.message || 'Failed to create vehicle',
+                title: 'Error Creating',
+            });
         }
     };
 
@@ -111,11 +102,14 @@ export const VehiclesPage: React.FC = () => {
         if (!selectedVehicle) return;
         try {
             await updateMutation.mutateAsync({ id: selectedVehicle.id, data });
-            setToast({ message: 'Vehicle updated successfully', type: 'success' });
+            // setToast({ message: 'Vehicle updated successfully', title: 'Vehicle Updated' });
             closeModal('edit');
             refetch();
         } catch (error: any) {
-            setToast({ message: error.message || 'Failed to update vehicle', type: 'error' });
+            setToast({
+                message: error.message || 'Failed to update vehicle',
+                title: 'Error Updating',
+            });
         }
     };
 
@@ -123,11 +117,14 @@ export const VehiclesPage: React.FC = () => {
         if (!selectedVehicle) return;
         try {
             await deleteMutation.mutateAsync(selectedVehicle.id);
-            setToast({ message: 'Vehicle deleted successfully', type: 'success' });
+            // setToast({ message: 'Vehicle deleted successfully', title: 'success' });
             closeModal('delete');
             refetch();
         } catch (error: any) {
-            setToast({ message: error.message || 'Failed to delete vehicle', type: 'error' });
+            setToast({
+                message: error.message || 'Failed to delete vehicle',
+                title: 'Error Deleting',
+            });
         }
     };
 
@@ -136,11 +133,14 @@ export const VehiclesPage: React.FC = () => {
             await markAsPartedOutMutation.mutateAsync(vehicle.id);
             setToast({
                 message: `Vehicle marked as ${vehicle.isPartedOut ? 'active' : 'parted out'}`,
-                type: 'success'
+                title: 'Vehicle Updated',
             });
             refetch();
         } catch (error: any) {
-            setToast({ message: error.message || 'Failed to update vehicle status', type: 'error' });
+            setToast({
+                message: error.message || 'Failed to update vehicle status',
+                title: 'Error Updating',
+            });
         }
     };
 
@@ -149,7 +149,7 @@ export const VehiclesPage: React.FC = () => {
 
         const csvContent = [
             ['Make', 'Model', 'Year', 'VIN', 'Price (FCFA)', 'Purchase Date', 'Auction', 'Status'],
-            ...vehiclesData.items.map(v => [
+            ...vehiclesData.items.map((v) => [
                 v.make,
                 v.model,
                 v.year,
@@ -157,9 +157,11 @@ export const VehiclesPage: React.FC = () => {
                 v.purchasePrice,
                 v.purchaseDate,
                 v.auctionName || '',
-                v.isPartedOut ? 'Parted Out' : 'Active'
-            ])
-        ].map(row => row.join(',')).join('\n');
+                v.isPartedOut ? 'Parted Out' : 'Active',
+            ]),
+        ]
+            .map((row) => row.join(','))
+            .join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
@@ -169,24 +171,18 @@ export const VehiclesPage: React.FC = () => {
         a.click();
         window.URL.revokeObjectURL(url);
 
-        setToast({ message: 'Vehicles exported successfully', type: 'success' });
+        setToast({ message: 'Vehicles exported successfully', title: 'Vehicles exported' });
     };
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8 py-8">
-            {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
-            )}
+        <div className="px-4 py-8 sm:px-6 lg:px-8">
+            {toast && <NotificationToast notification={toast} onClose={() => setToast(null)} />}
 
             {/* Header */}
             <div className="mb-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+                        <h1 className="flex items-center text-2xl font-bold text-gray-900">
                             <Car className="w-8 h-8 mr-2 text-red-600" />
                             Vehicle Inventory
                         </h1>
@@ -216,58 +212,58 @@ export const VehiclesPage: React.FC = () => {
             </div>
 
             {/* Statistics Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Total Vehicles</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-gray-900">
                                 {stats?.total || 0}
                             </p>
                         </div>
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
                             <Car className="w-6 h-6 text-blue-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Active</p>
-                            <p className="text-2xl font-bold text-green-600 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-green-600">
                                 {stats?.active || 0}
                             </p>
                         </div>
-                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg">
                             <div className="w-3 h-3 bg-green-600 rounded-full"></div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Parted Out</p>
-                            <p className="text-2xl font-bold text-orange-600 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-orange-600">
                                 {stats?.partedOut || 0}
                             </p>
                         </div>
-                        <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-lg">
                             <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Avg Price</p>
-                            <p className="text-2xl font-bold text-purple-600 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-purple-600">
                                 {formatCurrency(averagePrice)}
                             </p>
                         </div>
-                        <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg">
                             <DollarSign className="w-6 h-6 text-purple-600" />
                         </div>
                     </div>
@@ -304,7 +300,7 @@ export const VehiclesPage: React.FC = () => {
 
             {/* Pagination */}
             {vehiclesData?.meta && vehiclesData.meta.totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-center space-x-2">
+                <div className="flex items-center justify-center mt-6 space-x-2">
                     <Button
                         variant="outline"
                         size="sm"

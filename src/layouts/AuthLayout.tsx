@@ -13,7 +13,7 @@ export const AuthLayout: React.FC = () => {
                     backgroundImage: `linear-gradient(rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.65)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000')`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
                 }}
             />
 

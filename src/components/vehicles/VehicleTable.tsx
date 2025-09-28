@@ -118,10 +118,13 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
                                     {format(new Date(vehicle.purchaseDate), 'MMM dd, yyyy')}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${vehicle.isPartedOut
-                                            ? 'bg-orange-100 text-orange-700'
-                                            : 'bg-green-100 text-green-700'
-                                        }`}>
+                                    <span
+                                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                            vehicle.isPartedOut
+                                                ? 'bg-orange-100 text-orange-700'
+                                                : 'bg-green-100 text-green-700'
+                                        }`}
+                                    >
                                         {vehicle.isPartedOut ? 'Parted Out' : 'Active'}
                                     </span>
                                 </td>
@@ -150,10 +153,11 @@ export const VehicleTable: React.FC<VehicleTableProps> = ({
                                         </button>
                                         <button
                                             onClick={() => onMarkAsPartedOut(vehicle)}
-                                            className={`ml-2 px-2 py-1 text-xs font-medium rounded transition-colors ${vehicle.isPartedOut
+                                            className={`ml-2 px-2 py-1 text-xs font-medium rounded transition-colors ${
+                                                vehicle.isPartedOut
                                                     ? 'bg-green-100 text-green-700 hover:bg-green-200'
                                                     : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                                                }`}
+                                            }`}
                                         >
                                             {vehicle.isPartedOut ? 'Activate' : 'Part Out'}
                                         </button>

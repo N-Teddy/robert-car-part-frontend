@@ -11,7 +11,7 @@ import {
     XCircle,
     User as UserIcon,
     Briefcase,
-    Hash
+    Hash,
 } from 'lucide-react';
 import type { User } from '../../types/request/user';
 import { Button } from '../ui/Button';
@@ -34,7 +34,7 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
     const getInitials = (name: string) => {
         return name
             .split(' ')
-            .map(n => n[0])
+            .map((n) => n[0])
             .join('')
             .toUpperCase()
             .slice(0, 2);
@@ -58,43 +58,44 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
         });
     };
 
-    const roleConfig: Record<string, { color: string; bgGradient: string; icon: React.ReactNode }> = {
-        ADMIN: {
-            color: 'bg-purple-100 text-purple-800 border-purple-200',
-            bgGradient: 'from-purple-500 to-purple-600',
-            icon: <Shield className="w-3 h-3" />
-        },
-        MANAGER: {
-            color: 'bg-blue-100 text-blue-800 border-blue-200',
-            bgGradient: 'from-blue-500 to-blue-600',
-            icon: <Briefcase className="w-3 h-3" />
-        },
-        DEV: {
-            color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-            bgGradient: 'from-indigo-500 to-indigo-600',
-            icon: <Hash className="w-3 h-3" />
-        },
-        SALES: {
-            color: 'bg-green-100 text-green-800 border-green-200',
-            bgGradient: 'from-green-500 to-green-600',
-            icon: <UserIcon className="w-3 h-3" />
-        },
-        STAFF: {
-            color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-            bgGradient: 'from-yellow-500 to-yellow-600',
-            icon: <UserIcon className="w-3 h-3" />
-        },
-        CUSTOMER: {
-            color: 'bg-gray-100 text-gray-800 border-gray-200',
-            bgGradient: 'from-gray-500 to-gray-600',
-            icon: <UserIcon className="w-3 h-3" />
-        },
-        UNKNOWN: {
-            color: 'bg-gray-100 text-gray-800 border-gray-200',
-            bgGradient: 'from-gray-400 to-gray-500',
-            icon: <UserIcon className="w-3 h-3" />
-        },
-    };
+    const roleConfig: Record<string, { color: string; bgGradient: string; icon: React.ReactNode }> =
+        {
+            ADMIN: {
+                color: 'bg-purple-100 text-purple-800 border-purple-200',
+                bgGradient: 'from-purple-500 to-purple-600',
+                icon: <Shield className="w-3 h-3" />,
+            },
+            MANAGER: {
+                color: 'bg-blue-100 text-blue-800 border-blue-200',
+                bgGradient: 'from-blue-500 to-blue-600',
+                icon: <Briefcase className="w-3 h-3" />,
+            },
+            DEV: {
+                color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+                bgGradient: 'from-indigo-500 to-indigo-600',
+                icon: <Hash className="w-3 h-3" />,
+            },
+            SALES: {
+                color: 'bg-green-100 text-green-800 border-green-200',
+                bgGradient: 'from-green-500 to-green-600',
+                icon: <UserIcon className="w-3 h-3" />,
+            },
+            STAFF: {
+                color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                bgGradient: 'from-yellow-500 to-yellow-600',
+                icon: <UserIcon className="w-3 h-3" />,
+            },
+            CUSTOMER: {
+                color: 'bg-gray-100 text-gray-800 border-gray-200',
+                bgGradient: 'from-gray-500 to-gray-600',
+                icon: <UserIcon className="w-3 h-3" />,
+            },
+            UNKNOWN: {
+                color: 'bg-gray-100 text-gray-800 border-gray-200',
+                bgGradient: 'from-gray-400 to-gray-500',
+                icon: <UserIcon className="w-3 h-3" />,
+            },
+        };
 
     const currentRoleConfig = roleConfig[user.role] || roleConfig.UNKNOWN;
 
@@ -109,14 +110,19 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
                 />
 
                 {/* Center modal hack for alignment */}
-                <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+                <span
+                    className="hidden sm:inline-block sm:align-middle sm:h-screen"
+                    aria-hidden="true"
+                >
                     &#8203;
                 </span>
 
                 {/* Modal panel with animation */}
                 <div className="relative z-40 inline-block overflow-hidden text-left align-bottom transition-all duration-300 transform bg-white shadow-2xl rounded-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full animate-in fade-in zoom-in">
                     {/* Gradient Header */}
-                    <div className={`bg-gradient-to-r ${currentRoleConfig.bgGradient} px-6 py-8 relative overflow-hidden`}>
+                    <div
+                        className={`bg-gradient-to-r ${currentRoleConfig.bgGradient} px-6 py-8 relative overflow-hidden`}
+                    >
                         {/* Background Pattern */}
                         <div className="absolute inset-0 opacity-10">
                             <div
@@ -168,14 +174,19 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
                     <div className="px-6 py-6">
                         {/* Role and Status Badges */}
                         <div className="flex items-center justify-center gap-2 mb-6">
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${currentRoleConfig.color}`}>
+                            <span
+                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${currentRoleConfig.color}`}
+                            >
                                 {currentRoleConfig.icon}
                                 {user.role}
                             </span>
-                            <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${user.isActive
-                                ? 'bg-green-100 text-green-800 border border-green-200'
-                                : 'bg-red-100 text-red-800 border border-red-200'
-                                }`}>
+                            <span
+                                className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold ${
+                                    user.isActive
+                                        ? 'bg-green-100 text-green-800 border border-green-200'
+                                        : 'bg-red-100 text-red-800 border border-red-200'
+                                }`}
+                            >
                                 {user.isActive ? 'Active Account' : 'Inactive Account'}
                             </span>
                         </div>
@@ -190,7 +201,9 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
                                         </div>
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-xs font-medium tracking-wider text-gray-500 uppercase">Email Address</p>
+                                        <p className="text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                            Email Address
+                                        </p>
                                         <p className="mt-1 text-sm text-gray-900">{user.email}</p>
                                     </div>
                                 </div>
@@ -204,8 +217,12 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
                                         </div>
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-xs font-medium tracking-wider text-gray-500 uppercase">Phone Number</p>
-                                        <p className="mt-1 text-sm text-gray-900">{user.phoneNumber}</p>
+                                        <p className="text-xs font-medium tracking-wider text-gray-500 uppercase">
+                                            Phone Number
+                                        </p>
+                                        <p className="mt-1 text-sm text-gray-900">
+                                            {user.phoneNumber}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -213,7 +230,9 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
 
                         {/* Timeline Information */}
                         <div className="pt-4 border-t border-gray-200">
-                            <h4 className="mb-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">Activity Timeline</h4>
+                            <h4 className="mb-3 text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                                Activity Timeline
+                            </h4>
                             <div className="space-y-3">
                                 <div className="flex items-center text-sm">
                                     <div className="flex items-center justify-center w-8 h-8 mr-3 bg-purple-100 rounded-lg">
@@ -221,7 +240,9 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-xs text-gray-600">Account Created</p>
-                                        <p className="font-medium text-gray-900">{formatDate(user.createdAt)}</p>
+                                        <p className="font-medium text-gray-900">
+                                            {formatDate(user.createdAt)}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center text-sm">
@@ -230,7 +251,9 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-xs text-gray-600">Last Modified</p>
-                                        <p className="font-medium text-gray-900">{formatDateTime(user.updatedAt)}</p>
+                                        <p className="font-medium text-gray-900">
+                                            {formatDateTime(user.updatedAt)}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -240,7 +263,10 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
                     {/* Footer */}
                     <div className="flex items-center justify-between px-6 py-4 bg-gray-50">
                         <div className="text-xs text-gray-500">
-                            ID: <span className="font-mono text-gray-700">{user.id.slice(0, 8)}...</span>
+                            ID:{' '}
+                            <span className="font-mono text-gray-700">
+                                {user.id.slice(0, 8)}...
+                            </span>
                         </div>
                         <div className="flex space-x-2">
                             {onEdit && (
@@ -256,11 +282,7 @@ export const UserQuickViewModal: React.FC<UserQuickViewModalProps> = ({
                                     Edit User
                                 </Button>
                             )}
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={onClose}
-                            >
+                            <Button variant="ghost" size="sm" onClick={onClose}>
                                 Close
                             </Button>
                         </div>

@@ -14,7 +14,7 @@ import {
     Search,
     ChevronRight,
     Volume2,
-    VolumeX
+    VolumeX,
 } from 'lucide-react';
 import { formatDistanceToNow, isToday, isYesterday, isThisWeek } from 'date-fns';
 import { useNotificationContext } from '../../context/NotificationContext';
@@ -26,25 +26,29 @@ import type { DecodedToken } from '../../types/authContext';
 import { jwtDecode } from 'jwt-decode';
 
 export const NotificationsPage: React.FC = () => {
-    const { markAsRead, markAllAsRead, deleteNotification, soundEnabled, setSoundEnabled } = useNotificationContext();
+    const { markAsRead, markAllAsRead, deleteNotification, soundEnabled, setSoundEnabled } =
+        useNotificationContext();
     const { useGetNotifications } = useNotification();
 
-    const [selectedFilter, setSelectedFilter] = useState<'all' | 'unread' | NotificationTypeEnum>('all');
+    const [selectedFilter, setSelectedFilter] = useState<'all' | 'unread' | NotificationTypeEnum>(
+        'all'
+    );
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
     const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
 
-    const token = JSON.parse(localStorage.getItem("authToken") || "null");
+    const token = JSON.parse(localStorage.getItem('authToken') || 'null');
     const decoded = jwtDecode<DecodedToken>(token.accessToken);
-
 
     const filters = {
         page,
         limit: 20,
         isRead: selectedFilter === 'unread' ? false : undefined,
-        type: !['all', 'unread'].includes(selectedFilter) ? selectedFilter as NotificationTypeEnum : undefined,
+        type: !['all', 'unread'].includes(selectedFilter)
+            ? (selectedFilter as NotificationTypeEnum)
+            : undefined,
         search: searchTerm || undefined,
-        userId: decoded.sub
+        userId: decoded.sub,
     };
 
     const { data, isLoading, refetch } = useGetNotifications(filters);
@@ -59,7 +63,7 @@ export const NotificationsPage: React.FC = () => {
             older: [],
         };
 
-        notifications.forEach(notification => {
+        notifications.forEach((notification) => {
             const date = new Date(notification.createdAt);
             if (isToday(date)) {
                 groups.today.push(notification);
@@ -76,18 +80,18 @@ export const NotificationsPage: React.FC = () => {
     }, [notifications]);
 
     const getNotificationIcon = (type: string) => {
-        const iconClass = "w-5 h-5";
+        const iconClass = 'w-5 h-5';
         const iconMap: Record<string, React.ReactNode> = {
-            'PART_LOW_STOCK': <AlertTriangle className={`${iconClass} text-yellow-500`} />,
-            'PART_CREATED': <Package className={`${iconClass} text-blue-500`} />,
-            'PART_UPDATED': <Package className={`${iconClass} text-blue-500`} />,
-            'PART_SOLD': <Package className={`${iconClass} text-green-500`} />,
-            'ORDER_CREATED': <ShoppingCart className={`${iconClass} text-indigo-500`} />,
-            'ORDER_COMPLETED': <ShoppingCart className={`${iconClass} text-green-500`} />,
-            'ORDER_CANCELLED': <ShoppingCart className={`${iconClass} text-red-500`} />,
-            'USER_UPDATED': <User className={`${iconClass} text-purple-500`} />,
-            'REPORT_READY': <FileText className={`${iconClass} text-indigo-500`} />,
-            'SYSTEM_UPDATE': <Settings className={`${iconClass} text-gray-500`} />,
+            PART_LOW_STOCK: <AlertTriangle className={`${iconClass} text-yellow-500`} />,
+            PART_CREATED: <Package className={`${iconClass} text-blue-500`} />,
+            PART_UPDATED: <Package className={`${iconClass} text-blue-500`} />,
+            PART_SOLD: <Package className={`${iconClass} text-green-500`} />,
+            ORDER_CREATED: <ShoppingCart className={`${iconClass} text-indigo-500`} />,
+            ORDER_COMPLETED: <ShoppingCart className={`${iconClass} text-green-500`} />,
+            ORDER_CANCELLED: <ShoppingCart className={`${iconClass} text-red-500`} />,
+            USER_UPDATED: <User className={`${iconClass} text-purple-500`} />,
+            REPORT_READY: <FileText className={`${iconClass} text-indigo-500`} />,
+            SYSTEM_UPDATE: <Settings className={`${iconClass} text-gray-500`} />,
         };
         return iconMap[type] || <Bell className={`${iconClass} text-gray-500`} />;
     };
@@ -98,7 +102,7 @@ export const NotificationsPage: React.FC = () => {
         if (action === 'read') {
             await markAsRead(selectedNotifications);
         } else {
-            selectedNotifications.forEach(id => deleteNotification(id));
+            selectedNotifications.forEach((id) => deleteNotification(id));
         }
 
         setSelectedNotifications([]);
@@ -118,10 +122,11 @@ export const NotificationsPage: React.FC = () => {
 
         return (
             <div
-                className={`group flex items-start space-x-3 p-4 hover:bg-gray-50 transition-colors border-l-4 ${!notification.isRead
+                className={`group flex items-start space-x-3 p-4 hover:bg-gray-50 transition-colors border-l-4 ${
+                    !notification.isRead
                         ? 'bg-blue-50/30 border-blue-500'
                         : 'bg-white border-transparent'
-                    }`}
+                }`}
             >
                 {/* Checkbox */}
                 <div className="flex-shrink-0 pt-1">
@@ -130,9 +135,14 @@ export const NotificationsPage: React.FC = () => {
                         checked={isSelected}
                         onChange={(e) => {
                             if (e.target.checked) {
-                                setSelectedNotifications([...selectedNotifications, notification.id]);
+                                setSelectedNotifications([
+                                    ...selectedNotifications,
+                                    notification.id,
+                                ]);
                             } else {
-                                setSelectedNotifications(selectedNotifications.filter(id => id !== notification.id));
+                                setSelectedNotifications(
+                                    selectedNotifications.filter((id) => id !== notification.id)
+                                );
                             }
                         }}
                         className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
@@ -141,8 +151,11 @@ export const NotificationsPage: React.FC = () => {
 
                 {/* Icon */}
                 <div className="flex-shrink-0">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${!notification.isRead ? 'bg-blue-100' : 'bg-gray-100'
-                        }`}>
+                    <div
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                            !notification.isRead ? 'bg-blue-100' : 'bg-gray-100'
+                        }`}
+                    >
                         {getNotificationIcon(notification.type)}
                     </div>
                 </div>
@@ -151,17 +164,22 @@ export const NotificationsPage: React.FC = () => {
                 <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between">
                         <div className="flex-1">
-                            <p className={`text-sm ${!notification.isRead ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'
-                                }`}>
+                            <p
+                                className={`text-sm ${
+                                    !notification.isRead
+                                        ? 'font-semibold text-gray-900'
+                                        : 'font-medium text-gray-700'
+                                }`}
+                            >
                                 {notification.title}
                             </p>
-                            <p className="text-sm text-gray-600 mt-0.5">
-                                {notification.message}
-                            </p>
+                            <p className="text-sm text-gray-600 mt-0.5">{notification.message}</p>
                             <div className="flex items-center mt-2 space-x-4">
                                 <span className="flex items-center text-xs text-gray-500">
                                     <Clock className="w-3 h-3 mr-1" />
-                                    {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                                    {formatDistanceToNow(new Date(notification.createdAt), {
+                                        addSuffix: true,
+                                    })}
                                 </span>
                                 {notification.metadata?.orderId && (
                                     <span className="text-xs text-blue-600 font-medium">
@@ -222,17 +240,18 @@ export const NotificationsPage: React.FC = () => {
                         {/* Sound Toggle */}
                         <button
                             onClick={() => setSoundEnabled(!soundEnabled)}
-                            className={`p-2 rounded-lg transition-colors ${soundEnabled
+                            className={`p-2 rounded-lg transition-colors ${
+                                soundEnabled
                                     ? 'bg-green-100 text-green-600 hover:bg-green-200'
                                     : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
-                                }`}
+                            }`}
                             title={soundEnabled ? 'Sound enabled' : 'Sound disabled'}
                         >
                             {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
                         </button>
 
                         {/* Mark All Read */}
-                        {notifications.some(n => !n.isRead) && (
+                        {notifications.some((n) => !n.isRead) && (
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -271,18 +290,20 @@ export const NotificationsPage: React.FC = () => {
                             {filterOptions.map((option) => {
                                 const Icon = option.icon;
                                 const isActive = selectedFilter === option.value;
-                                const unreadCount = option.value === 'unread'
-                                    ? notifications.filter(n => !n.isRead).length
-                                    : 0;
+                                const unreadCount =
+                                    option.value === 'unread'
+                                        ? notifications.filter((n) => !n.isRead).length
+                                        : 0;
 
                                 return (
                                     <button
                                         key={option.value}
                                         onClick={() => setSelectedFilter(option.value as any)}
-                                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${isActive
+                                        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${
+                                            isActive
                                                 ? 'bg-red-50 text-red-700 font-medium'
                                                 : 'text-gray-700 hover:bg-gray-50'
-                                            }`}
+                                        }`}
                                     >
                                         <div className="flex items-center space-x-2">
                                             <Icon size={16} />
@@ -305,12 +326,14 @@ export const NotificationsPage: React.FC = () => {
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
                                 <span className="text-xs text-gray-600">Total</span>
-                                <span className="text-sm font-medium text-gray-900">{data?.meta?.total || 0}</span>
+                                <span className="text-sm font-medium text-gray-900">
+                                    {data?.meta?.total || 0}
+                                </span>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className="text-xs text-gray-600">Unread</span>
                                 <span className="text-sm font-medium text-blue-600">
-                                    {notifications.filter(n => !n.isRead).length}
+                                    {notifications.filter((n) => !n.isRead).length}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center">
@@ -372,9 +395,13 @@ export const NotificationsPage: React.FC = () => {
                         ) : notifications.length === 0 ? (
                             <div className="p-12 text-center">
                                 <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-900 mb-1">No notifications</h3>
+                                <h3 className="text-lg font-medium text-gray-900 mb-1">
+                                    No notifications
+                                </h3>
                                 <p className="text-sm text-gray-500">
-                                    {searchTerm ? 'No notifications match your search' : 'You\'re all caught up!'}
+                                    {searchTerm
+                                        ? 'No notifications match your search'
+                                        : "You're all caught up!"}
                                 </p>
                             </div>
                         ) : (
@@ -387,8 +414,11 @@ export const NotificationsPage: React.FC = () => {
                                                 Today
                                             </h4>
                                         </div>
-                                        {groupedNotifications.today.map(notification => (
-                                            <NotificationItem key={notification.id} notification={notification} />
+                                        {groupedNotifications.today.map((notification) => (
+                                            <NotificationItem
+                                                key={notification.id}
+                                                notification={notification}
+                                            />
                                         ))}
                                     </>
                                 )}
@@ -401,8 +431,11 @@ export const NotificationsPage: React.FC = () => {
                                                 Yesterday
                                             </h4>
                                         </div>
-                                        {groupedNotifications.yesterday.map(notification => (
-                                            <NotificationItem key={notification.id} notification={notification} />
+                                        {groupedNotifications.yesterday.map((notification) => (
+                                            <NotificationItem
+                                                key={notification.id}
+                                                notification={notification}
+                                            />
                                         ))}
                                     </>
                                 )}
@@ -415,8 +448,11 @@ export const NotificationsPage: React.FC = () => {
                                                 This Week
                                             </h4>
                                         </div>
-                                        {groupedNotifications.thisWeek.map(notification => (
-                                            <NotificationItem key={notification.id} notification={notification} />
+                                        {groupedNotifications.thisWeek.map((notification) => (
+                                            <NotificationItem
+                                                key={notification.id}
+                                                notification={notification}
+                                            />
                                         ))}
                                     </>
                                 )}
@@ -429,8 +465,11 @@ export const NotificationsPage: React.FC = () => {
                                                 Older
                                             </h4>
                                         </div>
-                                        {groupedNotifications.older.map(notification => (
-                                            <NotificationItem key={notification.id} notification={notification} />
+                                        {groupedNotifications.older.map((notification) => (
+                                            <NotificationItem
+                                                key={notification.id}
+                                                notification={notification}
+                                            />
                                         ))}
                                     </>
                                 )}

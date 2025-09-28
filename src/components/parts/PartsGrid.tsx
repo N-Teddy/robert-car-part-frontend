@@ -33,7 +33,10 @@ export const PartsGrid: React.FC<PartsGridProps> = ({
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {[...Array(8)].map((_, i) => (
-                    <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 animate-pulse">
+                    <div
+                        key={i}
+                        className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 animate-pulse"
+                    >
                         <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
                         <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                         <div className="h-3 bg-gray-200 rounded w-1/2"></div>
@@ -60,11 +63,12 @@ export const PartsGrid: React.FC<PartsGridProps> = ({
         return (
             <div className="space-y-6">
                 {Object.entries(groupedParts).map(([groupId, groupParts]) => {
-                    const groupName = groupBy === 'vehicle'
-                        ? vehicles.find(v => v.id === groupId)
-                            ? `${vehicles.find(v => v.id === groupId)!.make} ${vehicles.find(v => v.id === groupId)!.model} (${vehicles.find(v => v.id === groupId)!.year})`
-                            : 'Unknown Vehicle'
-                        : categories.find(c => c.id === groupId)?.name || 'Unknown Category';
+                    const groupName =
+                        groupBy === 'vehicle'
+                            ? vehicles.find((v) => v.id === groupId)
+                                ? `${vehicles.find((v) => v.id === groupId)!.make} ${vehicles.find((v) => v.id === groupId)!.model} (${vehicles.find((v) => v.id === groupId)!.year})`
+                                : 'Unknown Vehicle'
+                            : categories.find((c) => c.id === groupId)?.name || 'Unknown Category';
 
                     return (
                         <div key={groupId}>
@@ -74,9 +78,7 @@ export const PartsGrid: React.FC<PartsGridProps> = ({
                                 ) : (
                                     <FolderOpen className="w-5 h-5 text-gray-600 mr-2" />
                                 )}
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                    {groupName}
-                                </h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{groupName}</h3>
                                 <span className="ml-2 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
                                     {groupParts.length} parts
                                 </span>
@@ -86,8 +88,8 @@ export const PartsGrid: React.FC<PartsGridProps> = ({
                                     <PartCard
                                         key={part.id}
                                         part={part}
-                                        vehicle={vehicles.find(v => v.id === part.vehicleId)}
-                                        category={categories.find(c => c.id === part.categoryId)}
+                                        vehicle={vehicles.find((v) => v.id === part.vehicleId)}
+                                        category={categories.find((c) => c.id === part.categoryId)}
                                         onView={onView}
                                         onEdit={onEdit}
                                         onDelete={onDelete}
@@ -108,8 +110,8 @@ export const PartsGrid: React.FC<PartsGridProps> = ({
                 <PartCard
                     key={part.id}
                     part={part}
-                    vehicle={vehicles.find(v => v.id === part.vehicleId)}
-                    category={categories.find(c => c.id === part.categoryId)}
+                    vehicle={vehicles.find((v) => v.id === part.vehicleId)}
+                    category={categories.find((c) => c.id === part.categoryId)}
                     onView={onView}
                     onEdit={onEdit}
                     onDelete={onDelete}

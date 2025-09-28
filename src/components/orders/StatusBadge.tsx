@@ -60,7 +60,9 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'md' })
     const Icon = config.icon;
 
     return (
-        <span className={`inline-flex items-center font-medium rounded-full border ${config.className} ${sizeClasses[size]}`}>
+        <span
+            className={`inline-flex items-center font-medium rounded-full border ${config.className} ${sizeClasses[size]}`}
+        >
             <Icon size={iconSizes[size]} className="mr-1" />
             {config.label}
         </span>

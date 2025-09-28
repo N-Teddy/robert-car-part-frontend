@@ -31,12 +31,18 @@ export const ExportCSV: React.FC<ExportCSVProps> = ({ data, filename, children }
     };
 
     return (
-        <span onClick={handleExport} style={{ cursor: 'pointer' }} role="button" tabIndex={0} onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleExport();
-            }
-        }}>
+        <span
+            onClick={handleExport}
+            style={{ cursor: 'pointer' }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleExport();
+                }
+            }}
+        >
             {children}
         </span>
     );

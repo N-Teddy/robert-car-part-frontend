@@ -13,7 +13,7 @@ import {
     Check,
     Loader2,
     Plus,
-    Archive
+    Archive,
 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import type { Part } from '../../types/request/part';
@@ -89,42 +89,47 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
         setActiveTab('basic');
     }, [mode, part, isOpen]);
 
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-        const validFiles = acceptedFiles.filter(file => {
-            if (file.size > MAX_IMAGE_SIZE) {
-                alert(`File ${file.name} is too large. Max size is 5MB.`);
-                return false;
-            }
-            if (file.type === 'image/svg+xml') {
-                alert(`SVG files are not allowed.`);
-                return false;
-            }
-            return true;
-        });
+    const onDrop = useCallback(
+        (acceptedFiles: File[]) => {
+            const validFiles = acceptedFiles.filter((file) => {
+                if (file.size > MAX_IMAGE_SIZE) {
+                    alert(`File ${file.name} is too large. Max size is 5MB.`);
+                    return false;
+                }
+                if (file.type === 'image/svg+xml') {
+                    alert(`SVG files are not allowed.`);
+                    return false;
+                }
+                return true;
+            });
 
-        const totalImages = images.length + existingImages.length + validFiles.length;
-        if (totalImages > MAX_IMAGES) {
-            alert(`Maximum ${MAX_IMAGES} images allowed. You can add ${MAX_IMAGES - images.length - existingImages.length} more.`);
-            return;
-        }
+            const totalImages = images.length + existingImages.length + validFiles.length;
+            if (totalImages > MAX_IMAGES) {
+                alert(
+                    `Maximum ${MAX_IMAGES} images allowed. You can add ${MAX_IMAGES - images.length - existingImages.length} more.`
+                );
+                return;
+            }
 
-        setImages(prev => [...prev, ...validFiles]);
-    }, [images.length, existingImages.length]);
+            setImages((prev) => [...prev, ...validFiles]);
+        },
+        [images.length, existingImages.length]
+    );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         accept: {
-            'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
+            'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp'],
         },
         maxFiles: MAX_IMAGES,
     });
 
     const removeImage = (index: number) => {
-        setImages(prev => prev.filter((_, i) => i !== index));
+        setImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     const removeExistingImage = (index: number) => {
-        setExistingImages(prev => prev.filter((_, i) => i !== index));
+        setExistingImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     const validate = () => {
@@ -154,8 +159,8 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
     };
 
     const handleChange = (field: keyof typeof formData, value: any) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-        setErrors(prev => ({ ...prev, [field]: '' }));
+        setFormData((prev) => ({ ...prev, [field]: value }));
+        setErrors((prev) => ({ ...prev, [field]: '' }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -194,10 +199,13 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
                 {/* Header */}
-                <div className={`relative overflow-hidden ${mode === 'create'
-                        ? 'bg-gradient-to-br from-green-600 via-green-500 to-emerald-500'
-                        : 'bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500'
-                    }`}>
+                <div
+                    className={`relative overflow-hidden ${
+                        mode === 'create'
+                            ? 'bg-gradient-to-br from-green-600 via-green-500 to-emerald-500'
+                            : 'bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500'
+                    }`}
+                >
                     {/* Decorative Pattern */}
                     <div className="absolute inset-0 opacity-10">
                         <div className="absolute -top-4 -right-4 w-24 h-24 bg-white rounded-full"></div>
@@ -246,20 +254,24 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
-                                className={`flex items-center space-x-2 px-4 py-3 border-b-2 transition-all ${activeTab === tab.id
+                                className={`flex items-center space-x-2 px-4 py-3 border-b-2 transition-all ${
+                                    activeTab === tab.id
                                         ? mode === 'create'
                                             ? 'border-green-500 text-green-600 bg-white'
                                             : 'border-blue-500 text-blue-600 bg-white'
                                         : 'border-transparent text-gray-500 hover:text-gray-700'
-                                    }`}
+                                }`}
                             >
                                 <tab.icon className="w-4 h-4" />
                                 <span className="font-medium text-sm">{tab.label}</span>
                                 {tab.id === 'images' && totalImages > 0 && (
-                                    <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-full ${mode === 'create'
-                                            ? 'bg-green-100 text-green-600'
-                                            : 'bg-blue-100 text-blue-600'
-                                        }`}>
+                                    <span
+                                        className={`ml-1 px-1.5 py-0.5 text-xs rounded-full ${
+                                            mode === 'create'
+                                                ? 'bg-green-100 text-green-600'
+                                                : 'bg-blue-100 text-blue-600'
+                                        }`}
+                                    >
                                         {totalImages}
                                     </span>
                                 )}
@@ -284,14 +296,17 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             type="text"
                                             value={formData.name}
                                             onChange={(e) => handleChange('name', e.target.value)}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.name
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.name
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="e.g., Brake Pad Set"
                                         />
                                         {errors.name && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.name}</p>
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.name}
+                                            </p>
                                         )}
                                     </div>
 
@@ -303,15 +318,23 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                         <input
                                             type="text"
                                             value={formData.partNumber}
-                                            onChange={(e) => handleChange('partNumber', e.target.value.toUpperCase())}
-                                            className={`w-full px-4 py-2.5 rounded-lg border font-mono ${errors.partNumber
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    'partNumber',
+                                                    e.target.value.toUpperCase()
+                                                )
+                                            }
+                                            className={`w-full px-4 py-2.5 rounded-lg border font-mono ${
+                                                errors.partNumber
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="e.g., BP-12345"
                                         />
                                         {errors.partNumber && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.partNumber}</p>
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.partNumber}
+                                            </p>
                                         )}
                                     </div>
 
@@ -322,21 +345,26 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                         </label>
                                         <select
                                             value={formData.vehicleId}
-                                            onChange={(e) => handleChange('vehicleId', e.target.value)}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.vehicleId
+                                            onChange={(e) =>
+                                                handleChange('vehicleId', e.target.value)
+                                            }
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.vehicleId
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                         >
                                             <option value="">Select a vehicle</option>
-                                            {vehicles.map(v => (
+                                            {vehicles.map((v) => (
                                                 <option key={v.id} value={v.id}>
                                                     {v.make} {v.model} ({v.year}) - {v.vin}
                                                 </option>
                                             ))}
                                         </select>
                                         {errors.vehicleId && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.vehicleId}</p>
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.vehicleId}
+                                            </p>
                                         )}
                                     </div>
 
@@ -347,21 +375,26 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                         </label>
                                         <select
                                             value={formData.categoryId}
-                                            onChange={(e) => handleChange('categoryId', e.target.value)}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.categoryId
+                                            onChange={(e) =>
+                                                handleChange('categoryId', e.target.value)
+                                            }
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.categoryId
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                         >
                                             <option value="">Select a category</option>
-                                            {categories.map(c => (
+                                            {categories.map((c) => (
                                                 <option key={c.id} value={c.id}>
                                                     {c.name}
                                                 </option>
                                             ))}
                                         </select>
                                         {errors.categoryId && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.categoryId}</p>
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.categoryId}
+                                            </p>
                                         )}
                                     </div>
                                 </div>
@@ -374,7 +407,9 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                     <textarea
                                         rows={4}
                                         value={formData.description}
-                                        onChange={(e) => handleChange('description', e.target.value)}
+                                        onChange={(e) =>
+                                            handleChange('description', e.target.value)
+                                        }
                                         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all resize-none"
                                         placeholder="Additional details about the part..."
                                     />
@@ -389,7 +424,8 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                     <div>
                                         <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                                             <DollarSign className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Price (FCFA) <span className="text-red-500 ml-1">*</span>
+                                            Price (FCFA){' '}
+                                            <span className="text-red-500 ml-1">*</span>
                                         </label>
                                         <div className="relative">
                                             <input
@@ -397,11 +433,14 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                                 min={0}
                                                 step={100}
                                                 value={formData.price}
-                                                onChange={(e) => handleChange('price', e.target.value)}
-                                                className={`w-full pl-12 pr-4 py-2.5 rounded-lg border ${errors.price
+                                                onChange={(e) =>
+                                                    handleChange('price', e.target.value)
+                                                }
+                                                className={`w-full pl-12 pr-4 py-2.5 rounded-lg border ${
+                                                    errors.price
                                                         ? 'border-red-300 focus:ring-red-500'
                                                         : 'border-gray-300 focus:ring-green-500'
-                                                    } focus:ring-2 focus:border-transparent transition-all`}
+                                                } focus:ring-2 focus:border-transparent transition-all`}
                                                 placeholder="0"
                                             />
                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
@@ -409,7 +448,9 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             </span>
                                         </div>
                                         {errors.price && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.price}</p>
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.price}
+                                            </p>
                                         )}
                                     </div>
 
@@ -422,21 +463,28 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             type="number"
                                             min={0}
                                             value={formData.quantity}
-                                            onChange={(e) => handleChange('quantity', e.target.value)}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.quantity
+                                            onChange={(e) =>
+                                                handleChange('quantity', e.target.value)
+                                            }
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.quantity
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="0"
                                         />
                                         {errors.quantity && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.quantity}</p>
-                                        )}
-                                        {formData.quantity && Number(formData.quantity) < 5 && Number(formData.quantity) > 0 && (
-                                            <p className="mt-1 text-xs text-yellow-600">
-                                                ⚠️ Low stock warning threshold is 5 units
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.quantity}
                                             </p>
                                         )}
+                                        {formData.quantity &&
+                                            Number(formData.quantity) < 5 &&
+                                            Number(formData.quantity) > 0 && (
+                                                <p className="mt-1 text-xs text-yellow-600">
+                                                    ⚠️ Low stock warning threshold is 5 units
+                                                </p>
+                                            )}
                                     </div>
                                 </div>
 
@@ -448,23 +496,29 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                         {['New', 'Used', 'Refurbished'].map((condition) => (
                                             <label
                                                 key={condition}
-                                                className={`relative flex items-center justify-center px-4 py-3 border-2 rounded-lg cursor-pointer transition-all ${formData.condition === condition
+                                                className={`relative flex items-center justify-center px-4 py-3 border-2 rounded-lg cursor-pointer transition-all ${
+                                                    formData.condition === condition
                                                         ? 'border-green-500 bg-green-50'
                                                         : 'border-gray-200 hover:border-gray-300'
-                                                    }`}
+                                                }`}
                                             >
                                                 <input
                                                     type="radio"
                                                     name="condition"
                                                     value={condition}
                                                     checked={formData.condition === condition}
-                                                    onChange={(e) => handleChange('condition', e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleChange('condition', e.target.value)
+                                                    }
                                                     className="sr-only"
                                                 />
-                                                <span className={`text-sm font-medium ${formData.condition === condition
-                                                        ? 'text-green-700'
-                                                        : 'text-gray-700'
-                                                    }`}>
+                                                <span
+                                                    className={`text-sm font-medium ${
+                                                        formData.condition === condition
+                                                            ? 'text-green-700'
+                                                            : 'text-gray-700'
+                                                    }`}
+                                                >
                                                     {condition}
                                                 </span>
                                                 {formData.condition === condition && (
@@ -481,8 +535,13 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                         <div className="ml-3">
                                             <p className="text-sm text-blue-800">Inventory Tips</p>
                                             <ul className="mt-1 text-xs text-blue-700 space-y-0.5">
-                                                <li>• Set accurate quantities to track stock levels</li>
-                                                <li>• Parts with less than 5 units will trigger low stock alerts</li>
+                                                <li>
+                                                    • Set accurate quantities to track stock levels
+                                                </li>
+                                                <li>
+                                                    • Parts with less than 5 units will trigger low
+                                                    stock alerts
+                                                </li>
                                                 <li>• Use consistent pricing for similar parts</li>
                                             </ul>
                                         </div>
@@ -498,10 +557,15 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                     <div className="flex">
                                         <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                                         <div className="ml-3">
-                                            <p className="text-sm text-blue-800">Image Guidelines</p>
+                                            <p className="text-sm text-blue-800">
+                                                Image Guidelines
+                                            </p>
                                             <ul className="mt-1 text-xs text-blue-700 space-y-0.5">
                                                 <li>• Maximum {MAX_IMAGES} images allowed</li>
-                                                <li>• Accepted formats: JPEG, PNG, GIF, WebP (no SVG)</li>
+                                                <li>
+                                                    • Accepted formats: JPEG, PNG, GIF, WebP (no
+                                                    SVG)
+                                                </li>
                                                 <li>• Maximum file size: 5MB per image</li>
                                             </ul>
                                         </div>
@@ -512,20 +576,31 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                 {canAddMore && (
                                     <div
                                         {...getRootProps()}
-                                        className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${isDragActive
+                                        className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+                                            isDragActive
                                                 ? 'border-green-500 bg-green-50'
                                                 : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                                            }`}
+                                        }`}
                                     >
                                         <input {...getInputProps()} />
                                         <div className="flex flex-col items-center">
-                                            <div className={`p-3 rounded-full ${isDragActive ? 'bg-green-100' : 'bg-gray-100'
-                                                }`}>
-                                                <Upload className={`w-8 h-8 ${isDragActive ? 'text-green-600' : 'text-gray-400'
-                                                    }`} />
+                                            <div
+                                                className={`p-3 rounded-full ${
+                                                    isDragActive ? 'bg-green-100' : 'bg-gray-100'
+                                                }`}
+                                            >
+                                                <Upload
+                                                    className={`w-8 h-8 ${
+                                                        isDragActive
+                                                            ? 'text-green-600'
+                                                            : 'text-gray-400'
+                                                    }`}
+                                                />
                                             </div>
                                             <p className="mt-3 text-sm font-medium text-gray-700">
-                                                {isDragActive ? 'Drop images here' : 'Drag & drop images here'}
+                                                {isDragActive
+                                                    ? 'Drop images here'
+                                                    : 'Drag & drop images here'}
                                             </p>
                                             <p className="mt-1 text-xs text-gray-500">
                                                 or click to browse
@@ -605,10 +680,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${mode === 'create'
+                                    className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${
+                                        mode === 'create'
                                             ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600'
                                             : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'
-                                        } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                     {isSubmitting ? (
                                         <>
@@ -618,7 +694,9 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                     ) : (
                                         <>
                                             <Check className="w-4 h-4" />
-                                            <span>{mode === 'create' ? 'Create Part' : 'Update Part'}</span>
+                                            <span>
+                                                {mode === 'create' ? 'Create Part' : 'Update Part'}
+                                            </span>
                                         </>
                                     )}
                                 </button>

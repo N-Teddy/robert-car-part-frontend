@@ -32,7 +32,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
             return;
         }
 
-        const stored = localStorage.getItem("authToken");
+        const stored = localStorage.getItem('authToken');
         const tokens = stored ? JSON.parse(stored) : null;
 
         if (!tokens?.accessToken) {
@@ -47,7 +47,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
 
         // Use localhost for development, but note WebSocket won't work in production
         const wsUrl = isProduction
-            ? 'wss://robert-car-part-backend.vercel.app'  // This won't work on Vercel
+            ? 'wss://robert-car-part-backend.vercel.app' // This won't work on Vercel
             : 'http://localhost:3000';
 
         const socket = io(`${wsUrl}/notifications`, {
@@ -108,8 +108,8 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
                 // You'll need to implement an API endpoint to check for new notifications
                 const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/notifications`, {
                     headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                    }
+                        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                    },
                 });
 
                 if (response.ok) {
@@ -141,19 +141,25 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
         setIsConnected(false);
     }, [stopPolling]);
 
-    const markAsRead = useCallback((notificationId: string) => {
-        if (isProduction) {
-            // In production, make API call instead of WebSocket emit
-            fetch(`${import.meta.env.VITE_API_BASE_URL}/api/notifications/${notificationId}/read`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                }
-            }).catch(console.error);
-        } else if (socketRef.current?.connected) {
-            socketRef.current.emit('markAsRead', notificationId);
-        }
-    }, [isProduction]);
+    const markAsRead = useCallback(
+        (notificationId: string) => {
+            if (isProduction) {
+                // In production, make API call instead of WebSocket emit
+                fetch(
+                    `${import.meta.env.VITE_API_BASE_URL}/api/notifications/${notificationId}/read`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                        },
+                    }
+                ).catch(console.error);
+            } else if (socketRef.current?.connected) {
+                socketRef.current.emit('markAsRead', notificationId);
+            }
+        },
+        [isProduction]
+    );
 
     // Main connection effect
     useEffect(() => {
@@ -167,7 +173,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
     // Effect to handle auth token changes
     useEffect(() => {
         const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === "authToken") {
+            if (e.key === 'authToken') {
                 disconnect();
                 setTimeout(() => connect(), 100);
             }

@@ -23,23 +23,26 @@ export const LowStockAlert: React.FC<LowStockAlertProps> = ({
 }) => {
     if (!isOpen) return null;
 
-    const outOfStock = parts.filter(p => p.quantity === 0);
-    const lowStock = parts.filter(p => p.quantity > 0 && p.quantity < 5);
+    const outOfStock = parts.filter((p) => p.quantity === 0);
+    const lowStock = parts.filter((p) => p.quantity > 0 && p.quantity < 5);
 
     const handleExport = () => {
         const csvContent = [
             ['Part Name', 'Part Number', 'Vehicle', 'Category', 'Current Stock', 'Status', 'Price'],
-            ...parts.map(p => [
+            ...parts.map((p) => [
                 p.name,
                 p.partNumber,
-                vehicles.find(v => v.id === p.vehicleId)?.make + ' ' +
-                vehicles.find(v => v.id === p.vehicleId)?.model || '',
-                categories.find(c => c.id === p.categoryId)?.name || '',
+                vehicles.find((v) => v.id === p.vehicleId)?.make +
+                    ' ' +
+                    vehicles.find((v) => v.id === p.vehicleId)?.model || '',
+                categories.find((c) => c.id === p.categoryId)?.name || '',
                 p.quantity,
                 p.quantity === 0 ? 'Out of Stock' : 'Low Stock',
-                p.price
-            ])
-        ].map(row => row.join(',')).join('\n');
+                p.price,
+            ]),
+        ]
+            .map((row) => row.join(','))
+            .join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
@@ -61,9 +64,7 @@ export const LowStockAlert: React.FC<LowStockAlertProps> = ({
                                 <AlertTriangle className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-white">
-                                    Low Stock Alert
-                                </h2>
+                                <h2 className="text-xl font-bold text-white">Low Stock Alert</h2>
                                 <p className="text-sm text-white/80 mt-0.5">
                                     {parts.length} parts need attention
                                 </p>
@@ -90,12 +91,17 @@ export const LowStockAlert: React.FC<LowStockAlertProps> = ({
                                 </h3>
                             </div>
                             <div className="space-y-3">
-                                {outOfStock.map(part => {
-                                    const vehicle = vehicles.find(v => v.id === part.vehicleId);
-                                    const category = categories.find(c => c.id === part.categoryId);
+                                {outOfStock.map((part) => {
+                                    const vehicle = vehicles.find((v) => v.id === part.vehicleId);
+                                    const category = categories.find(
+                                        (c) => c.id === part.categoryId
+                                    );
 
                                     return (
-                                        <div key={part.id} className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                        <div
+                                            key={part.id}
+                                            className="bg-red-50 border border-red-200 rounded-lg p-4"
+                                        >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center space-x-3">
                                                     {part.images && part.images.length > 0 ? (
@@ -114,7 +120,8 @@ export const LowStockAlert: React.FC<LowStockAlertProps> = ({
                                                             {part.name}
                                                         </p>
                                                         <p className="text-sm text-gray-600">
-                                                            #{part.partNumber} • {vehicle?.make} {vehicle?.model} • {category?.name}
+                                                            #{part.partNumber} • {vehicle?.make}{' '}
+                                                            {vehicle?.model} • {category?.name}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -144,12 +151,17 @@ export const LowStockAlert: React.FC<LowStockAlertProps> = ({
                                 </h3>
                             </div>
                             <div className="space-y-3">
-                                {lowStock.map(part => {
-                                    const vehicle = vehicles.find(v => v.id === part.vehicleId);
-                                    const category = categories.find(c => c.id === part.categoryId);
+                                {lowStock.map((part) => {
+                                    const vehicle = vehicles.find((v) => v.id === part.vehicleId);
+                                    const category = categories.find(
+                                        (c) => c.id === part.categoryId
+                                    );
 
                                     return (
-                                        <div key={part.id} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                        <div
+                                            key={part.id}
+                                            className="bg-yellow-50 border border-yellow-200 rounded-lg p-4"
+                                        >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center space-x-3">
                                                     {part.images && part.images.length > 0 ? (
@@ -168,7 +180,8 @@ export const LowStockAlert: React.FC<LowStockAlertProps> = ({
                                                             {part.name}
                                                         </p>
                                                         <p className="text-sm text-gray-600">
-                                                            #{part.partNumber} • {vehicle?.make} {vehicle?.model} • {category?.name}
+                                                            #{part.partNumber} • {vehicle?.make}{' '}
+                                                            {vehicle?.model} • {category?.name}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -214,9 +227,7 @@ export const LowStockAlert: React.FC<LowStockAlertProps> = ({
                                 <Download className="w-4 h-4 mr-2" />
                                 Export List
                             </button>
-                            <button
-                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors flex items-center"
-                            >
+                            <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors flex items-center">
                                 <ShoppingCart className="w-4 h-4 mr-2" />
                                 Create Order
                             </button>

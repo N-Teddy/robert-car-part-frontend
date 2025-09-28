@@ -2,7 +2,13 @@
 import { apiClient } from '../provider/AxiosClient';
 import type { CreatePartRequest, PartFilterDto, UpdatePartRequest } from '../types/request/part';
 
-import type { CategoryStatsResponse, LowStockPartsResponse, PartListResponse, PartStatsSummaryResponse, SinglePartResponse } from '../types/response/part';
+import type {
+    CategoryStatsResponse,
+    LowStockPartsResponse,
+    PartListResponse,
+    PartStatsSummaryResponse,
+    SinglePartResponse,
+} from '../types/response/part';
 
 export const partApi = {
     // Create a new part

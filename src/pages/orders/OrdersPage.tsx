@@ -13,7 +13,7 @@ import {
     Filter,
     Calendar,
     Package,
-    Copy
+    Copy,
 } from 'lucide-react';
 import { OrderFormModal } from '../../components/orders/OrderFormModal';
 import { OrderViewModal } from '../../components/orders/OrderViewModal';
@@ -49,11 +49,13 @@ export const OrdersPage: React.FC = () => {
     });
 
     // Customer data for autocomplete
-    const [savedCustomers, setSavedCustomers] = useState<Array<{
-        name: string;
-        phone: string;
-        email: string;
-    }>>([]);
+    const [savedCustomers, setSavedCustomers] = useState<
+        Array<{
+            name: string;
+            phone: string;
+            email: string;
+        }>
+    >([]);
 
     // Hooks
     const {
@@ -63,7 +65,7 @@ export const OrdersPage: React.FC = () => {
         useUpdateOrder,
         useDeleteOrder,
         useGetOrderStats,
-        useGenerateReceipt
+        useGenerateReceipt,
     } = useOrder();
 
     const { useGetAllParts } = usePart();
@@ -83,7 +85,7 @@ export const OrdersPage: React.FC = () => {
     useMemo(() => {
         if (ordersData?.items) {
             const customers = new Map();
-            ordersData.items.forEach(order => {
+            ordersData.items.forEach((order) => {
                 if (!customers.has(order.customerPhone)) {
                     customers.set(order.customerPhone, {
                         name: order.customerName,
@@ -98,20 +100,20 @@ export const OrdersPage: React.FC = () => {
 
     // Handlers
     const handleFilterChange = (newFilters: Partial<OrderQueryDto>) => {
-        setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
+        setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
     };
 
     const handlePageChange = (page: number) => {
-        setFilters(prev => ({ ...prev, page }));
+        setFilters((prev) => ({ ...prev, page }));
     };
 
     const openModal = (modal: keyof typeof modals, order?: OrderResponse) => {
         if (order) setSelectedOrder(order);
-        setModals(prev => ({ ...prev, [modal]: true }));
+        setModals((prev) => ({ ...prev, [modal]: true }));
     };
 
     const closeModal = (modal: keyof typeof modals) => {
-        setModals(prev => ({ ...prev, [modal]: false }));
+        setModals((prev) => ({ ...prev, [modal]: false }));
         if (modal !== 'view') setSelectedOrder(null);
     };
 
@@ -158,7 +160,7 @@ export const OrdersPage: React.FC = () => {
             customerEmail: order.customerEmail,
             deliveryMethod: order.deliveryMethod,
             notes: order.notes,
-            items: order.items.map(item => ({
+            items: order.items.map((item) => ({
                 partId: item.part.id,
                 quantity: item.quantity,
                 unitPrice: Number(item.unitPrice),
@@ -175,7 +177,7 @@ export const OrdersPage: React.FC = () => {
 
         const csvContent = [
             ['Order ID', 'Date', 'Customer', 'Phone', 'Items', 'Total', 'Status', 'Delivery'],
-            ...ordersData.items.map(order => [
+            ...ordersData.items.map((order) => [
                 order.id.slice(0, 8),
                 new Date(order.createdAt).toLocaleDateString(),
                 order.customerName,
@@ -184,8 +186,10 @@ export const OrdersPage: React.FC = () => {
                 order.totalAmount,
                 order.status,
                 order.deliveryMethod,
-            ])
-        ].map(row => row.join(',')).join('\n');
+            ]),
+        ]
+            .map((row) => row.join(','))
+            .join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
@@ -199,28 +203,26 @@ export const OrdersPage: React.FC = () => {
     };
 
     // Calculate quick stats
-    const todayOrders = ordersData?.items.filter(order => {
-        const orderDate = new Date(order.createdAt).toDateString();
-        const today = new Date().toDateString();
-        return orderDate === today;
-    }).length || 0;
-
-    const todayRevenue = ordersData?.items
-        .filter(order => {
+    const todayOrders =
+        ordersData?.items.filter((order) => {
             const orderDate = new Date(order.createdAt).toDateString();
             const today = new Date().toDateString();
-            return orderDate === today && order.status === 'COMPLETED';
-        })
-        .reduce((sum, order) => sum + Number(order.totalAmount), 0) || 0;
+            return orderDate === today;
+        }).length || 0;
+
+    const todayRevenue =
+        ordersData?.items
+            .filter((order) => {
+                const orderDate = new Date(order.createdAt).toDateString();
+                const today = new Date().toDateString();
+                return orderDate === today && order.status === 'COMPLETED';
+            })
+            .reduce((sum, order) => sum + Number(order.totalAmount), 0) || 0;
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 py-8">
             {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
+                <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
             )}
 
             {/* Header */}
@@ -265,9 +267,7 @@ export const OrdersPage: React.FC = () => {
                             <p className="text-2xl font-bold text-gray-900 mt-1">
                                 {stats?.totalOrders || 0}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                                {todayOrders} today
-                            </p>
+                            <p className="text-xs text-gray-500 mt-1">{todayOrders} today</p>
                         </div>
                         <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                             <ShoppingCart className="w-6 h-6 text-purple-600" />
@@ -283,9 +283,7 @@ export const OrdersPage: React.FC = () => {
                                 {stats?.pendingOrders || 0}
                             </p>
                             {stats?.pendingOrders > 0 && (
-                                <p className="text-xs text-yellow-600 mt-1">
-                                    Needs attention
-                                </p>
+                                <p className="text-xs text-yellow-600 mt-1">Needs attention</p>
                             )}
                         </div>
                         <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -330,9 +328,7 @@ export const OrdersPage: React.FC = () => {
             </div>
 
             {/* Filters */}
-            <OrderFilters
-                onFilterChange={handleFilterChange}
-            />
+            <OrderFilters onFilterChange={handleFilterChange} />
 
             {/* Orders List */}
             <OrdersList
@@ -400,7 +396,7 @@ export const OrdersPage: React.FC = () => {
                     closeModal('view');
                     openModal('edit', selectedOrder!);
                 }}
-                                onDelete={() => {
+                onDelete={() => {
                     closeModal('view');
                     openModal('delete', selectedOrder!);
                 }}

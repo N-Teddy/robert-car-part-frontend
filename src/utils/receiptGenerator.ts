@@ -244,7 +244,9 @@ export class ReceiptGenerator {
         <!-- Items -->
         <div class="section">
             <div class="section-title">ITEMS:</div>
-            ${order.items.map((item, index) => `
+            ${order.items
+                .map(
+                    (item, index) => `
                 <div class="item-row">
                     <div class="item-name">${index + 1}. ${item.part.name}</div>
                     <div class="item-details">
@@ -256,7 +258,9 @@ export class ReceiptGenerator {
                         ${this.formatCurrency(Number(item.total))}
                     </div>
                 </div>
-            `).join('')}
+            `
+                )
+                .join('')}
         </div>
 
         <!-- Totals -->
@@ -265,12 +269,16 @@ export class ReceiptGenerator {
                 <span>Subtotal:</span>
                 <span>${this.formatCurrency(subtotal)}</span>
             </div>
-            ${discounts > 0 ? `
+            ${
+                discounts > 0
+                    ? `
                 <div class="total-row">
                     <span>Discounts:</span>
                     <span>-${this.formatCurrency(discounts)}</span>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
             <div class="total-row grand-total">
                 <span>TOTAL:</span>
                 <span>${this.formatCurrency(total)}</span>
@@ -285,19 +293,27 @@ export class ReceiptGenerator {
             </div>
         </div>
 
-        ${order.notes ? `
+        ${
+            order.notes
+                ? `
             <!-- Notes -->
             <div class="section">
                 <div class="section-title">NOTES:</div>
                 <div style="font-size: 10px;">${order.notes}</div>
             </div>
-        ` : ''}
+        `
+                : ''
+        }
 
-        ${this.options.showBarcode ? `
+        ${
+            this.options.showBarcode
+                ? `
             <!-- Barcode -->
             <div class="barcode"></div>
             <div style="text-align: center; font-size: 9px;">${order.id}</div>
-        ` : ''}
+        `
+                : ''
+        }
 
         <!-- Footer -->
         <div class="footer">
@@ -379,7 +395,8 @@ export class ReceiptGenerator {
         // Totals
         receipt += `Subtotal:`.padEnd(30) + `${this.formatCurrency(subtotal)}`.padStart(10) + '\n';
         if (discounts > 0) {
-            receipt += `Discounts:`.padEnd(30) + `-${this.formatCurrency(discounts)}`.padStart(10) + '\n';
+            receipt +=
+                `Discounts:`.padEnd(30) + `-${this.formatCurrency(discounts)}`.padStart(10) + '\n';
         }
         receipt += separator + '\n';
         receipt += `TOTAL:`.padEnd(30) + `${this.formatCurrency(total)}`.padStart(10) + '\n';
@@ -429,7 +446,7 @@ export class ReceiptGenerator {
      */
     private calculateSubtotal(order: OrderResponse): number {
         return order.items.reduce((total, item) => {
-            return total + (item.quantity * Number(item.unitPrice));
+            return total + item.quantity * Number(item.unitPrice);
         }, 0);
     }
 
@@ -453,7 +470,7 @@ export class ReceiptGenerator {
         const lines: string[] = [];
         let currentLine = '';
 
-        words.forEach(word => {
+        words.forEach((word) => {
             if ((currentLine + word).length <= width) {
                 currentLine += (currentLine ? ' ' : '') + word;
             } else {

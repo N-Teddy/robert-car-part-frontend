@@ -25,7 +25,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
 
     return (
         <div
-            className={`group bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-all duration-200 overflow-hidden ${level > 0 ? 'ml-' + (level * 4) : ''}`}
+            className={`group bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-all duration-200 overflow-hidden ${level > 0 ? 'ml-' + level * 4 : ''}`}
         >
             {/* Image Section */}
             <div className="relative h-32 bg-gradient-to-br from-gray-100 to-gray-200">

@@ -1,6 +1,13 @@
 // src/components/categories/CategoryTree.tsx
 import React, { useState } from 'react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CategoryTreeItem } from './CategoryTreeItem';
 import type { CategoryWithChildren } from '../../types/request/category';
@@ -26,10 +33,7 @@ export const CategoryTree: React.FC<CategoryTreeProps> = ({
 }) => {
     const [items, setItems] = useState(categories);
 
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor)
-    );
+    const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
     const handleDragEnd = (event: any) => {
         const { active, over } = event;
@@ -45,14 +49,10 @@ export const CategoryTree: React.FC<CategoryTreeProps> = ({
     };
 
     return (
-        <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-        >
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <div className="p-4">
                 <SortableContext
-                    items={items.map(item => item.id)}
+                    items={items.map((item) => item.id)}
                     strategy={verticalListSortingStrategy}
                 >
                     {items.map((category) => (

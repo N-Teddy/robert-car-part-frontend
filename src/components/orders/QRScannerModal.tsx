@@ -52,13 +52,16 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
             );
 
             scannerRef.current = qrScanner;
-            qrScanner.start().then(() => {
-                setScanning(true);
-                setError(null);
-            }).catch((err) => {
-                setError('Camera access denied or not available');
-                console.error(err);
-            });
+            qrScanner
+                .start()
+                .then(() => {
+                    setScanning(true);
+                    setError(null);
+                })
+                .catch((err) => {
+                    setError('Camera access denied or not available');
+                    console.error(err);
+                });
 
             return () => {
                 qrScanner.stop();
@@ -80,9 +83,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
                                 <Camera className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold text-white">
-                                    Scan Part QR Code
-                                </h2>
+                                <h2 className="text-xl font-bold text-white">Scan Part QR Code</h2>
                                 <p className="text-sm text-white/80 mt-0.5">
                                     {stayOpen ? 'Scan multiple parts' : 'Position QR code in frame'}
                                 </p>
@@ -99,10 +100,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
 
                 {/* Scanner Area */}
                 <div className="relative bg-black aspect-square">
-                    <video
-                        ref={videoRef}
-                        className="w-full h-full object-cover"
-                    />
+                    <video ref={videoRef} className="w-full h-full object-cover" />
 
                     {/* Success Overlay */}
                     {showSuccess && (

@@ -53,7 +53,7 @@ export const DashboardLayout: React.FC = () => {
     const getInitials = (name: string) => {
         return name
             .split(' ')
-            .map(n => n[0])
+            .map((n) => n[0])
             .join('')
             .toUpperCase()
             .slice(0, 2);
@@ -71,8 +71,9 @@ export const DashboardLayout: React.FC = () => {
 
             {/* Sidebar - Fixed position on desktop */}
             <div
-                className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                    }`}
+                className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+                    sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                }`}
             >
                 <div className="flex flex-col h-full">
                     {/* Logo */}
@@ -81,7 +82,9 @@ export const DashboardLayout: React.FC = () => {
                             <div className="flex items-center justify-center w-8 h-8 bg-red-600 rounded-lg">
                                 <Wrench className="w-5 h-5 text-white" />
                             </div>
-                            <span className="ml-3 text-lg font-semibold text-white">AutoParts Pro</span>
+                            <span className="ml-3 text-lg font-semibold text-white">
+                                AutoParts Pro
+                            </span>
                         </div>
                         <button
                             onClick={() => setSidebarOpen(false)}
@@ -100,10 +103,11 @@ export const DashboardLayout: React.FC = () => {
                                 <NavLink
                                     key={item.name}
                                     to={item.href}
-                                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${active
+                                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                        active
                                             ? 'bg-red-600 text-white'
                                             : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                                        }`}
+                                    }`}
                                 >
                                     <Icon className="w-5 h-5 mr-3" />
                                     {item.name}

@@ -22,7 +22,7 @@ import {
     Download,
     Share2,
     Printer,
-    MoreVertical
+    MoreVertical,
 } from 'lucide-react';
 import type { Vehicle } from '../../types/request/vehicle';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -92,9 +92,12 @@ export const VehicleViewModal: React.FC<VehicleViewModalProps> = ({
                     <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
                         {/* Background Pattern */}
                         <div className="absolute inset-0 opacity-10">
-                            <div className="absolute inset-0" style={{
-                                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                            }} />
+                            <div
+                                className="absolute inset-0"
+                                style={{
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                                }}
+                            />
                         </div>
 
                         <div className="relative px-6 py-5">
@@ -166,10 +169,13 @@ export const VehicleViewModal: React.FC<VehicleViewModalProps> = ({
 
                             {/* Status Badge */}
                             <div className="absolute bottom-4 right-6">
-                                <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${vehicle.isPartedOut
-                                        ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
-                                        : 'bg-green-500/20 text-green-300 border border-green-500/30'
-                                    }`}>
+                                <span
+                                    className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold ${
+                                        vehicle.isPartedOut
+                                            ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
+                                            : 'bg-green-500/20 text-green-300 border border-green-500/30'
+                                    }`}
+                                >
                                     {vehicle.isPartedOut ? (
                                         <>
                                             <Wrench className="w-4 h-4 mr-1.5" />
@@ -244,10 +250,11 @@ export const VehicleViewModal: React.FC<VehicleViewModalProps> = ({
                                                 <button
                                                     key={img.id}
                                                     onClick={() => setCurrentImageIndex(idx)}
-                                                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${idx === currentImageIndex
+                                                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                                                        idx === currentImageIndex
                                                             ? 'border-blue-500 shadow-lg scale-105'
                                                             : 'border-gray-300 hover:border-gray-400'
-                                                        }`}
+                                                    }`}
                                                 >
                                                     <img
                                                         src={img.url}
@@ -278,7 +285,9 @@ export const VehicleViewModal: React.FC<VehicleViewModalProps> = ({
                                 <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl p-4 border border-blue-200">
                                     <div className="flex items-start justify-between">
                                         <div>
-                                            <p className="text-sm text-blue-600 font-medium">Purchase Price</p>
+                                            <p className="text-sm text-blue-600 font-medium">
+                                                Purchase Price
+                                            </p>
                                             <p className="text-2xl font-bold text-blue-900 mt-1">
                                                 {formatCurrency(vehicle.purchasePrice)}
                                             </p>
@@ -292,12 +301,20 @@ export const VehicleViewModal: React.FC<VehicleViewModalProps> = ({
                                 <div className="bg-gradient-to-br from-green-50 to-green-100/50 rounded-xl p-4 border border-green-200">
                                     <div className="flex items-start justify-between">
                                         <div>
-                                            <p className="text-sm text-green-600 font-medium">Purchase Date</p>
+                                            <p className="text-sm text-green-600 font-medium">
+                                                Purchase Date
+                                            </p>
                                             <p className="text-lg font-bold text-green-900 mt-1">
-                                                {format(new Date(vehicle.purchaseDate), 'MMM dd, yyyy')}
+                                                {format(
+                                                    new Date(vehicle.purchaseDate),
+                                                    'MMM dd, yyyy'
+                                                )}
                                             </p>
                                             <p className="text-xs text-green-600 mt-0.5">
-                                                {formatDistanceToNow(new Date(vehicle.purchaseDate), { addSuffix: true })}
+                                                {formatDistanceToNow(
+                                                    new Date(vehicle.purchaseDate),
+                                                    { addSuffix: true }
+                                                )}
                                             </p>
                                         </div>
                                         <div className="p-2 bg-green-200/50 rounded-lg">
@@ -310,7 +327,9 @@ export const VehicleViewModal: React.FC<VehicleViewModalProps> = ({
                                     <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-xl p-4 border border-purple-200">
                                         <div className="flex items-start justify-between">
                                             <div>
-                                                <p className="text-sm text-purple-600 font-medium">Auction</p>
+                                                <p className="text-sm text-purple-600 font-medium">
+                                                    Auction
+                                                </p>
                                                 <p className="text-lg font-bold text-purple-900 mt-1">
                                                     {vehicle.auctionName}
                                                 </p>
@@ -346,19 +365,27 @@ export const VehicleViewModal: React.FC<VehicleViewModalProps> = ({
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
                                             <span className="text-sm text-gray-600">Make</span>
-                                            <span className="text-sm font-medium text-gray-900">{vehicle.make}</span>
+                                            <span className="text-sm font-medium text-gray-900">
+                                                {vehicle.make}
+                                            </span>
                                         </div>
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
                                             <span className="text-sm text-gray-600">Model</span>
-                                            <span className="text-sm font-medium text-gray-900">{vehicle.model}</span>
+                                            <span className="text-sm font-medium text-gray-900">
+                                                {vehicle.model}
+                                            </span>
                                         </div>
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
                                             <span className="text-sm text-gray-600">Year</span>
-                                            <span className="text-sm font-medium text-gray-900">{vehicle.year}</span>
+                                            <span className="text-sm font-medium text-gray-900">
+                                                {vehicle.year}
+                                            </span>
                                         </div>
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
                                             <span className="text-sm text-gray-600">VIN</span>
-                                            <span className="text-sm font-mono font-medium text-gray-900">{vehicle.vin}</span>
+                                            <span className="text-sm font-mono font-medium text-gray-900">
+                                                {vehicle.vin}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -371,21 +398,34 @@ export const VehicleViewModal: React.FC<VehicleViewModalProps> = ({
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
                                             <span className="text-sm text-gray-600">Status</span>
-                                            <span className={`text-sm font-medium ${vehicle.isActive ? 'text-green-600' : 'text-gray-500'
-                                                }`}>
+                                            <span
+                                                className={`text-sm font-medium ${
+                                                    vehicle.isActive
+                                                        ? 'text-green-600'
+                                                        : 'text-gray-500'
+                                                }`}
+                                            >
                                                 {vehicle.isActive ? 'Active' : 'Inactive'}
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
                                             <span className="text-sm text-gray-600">Created</span>
                                             <span className="text-sm font-medium text-gray-900">
-                                                {format(new Date(vehicle.createdAt), 'MMM dd, yyyy')}
+                                                {format(
+                                                    new Date(vehicle.createdAt),
+                                                    'MMM dd, yyyy'
+                                                )}
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                            <span className="text-sm text-gray-600">Last Updated</span>
+                                            <span className="text-sm text-gray-600">
+                                                Last Updated
+                                            </span>
                                             <span className="text-sm font-medium text-gray-900">
-                                                {format(new Date(vehicle.updatedAt), 'MMM dd, yyyy')}
+                                                {format(
+                                                    new Date(vehicle.updatedAt),
+                                                    'MMM dd, yyyy'
+                                                )}
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
@@ -412,10 +452,11 @@ export const VehicleViewModal: React.FC<VehicleViewModalProps> = ({
                             <div className="flex items-center space-x-2">
                                 <button
                                     onClick={onMarkAsPartedOut}
-                                    className={`px-4 py-2.5 rounded-lg font-medium transition-all flex items-center space-x-2 ${vehicle.isPartedOut
+                                    className={`px-4 py-2.5 rounded-lg font-medium transition-all flex items-center space-x-2 ${
+                                        vehicle.isPartedOut
                                             ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700'
                                             : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700'
-                                        }`}
+                                    }`}
                                 >
                                     {vehicle.isPartedOut ? (
                                         <>
