@@ -8,8 +8,6 @@ import {
     X,
     ShoppingCart,
     QrCode,
-    Loader2,
-    AlertCircle,
 } from 'lucide-react';
 import type { Part } from '../../types/request/part';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -163,10 +161,10 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
         <>
             <div className="space-y-4">
                 {/* Search and Filters */}
-                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                    <div className="flex flex-col sm:flex-row gap-3">
-                        <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <div className="p-4 space-y-3 rounded-lg bg-gray-50">
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                        <div className="relative flex-1">
+                            <Search className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                             <input
                                 type="text"
                                 placeholder="Search parts by name or number..."
@@ -189,7 +187,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
+                            className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
                         >
                             <option value="all">All Categories</option>
                             {categories.map((cat) => (
@@ -202,19 +200,19 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value as any)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
+                            className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
                         >
                             <option value="name">Sort by Name</option>
                             <option value="price">Sort by Price</option>
                             <option value="stock">Sort by Stock</option>
                         </select>
 
-                        <label className="flex items-center cursor-pointer bg-white px-3 py-2 border border-gray-300 rounded-lg">
+                        <label className="flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer">
                             <input
                                 type="checkbox"
                                 checked={showOnlyAvailable}
                                 onChange={(e) => setShowOnlyAvailable(e.target.checked)}
-                                className="mr-2 rounded text-purple-600 focus:ring-purple-500"
+                                className="mr-2 text-purple-600 rounded focus:ring-purple-500"
                             />
                             <span className="text-sm text-gray-700">Available only</span>
                         </label>
@@ -222,12 +220,12 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                 </div>
 
                 {/* Parts List */}
-                <div className="bg-white rounded-lg border border-gray-200 max-h-96 overflow-y-auto">
+                <div className="overflow-y-auto bg-white border border-gray-200 rounded-lg max-h-96">
                     {filteredParts.length === 0 ? (
                         <div className="p-8 text-center">
-                            <Package className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                            <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                             <p className="text-gray-500">No parts found</p>
-                            <p className="text-xs text-gray-400 mt-1">Try adjusting your filters</p>
+                            <p className="mt-1 text-xs text-gray-400">Try adjusting your filters</p>
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-200">
@@ -252,10 +250,10 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                 <img
                                                     src={part.images[0].url}
                                                     alt={part.name}
-                                                    className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                                                    className="flex-shrink-0 object-cover w-16 h-16 rounded-lg"
                                                 />
                                             ) : (
-                                                <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                                <div className="flex items-center justify-center flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg">
                                                     <Package className="w-8 h-8 text-gray-400" />
                                                 </div>
                                             )}
@@ -277,13 +275,13 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                             {part.category?.name || 'Uncategorized'}
                                                         </p>
                                                         {part.vehicle && (
-                                                            <p className="text-xs text-gray-400 mt-1">
+                                                            <p className="mt-1 text-xs text-gray-400">
                                                                 {part.vehicle.make}{' '}
                                                                 {part.vehicle.model} (
                                                                 {part.vehicle.year})
                                                             </p>
                                                         )}
-                                                        <div className="flex items-center space-x-3 mt-2">
+                                                        <div className="flex items-center mt-2 space-x-3">
                                                             <span className="text-sm font-semibold text-purple-600">
                                                                 {formatCurrency(Number(part.price))}
                                                             </span>
@@ -348,7 +346,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                                                 );
                                                                             }
                                                                         }}
-                                                                        className="w-12 text-center text-sm border-0 focus:ring-0"
+                                                                        className="w-12 text-sm text-center border-0 focus:ring-0"
                                                                     />
                                                                     //
                                                                     src/components/orders/ItemSelector.tsx
@@ -383,7 +381,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
 
                                                 {/* Selected item discount */}
                                                 {selectedItem && (
-                                                    <div className="mt-2 flex items-center space-x-2">
+                                                    <div className="flex items-center mt-2 space-x-2">
                                                         <label className="text-xs text-gray-600">
                                                             Discount:
                                                         </label>
@@ -397,7 +395,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                                     parseFloat(e.target.value) || 0
                                                                 )
                                                             }
-                                                            className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
+                                                            className="w-20 px-2 py-1 text-sm border border-gray-300 rounded"
                                                         />
                                                         <span className="text-xs text-gray-500">
                                                             Subtotal:{' '}
@@ -418,10 +416,10 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
 
                 {/* Selected Items Summary */}
                 {selectedItems.length > 0 && (
-                    <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <div className="p-4 border border-green-200 rounded-lg bg-green-50">
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center">
-                                <ShoppingCart className="w-5 h-5 text-green-600 mr-2" />
+                                <ShoppingCart className="w-5 h-5 mr-2 text-green-600" />
                                 <h4 className="text-sm font-semibold text-green-900">
                                     Selected Items ({selectedItems.length})
                                 </h4>
@@ -453,22 +451,22 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
 
             {/* Quantity Dialog for Scanned Items */}
             {showQuantityDialog && pendingPart && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+                    <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-xl">
+                        <h3 className="mb-4 text-lg font-semibold text-gray-900">
                             Part Scanned Successfully
                         </h3>
 
-                        <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                        <div className="p-4 mb-4 rounded-lg bg-gray-50">
                             <div className="flex items-center space-x-3">
                                 {pendingPart.images && pendingPart.images.length > 0 ? (
                                     <img
                                         src={pendingPart.images[0].url}
                                         alt={pendingPart.name}
-                                        className="w-12 h-12 rounded-lg object-cover"
+                                        className="object-cover w-12 h-12 rounded-lg"
                                     />
                                 ) : (
-                                    <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                                    <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-lg">
                                         <Package className="w-6 h-6 text-gray-400" />
                                     </div>
                                 )}
@@ -483,7 +481,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                         </div>
 
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block mb-2 text-sm font-medium text-gray-700">
                                 Quantity to add:
                             </label>
                             <div className="flex items-center space-x-2">
@@ -525,13 +523,13 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                     setShowQuantityDialog(false);
                                     setPendingPart(null);
                                 }}
-                                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100"
+                                className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={confirmScannedPart}
-                                className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                                className="flex-1 px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700"
                             >
                                 Add to Order
                             </button>

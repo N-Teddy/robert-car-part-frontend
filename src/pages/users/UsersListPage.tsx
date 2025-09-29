@@ -8,9 +8,10 @@ import { Button } from '../../components/ui/Button';
 import type { UserFilter, User } from '../../types/request/user';
 import { useDebounce } from '../../hooks/useDebounce';
 import NotificationToast from '../../components/notifications/NotificationToast';
+import { UserDeleteModal } from '../../components/users/UserDeleteModal';
 
 export const UsersListPage: React.FC = () => {
-    const { useGetAllUsers, useDeleteUser, useUpdateUser, useCreateUser } = useUser(); // Added useCreateUser
+    const { useGetAllUsers, useDeleteUser, useUpdateUser, useCreateUser } = useUser();
 
     const [filters, setFilters] = useState<UserFilter>({
         page: 1,
@@ -31,7 +32,7 @@ export const UsersListPage: React.FC = () => {
         mode: 'create',
         user: null,
     });
-    const [selectedImage, setSelectedImage] = useState<File | null>(null); // Added selectedImage state
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
     const debouncedSearch = useDebounce(searchTerm, 500);
 
@@ -42,7 +43,7 @@ export const UsersListPage: React.FC = () => {
 
     const deleteMutation = useDeleteUser();
     const updateMutation = useUpdateUser();
-    const createMutation = useCreateUser(); // Added create mutation
+    const createMutation = useCreateUser();
 
     const stats = useMemo(() => {
         if (!data?.items) return { total: 0, active: 0, admins: 0, newThisMonth: 0 };
@@ -59,28 +60,25 @@ export const UsersListPage: React.FC = () => {
     }, [data]);
 
     const handleEdit = (user: User) => {
-        setSelectedImage(null); // Reset image when opening edit modal
+        setSelectedImage(null);
         setFormModal({ isOpen: true, mode: 'edit', user });
     };
 
     const handleCreate = () => {
-        setSelectedImage(null); // Reset image when opening create modal
+        setSelectedImage(null);
         setFormModal({ isOpen: true, mode: 'create', user: null });
     };
 
     const handleFormSubmit = async (data: any) => {
         try {
-            // Prepare FormData for file upload
             const formData = new FormData();
 
-            // Append all form fields
             Object.keys(data).forEach((key) => {
                 if (key !== 'image' && data[key] !== undefined && data[key] !== null) {
                     formData.append(key, data[key]);
                 }
             });
 
-            // Append image file if selected
             if (selectedImage) {
                 formData.append('image', selectedImage);
             }
@@ -95,7 +93,6 @@ export const UsersListPage: React.FC = () => {
                     title: 'User Updated',
                 });
             } else {
-                // Create user with FormData
                 await createMutation.mutateAsync(formData);
                 setToast({
                     message: 'User created successfully',
@@ -103,7 +100,6 @@ export const UsersListPage: React.FC = () => {
                 });
             }
 
-            // Reset form and close modal
             setSelectedImage(null);
             setFormModal({ isOpen: false, mode: 'create', user: null });
             refetch();
@@ -160,7 +156,6 @@ export const UsersListPage: React.FC = () => {
         }
     };
 
-    // Update UserFormModal to pass selectedImage and setSelectedImage
     return (
         <>
             {toast && <NotificationToast notification={toast} onClose={() => setToast(null)} />}
@@ -180,38 +175,12 @@ export const UsersListPage: React.FC = () => {
             />
 
             {/* Delete Confirmation Modal */}
-            {deleteConfirm && (
-                <div className="fixed inset-0 z-50 overflow-y-auto">
-                    <div className="flex items-center justify-center min-h-screen px-4">
-                        <div
-                            className="fixed inset-0 bg-gray-500/50"
-                            onClick={() => setDeleteConfirm(null)}
-                        />
-                        <div className="relative w-full max-w-md p-6 bg-white rounded-lg">
-                            <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                                Confirm Delete
-                            </h3>
-                            <p className="mb-6 text-gray-600">
-                                Are you sure you want to delete{' '}
-                                <strong>{deleteConfirm.fullName}</strong>? This action cannot be
-                                undone.
-                            </p>
-                            <div className="flex justify-end space-x-3">
-                                <Button variant="outline" onClick={() => setDeleteConfirm(null)}>
-                                    Cancel
-                                </Button>
-                                <Button
-                                    variant="primary"
-                                    onClick={confirmDelete}
-                                    className="bg-red-600 hover:bg-red-700"
-                                >
-                                    Delete User
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <UserDeleteModal
+                isOpen={!!deleteConfirm}
+                user={deleteConfirm}
+                onClose={() => setDeleteConfirm(null)}
+                onConfirm={confirmDelete}
+            />
 
             <div className="px-4 py-8 sm:px-6 lg:px-8">
                 {/* Page Header */}
