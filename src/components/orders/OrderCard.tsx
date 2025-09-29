@@ -7,15 +7,12 @@ import {
     Calendar,
     Package,
     DollarSign,
-    Truck,
     Eye,
     Edit2,
     Copy,
     XCircle,
     ChevronDown,
     ChevronUp,
-    Clock,
-    CheckCircle,
     AlertCircle,
 } from 'lucide-react';
 import type { OrderResponse } from '../../types/response/order';
@@ -65,7 +62,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+        <div className="overflow-hidden transition-all duration-300 bg-white border border-gray-200 shadow-sm rounded-xl hover:shadow-lg">
             {/* Card Header with Gradient */}
             <div className={`h-2 bg-gradient-to-r ${getStatusGradient()}`} />
 
@@ -84,7 +81,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                                 </h3>
                                 <StatusBadge status={order.status} size="sm" />
                             </div>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="mt-1 text-sm text-gray-500">
                                 {formatDistanceToNow(new Date(order.createdAt), {
                                     addSuffix: true,
                                 })}
@@ -130,7 +127,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                 </div>
 
                 {/* Customer Info */}
-                <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                <div className="p-3 mb-4 rounded-lg bg-gray-50">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             <User className="w-4 h-4 text-gray-500" />
@@ -182,10 +179,10 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                 </div>
 
                 {/* Expandable Items Section */}
-                <div className="border-t border-gray-200 pt-3">
+                <div className="pt-3 border-t border-gray-200">
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="w-full flex items-center justify-between text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                        className="flex items-center justify-between w-full text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
                     >
                         <span>Order Items</span>
                         {isExpanded ? (
@@ -200,7 +197,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                             {order.items.map((item, index) => (
                                 <div
                                     key={item.id}
-                                    className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                                    className="flex items-center justify-between p-2 rounded-lg bg-gray-50"
                                 >
                                     <div className="flex items-center space-x-2">
                                         <span className="text-xs font-medium text-gray-500">
@@ -231,7 +228,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                 </div>
 
                 {/* Footer with Date */}
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+                <div className="flex items-center justify-between pt-3 mt-4 border-t border-gray-100">
                     <div className="flex items-center text-xs text-gray-500">
                         <Calendar className="w-3 h-3 mr-1" />
                         {format(new Date(order.createdAt), 'MMM dd, yyyy HH:mm')}

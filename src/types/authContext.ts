@@ -1,5 +1,5 @@
 import type { LoginRequest, RegisterRequest } from './request/auth';
-import type { User } from './response/auth';
+import type { User } from './request/user';
 
 export interface DecodedToken {
     sub: string;
