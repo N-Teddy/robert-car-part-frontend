@@ -15,7 +15,6 @@ import {
     Check,
     Loader2,
     Sparkles,
-    Plus,
     ChevronLeft,
     ChevronRight,
 } from 'lucide-react';

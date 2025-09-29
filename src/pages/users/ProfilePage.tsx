@@ -75,7 +75,7 @@ export const ProfilePage: React.FC = () => {
                 <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
             )}
 
-            <div className="px-4 sm:px-6 lg:px-8 py-8">
+            <div className="px-4 py-8 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto">
                     {/* Page Header */}
                     <div className="mb-8">
@@ -85,25 +85,25 @@ export const ProfilePage: React.FC = () => {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                         {/* Profile Card */}
                         <div className="lg:col-span-1">
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                                 <div className="text-center">
                                     {/* Avatar */}
                                     <div className="relative inline-block">
-                                        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white font-semibold text-3xl mx-auto">
-                                            {currentProfile?.profileImage ? (
+                                        <div className="flex items-center justify-center w-32 h-32 mx-auto text-3xl font-semibold text-white rounded-full bg-gradient-to-br from-red-500 to-red-600">
+                                            {currentProfile?.profileImage? (
                                                 <img
                                                     src={currentProfile.profileImage.url}
                                                     alt={currentProfile.fullName}
-                                                    className="w-32 h-32 rounded-full object-cover"
+                                                    className="object-cover w-32 h-32 rounded-full"
                                                 />
                                             ) : (
                                                 getInitials(currentProfile?.fullName || 'User')
                                             )}
                                         </div>
-                                        <button className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors">
+                                        <button className="absolute bottom-0 right-0 flex items-center justify-center w-10 h-10 transition-colors bg-white border border-gray-300 rounded-full hover:bg-gray-50">
                                             <Camera size={18} className="text-gray-600" />
                                         </button>
                                     </div>
@@ -115,17 +115,17 @@ export const ProfilePage: React.FC = () => {
 
                                     {/* Role Badge */}
                                     <div className="mt-4">
-                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium text-purple-800 bg-purple-100 border border-purple-200 rounded-full">
                                             <Shield size={14} className="mr-1" />
                                             {currentProfile?.role}
                                         </span>
                                     </div>
 
                                     {/* Stats */}
-                                    <div className="mt-6 pt-6 border-t border-gray-200">
-                                        <div className="text-left space-y-3">
+                                    <div className="pt-6 mt-6 border-t border-gray-200">
+                                        <div className="space-y-3 text-left">
                                             <div className="flex items-center text-sm">
-                                                <Calendar className="w-4 h-4 text-gray-400 mr-3" />
+                                                <Calendar className="w-4 h-4 mr-3 text-gray-400" />
                                                 <span className="text-gray-600">Joined:</span>
                                                 <span className="ml-2 text-gray-900">
                                                     {currentProfile?.createdAt &&
@@ -155,7 +155,7 @@ export const ProfilePage: React.FC = () => {
 
                         {/* Profile Form */}
                         <div className="lg:col-span-2">
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
                                 {/* Personal Information */}
                                 <div className="p-6 border-b border-gray-200">
                                     <div className="flex items-center justify-between mb-4">
@@ -229,7 +229,7 @@ export const ProfilePage: React.FC = () => {
                                             <h3 className="text-lg font-semibold text-gray-900">
                                                 Security Settings
                                             </h3>
-                                            <p className="text-sm text-gray-600 mt-1">
+                                            <p className="mt-1 text-sm text-gray-600">
                                                 Manage your password and security preferences
                                             </p>
                                         </div>
@@ -275,13 +275,13 @@ export const ProfilePage: React.FC = () => {
                             </div>
 
                             {/* Activity Log */}
-                            <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                            <div className="p-6 mt-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+                                <h3 className="mb-4 text-lg font-semibold text-gray-900">
                                     Recent Activity
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="flex items-start">
-                                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></div>
+                                        <div className="w-2 h-2 mt-2 mr-3 bg-green-500 rounded-full"></div>
                                         <div>
                                             <p className="text-sm text-gray-900">
                                                 Login successful
@@ -292,7 +292,7 @@ export const ProfilePage: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-start">
-                                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
+                                        <div className="w-2 h-2 mt-2 mr-3 bg-blue-500 rounded-full"></div>
                                         <div>
                                             <p className="text-sm text-gray-900">Profile updated</p>
                                             <p className="text-xs text-gray-500">
@@ -301,7 +301,7 @@ export const ProfilePage: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-start">
-                                        <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-3"></div>
+                                        <div className="w-2 h-2 mt-2 mr-3 bg-yellow-500 rounded-full"></div>
                                         <div>
                                             <p className="text-sm text-gray-900">
                                                 Password changed
