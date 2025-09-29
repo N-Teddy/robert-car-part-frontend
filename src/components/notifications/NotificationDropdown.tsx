@@ -17,6 +17,7 @@ import type { Notification } from '../../types/request/notification';
 import { formatDistanceToNow } from 'date-fns';
 import { useNotificationContext } from '../../context/NotificationContext';
 import { useNotification } from '../../hooks/notificationHook';
+import { useAuthContext } from '../../context/AuthContext';
 
 interface NotificationDropdownProps {
     onClose: () => void;
@@ -25,10 +26,14 @@ interface NotificationDropdownProps {
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onClose }) => {
     const { markAsRead, markAllAsRead } = useNotificationContext();
     const { useGetNotifications } = useNotification();
+        const { user } = useAuthContext();
+
 
     const { data, isLoading } = useGetNotifications({
         limit: 5,
         page: 1,
+        userId: user.id,
+        isRead: false
     });
 
     const notifications = data?.items || [];
@@ -66,7 +71,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
     };
 
     return (
-        <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 animate-in slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 z-50 mt-2 duration-200 bg-white border border-gray-200 rounded-lg shadow-2xl w-96 animate-in slide-in-from-top-2">
             {/* Header */}
             <div className="px-4 py-3 border-b border-gray-200">
                 <div className="flex items-center justify-between">
@@ -78,7 +83,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
                         {notifications.some((n) => !n.isRead) && (
                             <button
                                 onClick={markAllAsRead}
-                                className="text-xs text-red-600 hover:text-red-700 font-medium flex items-center space-x-1"
+                                className="flex items-center space-x-1 text-xs font-medium text-red-600 hover:text-red-700"
                             >
                                 <CheckCheck size={14} />
                                 <span>Mark all read</span>
@@ -87,7 +92,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
                         <Link
                             to="/notifications"
                             onClick={onClose}
-                            className="text-xs text-gray-600 hover:text-gray-900 font-medium"
+                            className="text-xs font-medium text-gray-600 hover:text-gray-900"
                         >
                             See All
                         </Link>
@@ -96,16 +101,16 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
             </div>
 
             {/* Notifications List */}
-            <div className="max-h-96 overflow-y-auto">
+            <div className="overflow-y-auto max-h-96">
                 {isLoading ? (
                     <div className="p-4">
                         {[...Array(3)].map((_, i) => (
-                            <div key={i} className="animate-pulse mb-3">
+                            <div key={i} className="mb-3 animate-pulse">
                                 <div className="flex space-x-3">
                                     <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
                                     <div className="flex-1">
-                                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                                        <div className="w-3/4 h-4 mb-2 bg-gray-200 rounded"></div>
+                                        <div className="w-1/2 h-3 bg-gray-200 rounded"></div>
                                     </div>
                                 </div>
                             </div>
@@ -113,9 +118,9 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
                     </div>
                 ) : notifications.length === 0 ? (
                     <div className="p-8 text-center">
-                        <Bell className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                        <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                         <p className="text-sm text-gray-500">No notifications yet</p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="mt-1 text-xs text-gray-400">
                             We'll notify you when something arrives
                         </p>
                     </div>
@@ -185,7 +190,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
                 <Link
                     to="/notifications"
                     onClick={onClose}
-                    className="block px-4 py-3 text-center text-sm font-medium text-red-600 hover:text-red-700 border-t border-gray-200 hover:bg-gray-50 transition-colors"
+                    className="block px-4 py-3 text-sm font-medium text-center text-red-600 transition-colors border-t border-gray-200 hover:text-red-700 hover:bg-gray-50"
                 >
                     <span className="flex items-center justify-center space-x-1">
                         <span>View All Notifications</span>
