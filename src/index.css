@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 
-
 /* src/index.css - Add these utilities */
 @layer utilities {
     .line-clamp-2 {

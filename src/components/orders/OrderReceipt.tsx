@@ -22,8 +22,8 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({ order, onClose }) =>
                 margin: 0,
                 color: {
                     dark: '#000000',
-                    light: '#FFFFFF'
-                }
+                    light: '#FFFFFF',
+                },
             });
         }
     }, [order.id]);
@@ -49,7 +49,8 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({ order, onClose }) =>
                     body * {
                         visibility: hidden;
                     }
-                    .receipt-container, .receipt-container * {
+                    .receipt-container,
+                    .receipt-container * {
                         visibility: visible;
                     }
                     .receipt-container {
@@ -137,8 +138,12 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({ order, onClose }) =>
                                             {index + 1}. {item.part.name}
                                         </span>
                                         <span className="w-12 text-center">{item.quantity}</span>
-                                        <span className="w-20 text-right">{formatCurrency(Number(item.unitPrice))}</span>
-                                        <span className="w-20 text-right">{formatCurrency(item.quantity * Number(item.unitPrice))}</span>
+                                        <span className="w-20 text-right">
+                                            {formatCurrency(Number(item.unitPrice))}
+                                        </span>
+                                        <span className="w-20 text-right">
+                                            {formatCurrency(item.quantity * Number(item.unitPrice))}
+                                        </span>
                                     </div>
                                     {item.part.partNumber && (
                                         <div className="text-xs text-gray-600 ml-4">
@@ -177,7 +182,9 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({ order, onClose }) =>
                             <div className="flex justify-between text-sm">
                                 <span>Delivery Method:</span>
                                 <span className="font-bold">
-                                    {order.deliveryMethod === 'PICKUP' ? 'STORE PICKUP' : 'SHIPPING'}
+                                    {order.deliveryMethod === 'PICKUP'
+                                        ? 'STORE PICKUP'
+                                        : 'SHIPPING'}
                                 </span>
                             </div>
                         </div>
@@ -194,13 +201,17 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({ order, onClose }) =>
                         <div className="text-center mt-6 pt-4 border-t-2 border-black border-dashed">
                             <p className="text-sm font-bold mb-2">THANK YOU FOR YOUR PURCHASE!</p>
                             <p className="text-xs">Please keep this receipt for your records</p>
-                            <p className="text-xs mt-2">Returns accepted within 7 days with receipt</p>
+                            <p className="text-xs mt-2">
+                                Returns accepted within 7 days with receipt
+                            </p>
 
                             {/* QR Code */}
                             <div className="mt-4 flex justify-center">
                                 <canvas ref={qrCodeRef} />
                             </div>
-                            <p className="text-xs mt-1">Order ID: {order.id.slice(0, 8).toUpperCase()}</p>
+                            <p className="text-xs mt-1">
+                                Order ID: {order.id.slice(0, 8).toUpperCase()}
+                            </p>
                         </div>
 
                         {/* Signature Section */}

@@ -35,10 +35,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               ${isPassword ? 'pr-10' : ''}
               border rounded-lg
               transition-all duration-200
-              ${error
-                                ? 'border-red-500 focus:ring-2 focus:ring-red-200'
-                                : 'border-gray-300 focus:border-red-600 focus:ring-2 focus:ring-red-100'
-                            }
+              ${
+                  error
+                      ? 'border-red-500 focus:ring-2 focus:ring-red-200'
+                      : 'border-gray-300 focus:border-red-600 focus:ring-2 focus:ring-red-100'
+              }
               focus:outline-none
               placeholder:text-gray-400
               ${className}

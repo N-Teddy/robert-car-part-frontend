@@ -1,13 +1,6 @@
 // src/components/orders/OrderFilters.tsx
 import React, { useState } from 'react';
-import {
-    Search,
-    Filter,
-    Calendar,
-    Package,
-    Truck,
-    X
-} from 'lucide-react';
+import { Search, Filter, Calendar, Package, Truck, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import type { OrderQueryDto } from '../../types/request/order';
 import type { OrderStatusEnum, DeliveryMethodEnum } from '../../types/enum';
@@ -16,9 +9,7 @@ interface OrderFiltersProps {
     onFilterChange: (filters: Partial<OrderQueryDto>) => void;
 }
 
-export const OrderFilters: React.FC<OrderFiltersProps> = ({
-    onFilterChange,
-}) => {
+export const OrderFilters: React.FC<OrderFiltersProps> = ({ onFilterChange }) => {
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState<OrderStatusEnum | ''>('');
     const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethodEnum | ''>('');
@@ -33,7 +24,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
             onFilterChange({
                 customerName: value,
                 customerPhone: value,
-                customerEmail: value
+                customerEmail: value,
             });
         }, 500);
         return () => clearTimeout(timer);
@@ -99,12 +90,14 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                             value={status}
                             onChange={(e) => {
                                 setStatus(e.target.value as OrderStatusEnum | '');
-                                onFilterChange({ status: e.target.value as OrderStatusEnum || undefined });
+                                onFilterChange({
+                                    status: (e.target.value as OrderStatusEnum) || undefined,
+                                });
                             }}
                             className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                         >
                             <option value="">All Status</option>
-                            {statusOptions.map(opt => (
+                            {statusOptions.map((opt) => (
                                 <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                 </option>
@@ -121,7 +114,10 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                             Filters
                             {hasActiveFilters && (
                                 <span className="ml-1 px-1.5 py-0.5 text-xs bg-purple-600 text-white rounded-full">
-                                    {[status, deliveryMethod, startDate, endDate].filter(Boolean).length}
+                                    {
+                                        [status, deliveryMethod, startDate, endDate].filter(Boolean)
+                                            .length
+                                    }
                                 </span>
                             )}
                         </Button>
@@ -139,11 +135,13 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                                 </label>
                                 <select
                                     value={status}
-                                    onChange={(e) => setStatus(e.target.value as OrderStatusEnum | '')}
+                                    onChange={(e) =>
+                                        setStatus(e.target.value as OrderStatusEnum | '')
+                                    }
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                 >
                                     <option value="">All Status</option>
-                                    {statusOptions.map(opt => (
+                                    {statusOptions.map((opt) => (
                                         <option key={opt.value} value={opt.value}>
                                             {opt.label}
                                         </option>
@@ -158,7 +156,9 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                                 </label>
                                 <select
                                     value={deliveryMethod}
-                                    onChange={(e) => setDeliveryMethod(e.target.value as DeliveryMethodEnum | '')}
+                                    onChange={(e) =>
+                                        setDeliveryMethod(e.target.value as DeliveryMethodEnum | '')
+                                    }
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                                 >
                                     <option value="">All Methods</option>
@@ -195,11 +195,7 @@ export const OrderFilters: React.FC<OrderFiltersProps> = ({
                         </div>
 
                         <div className="flex justify-end space-x-2 mt-4">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleClearFilters}
-                            >
+                            <Button variant="outline" size="sm" onClick={handleClearFilters}>
                                 Clear
                             </Button>
                             <Button

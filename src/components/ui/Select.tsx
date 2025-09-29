@@ -37,7 +37,9 @@ interface SelectValueProps {
 }
 
 // Type guards to check if a React element is a specific component
-const isSelectContent = (element: React.ReactNode): element is React.ReactElement<SelectContentProps> => {
+const isSelectContent = (
+    element: React.ReactNode
+): element is React.ReactElement<SelectContentProps> => {
     return React.isValidElement(element) && (element.type as any).displayName === 'SelectContent';
 };
 
@@ -53,7 +55,7 @@ export const Select: React.FC<SelectProps> & { displayName: string } = ({
     className = '',
     disabled = false,
     placeholder = 'Select...',
-    'aria-label': ariaLabel
+    'aria-label': ariaLabel,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectRef = useRef<HTMLDivElement>(null);
@@ -67,7 +69,9 @@ export const Select: React.FC<SelectProps> & { displayName: string } = ({
 
         if (contentElement && React.isValidElement(contentElement)) {
             // Find SelectItem children within SelectContent
-            const items = React.Children.toArray(contentElement.props.children).filter(isSelectItem);
+            const items = React.Children.toArray(contentElement.props.children).filter(
+                isSelectItem
+            );
 
             const selectedItem = items.find(
                 (item: React.ReactElement<SelectItemProps>) => item.props.value === value
@@ -109,10 +113,10 @@ export const Select: React.FC<SelectProps> & { displayName: string } = ({
                 aria-label={ariaLabel}
                 className={disabled ? 'opacity-50 cursor-not-allowed' : ''}
             >
-                <SelectValue placeholder={placeholder}>
-                    {findSelectedLabel()}
-                </SelectValue>
-                <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <SelectValue placeholder={placeholder}>{findSelectedLabel()}</SelectValue>
+                <ChevronDown
+                    className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                />
             </SelectTrigger>
 
             {isOpen && (
@@ -124,12 +128,15 @@ export const Select: React.FC<SelectProps> & { displayName: string } = ({
                                     if (isSelectItem(item)) {
                                         return React.cloneElement(item, {
                                             onClick: () => handleItemClick(item.props.value),
-                                            className: `${item.props.value === value ? 'bg-blue-100 text-blue-800' : ''
-                                                } ${item.props.className || ''}`
+                                            className: `${
+                                                item.props.value === value
+                                                    ? 'bg-blue-100 text-blue-800'
+                                                    : ''
+                                            } ${item.props.className || ''}`,
                                         });
                                     }
                                     return item;
-                                })
+                                }),
                             });
                         }
                         return child;
@@ -145,7 +152,7 @@ export const SelectTrigger: React.FC<SelectTriggerProps> & { displayName: string
     children,
     className = '',
     onClick,
-    'aria-label': ariaLabel
+    'aria-label': ariaLabel,
 }) => {
     return (
         <button
@@ -162,25 +169,21 @@ SelectTrigger.displayName = 'SelectTrigger';
 
 export const SelectValue: React.FC<SelectValueProps> & { displayName: string } = ({
     children,
-    placeholder = 'Select...'
+    placeholder = 'Select...',
 }) => {
-    return (
-        <span className="truncate">
-            {children || placeholder}
-        </span>
-    );
+    return <span className="truncate">{children || placeholder}</span>;
 };
 SelectValue.displayName = 'SelectValue';
 
 export const SelectContent: React.FC<SelectContentProps> & { displayName: string } = ({
     children,
-    className = ''
+    className = '',
 }) => {
     return (
-        <div className={`absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto ${className}`}>
-            <div className="py-1">
-                {children}
-            </div>
+        <div
+            className={`absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto ${className}`}
+        >
+            <div className="py-1">{children}</div>
         </div>
     );
 };
@@ -211,7 +214,11 @@ interface SimpleSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement
     className?: string;
 }
 
-export const SimpleSelect: React.FC<SimpleSelectProps> = ({ children, className = '', ...props }) => {
+export const SimpleSelect: React.FC<SimpleSelectProps> = ({
+    children,
+    className = '',
+    ...props
+}) => {
     return (
         <select
             className={`w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
@@ -222,6 +229,8 @@ export const SimpleSelect: React.FC<SimpleSelectProps> = ({ children, className 
     );
 };
 
-export const SimpleSelectItem: React.FC<React.OptionHTMLAttributes<HTMLOptionElement>> = (props) => {
+export const SimpleSelectItem: React.FC<React.OptionHTMLAttributes<HTMLOptionElement>> = (
+    props
+) => {
     return <option {...props} />;
 };

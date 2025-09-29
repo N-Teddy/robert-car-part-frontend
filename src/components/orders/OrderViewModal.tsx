@@ -17,7 +17,7 @@ import {
     XCircle,
     Clock,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
 } from 'lucide-react';
 import type { OrderResponse } from '../../types/response/order';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -91,9 +91,12 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                     {/* Header */}
                     <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
                         <div className="absolute inset-0 opacity-10">
-                            <div className="absolute inset-0" style={{
-                                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                            }} />
+                            <div
+                                className="absolute inset-0"
+                                style={{
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                                }}
+                            />
                         </div>
 
                         <div className="relative px-6 py-5">
@@ -109,7 +112,9 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                         <div className="flex items-center space-x-3 mt-1">
                                             <StatusBadge status={order.status} />
                                             <span className="text-sm text-gray-300">
-                                                {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+                                                {formatDistanceToNow(new Date(order.createdAt), {
+                                                    addSuffix: true,
+                                                })}
                                             </span>
                                         </div>
                                     </div>
@@ -159,36 +164,63 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                         <div className="p-6 space-y-6">
                             {/* Status Timeline */}
                             <div className="bg-white rounded-xl border border-gray-200 p-5">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Status</h3>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                                    Order Status
+                                </h3>
                                 <div className="flex items-center justify-between">
                                     {['PENDING', 'PROCESSING', 'COMPLETED'].map((status, index) => (
                                         <div key={status} className="flex items-center">
-                                            <div className={`flex flex-col items-center ${order.status === status ||
-                                                    (order.status === 'CANCELLED' && status === 'PENDING') ||
-                                                    (order.status === 'PROCESSING' && status === 'PENDING') ||
-                                                    (order.status === 'COMPLETED' && (status === 'PENDING' || status === 'PROCESSING'))
-                                                    ? 'text-purple-600'
-                                                    : 'text-gray-400'
-                                                }`}>
-                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${order.status === status ||
-                                                        (order.status === 'CANCELLED' && status === 'PENDING') ||
-                                                        (order.status === 'PROCESSING' && status === 'PENDING') ||
-                                                        (order.status === 'COMPLETED' && (status === 'PENDING' || status === 'PROCESSING'))
-                                                        ? 'bg-purple-600 text-white'
-                                                        : 'bg-gray-200'
-                                                    }`}>
+                                            <div
+                                                className={`flex flex-col items-center ${
+                                                    order.status === status ||
+                                                    (order.status === 'CANCELLED' &&
+                                                        status === 'PENDING') ||
+                                                    (order.status === 'PROCESSING' &&
+                                                        status === 'PENDING') ||
+                                                    (order.status === 'COMPLETED' &&
+                                                        (status === 'PENDING' ||
+                                                            status === 'PROCESSING'))
+                                                        ? 'text-purple-600'
+                                                        : 'text-gray-400'
+                                                }`}
+                                            >
+                                                <div
+                                                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                                        order.status === status ||
+                                                        (order.status === 'CANCELLED' &&
+                                                            status === 'PENDING') ||
+                                                        (order.status === 'PROCESSING' &&
+                                                            status === 'PENDING') ||
+                                                        (order.status === 'COMPLETED' &&
+                                                            (status === 'PENDING' ||
+                                                                status === 'PROCESSING'))
+                                                            ? 'bg-purple-600 text-white'
+                                                            : 'bg-gray-200'
+                                                    }`}
+                                                >
                                                     {status === 'PENDING' && <Clock size={20} />}
-                                                    {status === 'PROCESSING' && <Package size={20} />}
-                                                    {status === 'COMPLETED' && <CheckCircle size={20} />}
+                                                    {status === 'PROCESSING' && (
+                                                        <Package size={20} />
+                                                    )}
+                                                    {status === 'COMPLETED' && (
+                                                        <CheckCircle size={20} />
+                                                    )}
                                                 </div>
-                                                <span className="text-xs font-medium mt-2">{status}</span>
+                                                <span className="text-xs font-medium mt-2">
+                                                    {status}
+                                                </span>
                                             </div>
                                             {index < 2 && (
-                                                <div className={`w-full h-1 mx-2 ${(order.status === 'PROCESSING' && index === 0) ||
+                                                <div
+                                                    className={`w-full h-1 mx-2 ${
+                                                        (order.status === 'PROCESSING' &&
+                                                            index === 0) ||
                                                         (order.status === 'COMPLETED' && index <= 1)
-                                                        ? 'bg-purple-600'
-                                                        : 'bg-gray-200'
-                                                    }`} style={{ width: '100px' }} />
+                                                            ? 'bg-purple-600'
+                                                            : 'bg-gray-200'
+                                                    }`}
+                                                    style={{ width: '100px' }}
+                                                />
                                             )}
                                         </div>
                                     ))}
@@ -197,7 +229,9 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                             <div className="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center">
                                                 <XCircle size={20} />
                                             </div>
-                                            <span className="text-xs font-medium mt-2">CANCELLED</span>
+                                            <span className="text-xs font-medium mt-2">
+                                                CANCELLED
+                                            </span>
                                         </div>
                                     )}
                                 </div>
@@ -213,7 +247,9 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                     <div className="space-y-3">
                                         <div>
                                             <p className="text-sm text-gray-500">Name</p>
-                                            <p className="text-base font-medium text-gray-900">{order.customerName}</p>
+                                            <p className="text-base font-medium text-gray-900">
+                                                {order.customerName}
+                                            </p>
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-500">Phone</p>
@@ -243,20 +279,30 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                         <div>
                                             <p className="text-sm text-gray-500">Delivery Method</p>
                                             <p className="text-base font-medium text-gray-900">
-                                                {order.deliveryMethod === 'PICKUP' ? '🏪 Store Pickup' : '🚚 Shipping'}
+                                                {order.deliveryMethod === 'PICKUP'
+                                                    ? '🏪 Store Pickup'
+                                                    : '🚚 Shipping'}
                                             </p>
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-500">Order Date</p>
                                             <p className="text-base font-medium text-gray-900">
-                                                {format(new Date(order.createdAt), 'MMM dd, yyyy HH:mm')}
+                                                {format(
+                                                    new Date(order.createdAt),
+                                                    'MMM dd, yyyy HH:mm'
+                                                )}
                                             </p>
                                         </div>
                                         {order.updatedAt !== order.createdAt && (
                                             <div>
-                                                <p className="text-sm text-gray-500">Last Updated</p>
+                                                <p className="text-sm text-gray-500">
+                                                    Last Updated
+                                                </p>
                                                 <p className="text-base font-medium text-gray-900">
-                                                    {format(new Date(order.updatedAt), 'MMM dd, yyyy HH:mm')}
+                                                    {format(
+                                                        new Date(order.updatedAt),
+                                                        'MMM dd, yyyy HH:mm'
+                                                    )}
                                                 </p>
                                             </div>
                                         )}
@@ -290,7 +336,9 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                                             </p>
                                                             {item.part.vehicle && (
                                                                 <p className="text-xs text-gray-400 mt-1">
-                                                                    {item.part.vehicle.make} {item.part.vehicle.model} ({item.part.vehicle.year})
+                                                                    {item.part.vehicle.make}{' '}
+                                                                    {item.part.vehicle.model} (
+                                                                    {item.part.vehicle.year})
                                                                 </p>
                                                             )}
                                                         </div>
@@ -298,11 +346,13 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                                 </div>
                                                 <div className="text-right ml-4">
                                                     <p className="text-sm text-gray-600">
-                                                        {item.quantity} × {formatCurrency(item.unitPrice)}
+                                                        {item.quantity} ×{' '}
+                                                        {formatCurrency(item.unitPrice)}
                                                     </p>
                                                     {Number(item.discount) > 0 && (
                                                         <p className="text-xs text-red-600">
-                                                            - {formatCurrency(item.discount)} discount
+                                                            - {formatCurrency(item.discount)}{' '}
+                                                            discount
                                                         </p>
                                                     )}
                                                     <p className="text-base font-semibold text-gray-900 mt-1">
@@ -331,7 +381,9 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                         </div>
                                     )}
                                     <div className="flex justify-between pt-2 border-t border-gray-200">
-                                        <span className="text-base font-semibold text-gray-900">Total Amount:</span>
+                                        <span className="text-base font-semibold text-gray-900">
+                                            Total Amount:
+                                        </span>
                                         <span className="text-xl font-bold text-purple-600">
                                             {formatCurrency(order.totalAmount)}
                                         </span>
@@ -346,7 +398,9 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                         <FileText className="w-5 h-5 mr-2 text-gray-600" />
                                         Notes
                                     </h3>
-                                    <p className="text-gray-700 whitespace-pre-wrap">{order.notes}</p>
+                                    <p className="text-gray-700 whitespace-pre-wrap">
+                                        {order.notes}
+                                    </p>
                                 </div>
                             )}
                         </div>
@@ -376,12 +430,7 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
             </div>
 
             {/* Receipt Modal for Printing */}
-            {showReceipt && (
-                <OrderReceipt
-                    order={order}
-                    onClose={() => setShowReceipt(false)}
-                />
-            )}
+            {showReceipt && <OrderReceipt order={order} onClose={() => setShowReceipt(false)} />}
         </>
     );
 };

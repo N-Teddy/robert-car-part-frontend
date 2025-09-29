@@ -9,7 +9,7 @@ import {
     ShoppingCart,
     QrCode,
     Loader2,
-    AlertCircle
+    AlertCircle,
 } from 'lucide-react';
 import type { Part } from '../../types/request/part';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -51,12 +51,12 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
 
     // Extract unique categories safely
     const categories = Array.from(
-        new Set(parts.map(p => p.category?.name || 'Uncategorized').filter(Boolean))
+        new Set(parts.map((p) => p.category?.name || 'Uncategorized').filter(Boolean))
     );
 
     // Filter and sort parts
     const filteredParts = parts
-        .filter(part => {
+        .filter((part) => {
             const matchesSearch =
                 part.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 part.partNumber.toLowerCase().includes(searchTerm.toLowerCase());
@@ -89,7 +89,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                 return;
             }
 
-            const scannedPart = parts.find(p => p.id === partId);
+            const scannedPart = parts.find((p) => p.id === partId);
 
             if (!scannedPart) {
                 alert('Part not found in inventory');
@@ -105,7 +105,6 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
             setPendingPart(scannedPart);
             setShowQuantityDialog(true);
             setScanQuantity(1);
-
         } catch (error) {
             alert('Invalid QR code');
         }
@@ -115,7 +114,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
     const confirmScannedPart = () => {
         if (!pendingPart) return;
 
-        const existingItem = selectedItems.find(item => item.partId === pendingPart.id);
+        const existingItem = selectedItems.find((item) => item.partId === pendingPart.id);
 
         if (existingItem) {
             const newQuantity = Math.min(
@@ -140,12 +139,12 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
 
     // Get selected item details
     const getSelectedItem = (partId: string) => {
-        return selectedItems.find(item => item.partId === partId);
+        return selectedItems.find((item) => item.partId === partId);
     };
 
     // Calculate item subtotal
     const calculateItemTotal = (item: SelectedItem) => {
-        return (item.quantity * item.unitPrice) - (item.discount || 0);
+        return item.quantity * item.unitPrice - (item.discount || 0);
     };
 
     // Get stock status color
@@ -157,9 +156,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
 
     // Calculate total
     const calculateTotal = () => {
-        return selectedItems.reduce((total, item) =>
-            total + calculateItemTotal(item), 0
-        );
+        return selectedItems.reduce((total, item) => total + calculateItemTotal(item), 0);
     };
 
     return (
@@ -195,8 +192,10 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
                         >
                             <option value="all">All Categories</option>
-                            {categories.map(cat => (
-                                <option key={cat} value={cat}>{cat}</option>
+                            {categories.map((cat) => (
+                                <option key={cat} value={cat}>
+                                    {cat}
+                                </option>
                             ))}
                         </select>
 
@@ -232,16 +231,20 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-200">
-                            {filteredParts.map(part => {
+                            {filteredParts.map((part) => {
                                 const selectedItem = getSelectedItem(part.id);
-                                const isMaxQuantity = (selectedItem?.quantity || 0) >= part.quantity;
+                                const isMaxQuantity =
+                                    (selectedItem?.quantity || 0) >= part.quantity;
                                 const isLastScanned = lastScannedId === part.id;
 
                                 return (
                                     <div
                                         key={part.id}
-                                        className={`p-4 transition-all ${isLastScanned ? 'bg-purple-50 ring-2 ring-purple-500' : 'hover:bg-gray-50'
-                                            }`}
+                                        className={`p-4 transition-all ${
+                                            isLastScanned
+                                                ? 'bg-purple-50 ring-2 ring-purple-500'
+                                                : 'hover:bg-gray-50'
+                                        }`}
                                     >
                                         <div className="flex items-start space-x-4">
                                             {/* Part Image */}
@@ -270,18 +273,23 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                             )}
                                                         </h5>
                                                         <p className="text-sm text-gray-500">
-                                                            #{part.partNumber} • {part.category?.name || 'Uncategorized'}
+                                                            #{part.partNumber} •{' '}
+                                                            {part.category?.name || 'Uncategorized'}
                                                         </p>
                                                         {part.vehicle && (
                                                             <p className="text-xs text-gray-400 mt-1">
-                                                                {part.vehicle.make} {part.vehicle.model} ({part.vehicle.year})
+                                                                {part.vehicle.make}{' '}
+                                                                {part.vehicle.model} (
+                                                                {part.vehicle.year})
                                                             </p>
                                                         )}
                                                         <div className="flex items-center space-x-3 mt-2">
                                                             <span className="text-sm font-semibold text-purple-600">
                                                                 {formatCurrency(Number(part.price))}
                                                             </span>
-                                                            <span className={`text-xs px-2 py-0.5 rounded-full border ${getStockStatusColor(part.quantity)}`}>
+                                                            <span
+                                                                className={`text-xs px-2 py-0.5 rounded-full border ${getStockStatusColor(part.quantity)}`}
+                                                            >
                                                                 {part.quantity} in stock
                                                             </span>
                                                         </div>
@@ -293,10 +301,11 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                             <button
                                                                 onClick={() => onItemAdd(part)}
                                                                 disabled={part.quantity === 0}
-                                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${part.quantity === 0
+                                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                                    part.quantity === 0
                                                                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                                                         : 'bg-purple-600 text-white hover:bg-purple-700'
-                                                                    }`}
+                                                                }`}
                                                             >
                                                                 Add
                                                             </button>
@@ -304,25 +313,54 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                             <div className="flex items-center space-x-2">
                                                                 <div className="flex items-center border border-gray-300 rounded-lg">
                                                                     <button
-                                                                        onClick={() => onItemUpdate(part.id, Math.max(0, selectedItem.quantity - 1))}
+                                                                        onClick={() =>
+                                                                            onItemUpdate(
+                                                                                part.id,
+                                                                                Math.max(
+                                                                                    0,
+                                                                                    selectedItem.quantity -
+                                                                                        1
+                                                                                )
+                                                                            )
+                                                                        }
                                                                         className="p-1.5 hover:bg-gray-100 transition-colors"
                                                                     >
                                                                         <Minus size={14} />
                                                                     </button>
                                                                     <input
                                                                         type="number"
-                                                                        value={selectedItem.quantity}
+                                                                        value={
+                                                                            selectedItem.quantity
+                                                                        }
                                                                         onChange={(e) => {
-                                                                            const val = parseInt(e.target.value) || 0;
-                                                                            if (val <= part.quantity && val >= 0) {
-                                                                                onItemUpdate(part.id, val);
+                                                                            const val =
+                                                                                parseInt(
+                                                                                    e.target.value
+                                                                                ) || 0;
+                                                                            if (
+                                                                                val <=
+                                                                                    part.quantity &&
+                                                                                val >= 0
+                                                                            ) {
+                                                                                onItemUpdate(
+                                                                                    part.id,
+                                                                                    val
+                                                                                );
                                                                             }
                                                                         }}
                                                                         className="w-12 text-center text-sm border-0 focus:ring-0"
                                                                     />
-                                                                    // src/components/orders/ItemSelector.tsx (continued)
+                                                                    //
+                                                                    src/components/orders/ItemSelector.tsx
+                                                                    (continued)
                                                                     <button
-                                                                        onClick={() => onItemUpdate(part.id, selectedItem.quantity + 1)}
+                                                                        onClick={() =>
+                                                                            onItemUpdate(
+                                                                                part.id,
+                                                                                selectedItem.quantity +
+                                                                                    1
+                                                                            )
+                                                                        }
                                                                         disabled={isMaxQuantity}
                                                                         className="p-1.5 hover:bg-gray-100 transition-colors disabled:opacity-50"
                                                                     >
@@ -331,7 +369,9 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                                 </div>
 
                                                                 <button
-                                                                    onClick={() => onItemRemove(part.id)}
+                                                                    onClick={() =>
+                                                                        onItemRemove(part.id)
+                                                                    }
                                                                     className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
                                                                 >
                                                                     <X size={18} />
@@ -344,16 +384,26 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                 {/* Selected item discount */}
                                                 {selectedItem && (
                                                     <div className="mt-2 flex items-center space-x-2">
-                                                        <label className="text-xs text-gray-600">Discount:</label>
+                                                        <label className="text-xs text-gray-600">
+                                                            Discount:
+                                                        </label>
                                                         <input
                                                             type="number"
                                                             min="0"
                                                             value={selectedItem.discount || 0}
-                                                            onChange={(e) => onDiscountUpdate(part.id, parseFloat(e.target.value) || 0)}
+                                                            onChange={(e) =>
+                                                                onDiscountUpdate(
+                                                                    part.id,
+                                                                    parseFloat(e.target.value) || 0
+                                                                )
+                                                            }
                                                             className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
                                                         />
                                                         <span className="text-xs text-gray-500">
-                                                            Subtotal: {formatCurrency(calculateItemTotal(selectedItem))}
+                                                            Subtotal:{' '}
+                                                            {formatCurrency(
+                                                                calculateItemTotal(selectedItem)
+                                                            )}
                                                         </span>
                                                     </div>
                                                 )}
@@ -381,10 +431,13 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                             </span>
                         </div>
                         <div className="text-xs text-green-700">
-                            {selectedItems.map(item => {
-                                const part = parts.find(p => p.id === item.partId);
-                                return part ? `${part.name} (${item.quantity})` : '';
-                            }).filter(Boolean).join(', ')}
+                            {selectedItems
+                                .map((item) => {
+                                    const part = parts.find((p) => p.id === item.partId);
+                                    return part ? `${part.name} (${item.quantity})` : '';
+                                })
+                                .filter(Boolean)
+                                .join(', ')}
                         </div>
                     </div>
                 )}
@@ -422,7 +475,8 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                 <div className="flex-1">
                                     <p className="font-medium text-gray-900">{pendingPart.name}</p>
                                     <p className="text-sm text-gray-500">
-                                        {formatCurrency(Number(pendingPart.price))} • {pendingPart.quantity} in stock
+                                        {formatCurrency(Number(pendingPart.price))} •{' '}
+                                        {pendingPart.quantity} in stock
                                     </p>
                                 </div>
                             </div>
@@ -453,7 +507,11 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                     className="w-24 px-3 py-2 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
                                 />
                                 <button
-                                    onClick={() => setScanQuantity(Math.min(pendingPart.quantity, scanQuantity + 1))}
+                                    onClick={() =>
+                                        setScanQuantity(
+                                            Math.min(pendingPart.quantity, scanQuantity + 1)
+                                        )
+                                    }
                                     className="p-2 border border-gray-300 rounded-lg hover:bg-gray-100"
                                 >
                                     <Plus size={20} />

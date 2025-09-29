@@ -13,12 +13,15 @@ import {
     Check,
     Loader2,
     Plus,
-    Archive
+    Archive,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import type { Part } from '../../types/request/part';
 import type { Vehicle } from '../../types/request/vehicle';
 import type { Category } from '../../types/request/category';
+import { Stepper } from '../ui/Stepper';
 
 interface PartFormModalProps {
     isOpen: boolean;
@@ -56,7 +59,14 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
     const [existingImages, setExistingImages] = useState<any[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [activeTab, setActiveTab] = useState<'basic' | 'inventory' | 'images'>('basic');
+    const [currentStep, setCurrentStep] = useState(1);
+
+    // Stepper steps configuration
+    const steps = [
+        { id: 1, label: 'Basic Info', icon: Package },
+        { id: 2, label: 'Pricing & Stock', icon: Archive },
+        { id: 3, label: 'Images', icon: Upload },
+    ];
 
     useEffect(() => {
         if (mode === 'edit' && part) {
@@ -86,81 +96,110 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
             setExistingImages([]);
         }
         setErrors({});
-        setActiveTab('basic');
+        setCurrentStep(1);
     }, [mode, part, isOpen]);
 
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-        const validFiles = acceptedFiles.filter(file => {
-            if (file.size > MAX_IMAGE_SIZE) {
-                alert(`File ${file.name} is too large. Max size is 5MB.`);
-                return false;
-            }
-            if (file.type === 'image/svg+xml') {
-                alert(`SVG files are not allowed.`);
-                return false;
-            }
-            return true;
-        });
+    const onDrop = useCallback(
+        (acceptedFiles: File[]) => {
+            const validFiles = acceptedFiles.filter((file) => {
+                if (file.size > MAX_IMAGE_SIZE) {
+                    alert(`File ${file.name} is too large. Max size is 5MB.`);
+                    return false;
+                }
+                if (file.type === 'image/svg+xml') {
+                    alert(`SVG files are not allowed.`);
+                    return false;
+                }
+                return true;
+            });
 
-        const totalImages = images.length + existingImages.length + validFiles.length;
-        if (totalImages > MAX_IMAGES) {
-            alert(`Maximum ${MAX_IMAGES} images allowed. You can add ${MAX_IMAGES - images.length - existingImages.length} more.`);
-            return;
-        }
+            const totalImages = images.length + existingImages.length + validFiles.length;
+            if (totalImages > MAX_IMAGES) {
+                alert(
+                    `Maximum ${MAX_IMAGES} images allowed. You can add ${MAX_IMAGES - images.length - existingImages.length} more.`
+                );
+                return;
+            }
 
-        setImages(prev => [...prev, ...validFiles]);
-    }, [images.length, existingImages.length]);
+            setImages((prev) => [...prev, ...validFiles]);
+        },
+        [images.length, existingImages.length]
+    );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         accept: {
-            'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
+            'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp'],
         },
         maxFiles: MAX_IMAGES,
+        noClick: false,
+        noKeyboard: true,
     });
 
     const removeImage = (index: number) => {
-        setImages(prev => prev.filter((_, i) => i !== index));
+        setImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     const removeExistingImage = (index: number) => {
-        setExistingImages(prev => prev.filter((_, i) => i !== index));
+        setExistingImages((prev) => prev.filter((_, i) => i !== index));
     };
 
-    const validate = () => {
+    // Step-specific validation
+    const validateStep = (step: number) => {
         const newErrors: Record<string, string> = {};
 
-        if (!formData.name.trim()) newErrors.name = 'Part name is required';
-        if (!formData.partNumber.trim()) newErrors.partNumber = 'Part number is required';
-        if (!formData.vehicleId) newErrors.vehicleId = 'Vehicle is required';
-        if (!formData.categoryId) newErrors.categoryId = 'Category is required';
-        if (!formData.price || Number(formData.price) <= 0) {
-            newErrors.price = 'Price must be a positive number';
+        if (step === 1) {
+            if (!formData.name.trim()) newErrors.name = 'Part name is required';
+            if (!formData.partNumber.trim()) newErrors.partNumber = 'Part number is required';
+            if (!formData.vehicleId) newErrors.vehicleId = 'Vehicle is required';
+            if (!formData.categoryId) newErrors.categoryId = 'Category is required';
         }
-        if (formData.quantity === '' || Number(formData.quantity) < 0) {
-            newErrors.quantity = 'Quantity must be 0 or greater';
+
+        if (step === 2) {
+            if (!formData.price || Number(formData.price) <= 0) {
+                newErrors.price = 'Price must be a positive number';
+            }
+            if (formData.quantity === '' || Number(formData.quantity) < 0) {
+                newErrors.quantity = 'Quantity must be 0 or greater';
+            }
+        }
+
+        if (step === 3) {
+            // Optional: Add image validation if needed
+            // if (images.length === 0 && existingImages.length === 0) {
+            //     newErrors.images = 'At least one image is required';
+            // }
         }
 
         setErrors(newErrors);
-
-        // Switch to the tab with the first error
-        if (newErrors.name || newErrors.partNumber || newErrors.vehicleId || newErrors.categoryId) {
-            setActiveTab('basic');
-        } else if (newErrors.price || newErrors.quantity) {
-            setActiveTab('inventory');
-        }
-
         return Object.keys(newErrors).length === 0;
     };
 
     const handleChange = (field: keyof typeof formData, value: any) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-        setErrors(prev => ({ ...prev, [field]: '' }));
+        setFormData((prev) => ({ ...prev, [field]: value }));
+        setErrors((prev) => ({ ...prev, [field]: '' }));
+    };
+
+    const handleNext = () => {
+        if (validateStep(currentStep)) {
+            setCurrentStep(prev => Math.min(prev + 1, steps.length));
+        }
+    };
+
+    const handleBack = () => {
+        setCurrentStep(prev => Math.max(prev - 1, 1));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validate()) return;
+        e.stopPropagation(); // Prevent event bubbling
+
+        // Only allow submission from the final step
+        if (currentStep !== steps.length) {
+            return;
+        }
+
+        if (!validateStep(3)) return; // Final validation
 
         setIsSubmitting(true);
 
@@ -185,23 +224,36 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
         }
     };
 
+    // Prevent form submission on Enter key
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && currentStep !== steps.length) {
+            e.preventDefault();
+            // Optionally, you can make Enter key trigger "Next" instead
+            if (currentStep < steps.length) {
+                handleNext();
+            }
+        }
+    };
+
     if (!isOpen) return null;
 
     const totalImages = images.length + existingImages.length;
     const canAddMore = totalImages < MAX_IMAGES;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
                 {/* Header */}
-                <div className={`relative overflow-hidden ${mode === 'create'
-                        ? 'bg-gradient-to-br from-green-600 via-green-500 to-emerald-500'
-                        : 'bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500'
-                    }`}>
+                <div
+                    className={`relative overflow-hidden ${mode === 'create'
+                            ? 'bg-gradient-to-br from-green-600 via-green-500 to-emerald-500'
+                            : 'bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500'
+                        }`}
+                >
                     {/* Decorative Pattern */}
                     <div className="absolute inset-0 opacity-10">
-                        <div className="absolute -top-4 -right-4 w-24 h-24 bg-white rounded-full"></div>
-                        <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-white rounded-full"></div>
+                        <div className="absolute w-24 h-24 bg-white rounded-full -top-4 -right-4"></div>
+                        <div className="absolute w-32 h-32 bg-white rounded-full -bottom-4 -left-4"></div>
                     </div>
 
                     <div className="relative px-6 py-5">
@@ -227,7 +279,7 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                             </div>
                             <button
                                 onClick={onClose}
-                                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                                className="p-2 transition-colors rounded-lg hover:bg-white/20"
                             >
                                 <X className="w-5 h-5 text-white" />
                             </button>
@@ -235,50 +287,28 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                     </div>
                 </div>
 
-                {/* Tab Navigation */}
-                <div className="border-b border-gray-200 bg-gray-50">
-                    <div className="flex space-x-1 px-6">
-                        {[
-                            { id: 'basic', label: 'Basic Info', icon: Package },
-                            { id: 'inventory', label: 'Pricing & Stock', icon: Archive },
-                            { id: 'images', label: 'Images', icon: Upload },
-                        ].map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id as any)}
-                                className={`flex items-center space-x-2 px-4 py-3 border-b-2 transition-all ${activeTab === tab.id
-                                        ? mode === 'create'
-                                            ? 'border-green-500 text-green-600 bg-white'
-                                            : 'border-blue-500 text-blue-600 bg-white'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700'
-                                    }`}
-                            >
-                                <tab.icon className="w-4 h-4" />
-                                <span className="font-medium text-sm">{tab.label}</span>
-                                {tab.id === 'images' && totalImages > 0 && (
-                                    <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-full ${mode === 'create'
-                                            ? 'bg-green-100 text-green-600'
-                                            : 'bg-blue-100 text-blue-600'
-                                        }`}>
-                                        {totalImages}
-                                    </span>
-                                )}
-                            </button>
-                        ))}
-                    </div>
+                {/* Stepper */}
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <Stepper
+                        steps={steps}
+                        currentStep={currentStep}
+                        onStepClick={setCurrentStep}
+                        allowNavigation={true}
+                        mode={mode}
+                    />
                 </div>
 
                 {/* Form Content */}
-                <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-200px)]">
+                <div onKeyDown={handleKeyDown} className="overflow-y-auto max-h-[calc(90vh-200px)]">
                     <div className="p-6">
-                        {/* Basic Info Tab */}
-                        {activeTab === 'basic' && (
+                        {/* Step 1: Basic Info */}
+                        {currentStep === 1 && (
                             <div className="space-y-6 animate-fadeIn">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                     <div>
-                                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                        <label className="flex items-center mb-2 text-sm font-medium text-gray-700">
                                             <Package className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Part Name <span className="text-red-500 ml-1">*</span>
+                                            Part Name <span className="ml-1 text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
@@ -291,19 +321,26 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             placeholder="e.g., Brake Pad Set"
                                         />
                                         {errors.name && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.name}</p>
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.name}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div>
-                                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                        <label className="flex items-center mb-2 text-sm font-medium text-gray-700">
                                             <Hash className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Part Number <span className="text-red-500 ml-1">*</span>
+                                            Part Number <span className="ml-1 text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
                                             value={formData.partNumber}
-                                            onChange={(e) => handleChange('partNumber', e.target.value.toUpperCase())}
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    'partNumber',
+                                                    e.target.value.toUpperCase()
+                                                )
+                                            }
                                             className={`w-full px-4 py-2.5 rounded-lg border font-mono ${errors.partNumber
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
@@ -311,70 +348,82 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             placeholder="e.g., BP-12345"
                                         />
                                         {errors.partNumber && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.partNumber}</p>
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.partNumber}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div>
-                                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                        <label className="flex items-center mb-2 text-sm font-medium text-gray-700">
                                             <Car className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Vehicle <span className="text-red-500 ml-1">*</span>
+                                            Vehicle <span className="ml-1 text-red-500">*</span>
                                         </label>
                                         <select
                                             value={formData.vehicleId}
-                                            onChange={(e) => handleChange('vehicleId', e.target.value)}
+                                            onChange={(e) =>
+                                                handleChange('vehicleId', e.target.value)
+                                            }
                                             className={`w-full px-4 py-2.5 rounded-lg border ${errors.vehicleId
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
                                                 } focus:ring-2 focus:border-transparent transition-all`}
                                         >
                                             <option value="">Select a vehicle</option>
-                                            {vehicles.map(v => (
+                                            {vehicles.map((v) => (
                                                 <option key={v.id} value={v.id}>
                                                     {v.make} {v.model} ({v.year}) - {v.vin}
                                                 </option>
                                             ))}
                                         </select>
                                         {errors.vehicleId && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.vehicleId}</p>
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.vehicleId}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div>
-                                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                        <label className="flex items-center mb-2 text-sm font-medium text-gray-700">
                                             <FolderOpen className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Category <span className="text-red-500 ml-1">*</span>
+                                            Category <span className="ml-1 text-red-500">*</span>
                                         </label>
                                         <select
                                             value={formData.categoryId}
-                                            onChange={(e) => handleChange('categoryId', e.target.value)}
+                                            onChange={(e) =>
+                                                handleChange('categoryId', e.target.value)
+                                            }
                                             className={`w-full px-4 py-2.5 rounded-lg border ${errors.categoryId
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
                                                 } focus:ring-2 focus:border-transparent transition-all`}
                                         >
                                             <option value="">Select a category</option>
-                                            {categories.map(c => (
+                                            {categories.map((c) => (
                                                 <option key={c.id} value={c.id}>
                                                     {c.name}
                                                 </option>
                                             ))}
                                         </select>
                                         {errors.categoryId && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.categoryId}</p>
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.categoryId}
+                                            </p>
                                         )}
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                    <label className="flex items-center mb-2 text-sm font-medium text-gray-700">
                                         <FileText className="w-4 h-4 mr-1.5 text-gray-400" />
                                         Description
                                     </label>
                                     <textarea
                                         rows={4}
                                         value={formData.description}
-                                        onChange={(e) => handleChange('description', e.target.value)}
+                                        onChange={(e) =>
+                                            handleChange('description', e.target.value)
+                                        }
                                         className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all resize-none"
                                         placeholder="Additional details about the part..."
                                     />
@@ -382,14 +431,15 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                             </div>
                         )}
 
-                        {/* Inventory Tab */}
-                        {activeTab === 'inventory' && (
+                        {/* Step 2: Pricing & Stock */}
+                        {currentStep === 2 && (
                             <div className="space-y-6 animate-fadeIn">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                     <div>
-                                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                        <label className="flex items-center mb-2 text-sm font-medium text-gray-700">
                                             <DollarSign className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Price (FCFA) <span className="text-red-500 ml-1">*</span>
+                                            Price (FCFA){' '}
+                                            <span className="ml-1 text-red-500">*</span>
                                         </label>
                                         <div className="relative">
                                             <input
@@ -397,32 +447,38 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                                 min={0}
                                                 step={100}
                                                 value={formData.price}
-                                                onChange={(e) => handleChange('price', e.target.value)}
+                                                onChange={(e) =>
+                                                    handleChange('price', e.target.value)
+                                                }
                                                 className={`w-full pl-12 pr-4 py-2.5 rounded-lg border ${errors.price
                                                         ? 'border-red-300 focus:ring-red-500'
                                                         : 'border-gray-300 focus:ring-green-500'
                                                     } focus:ring-2 focus:border-transparent transition-all`}
                                                 placeholder="0"
                                             />
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                                            <span className="absolute font-medium text-gray-500 -translate-y-1/2 left-3 top-1/2">
                                                 FCFA
                                             </span>
                                         </div>
                                         {errors.price && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.price}</p>
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.price}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div>
-                                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                        <label className="flex items-center mb-2 text-sm font-medium text-gray-700">
                                             <Archive className="w-4 h-4 mr-1.5 text-gray-400" />
-                                            Quantity <span className="text-red-500 ml-1">*</span>
+                                            Quantity <span className="ml-1 text-red-500">*</span>
                                         </label>
                                         <input
                                             type="number"
                                             min={0}
                                             value={formData.quantity}
-                                            onChange={(e) => handleChange('quantity', e.target.value)}
+                                            onChange={(e) =>
+                                                handleChange('quantity', e.target.value)
+                                            }
                                             className={`w-full px-4 py-2.5 rounded-lg border ${errors.quantity
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
@@ -430,18 +486,22 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             placeholder="0"
                                         />
                                         {errors.quantity && (
-                                            <p className="mt-1.5 text-xs text-red-600">{errors.quantity}</p>
-                                        )}
-                                        {formData.quantity && Number(formData.quantity) < 5 && Number(formData.quantity) > 0 && (
-                                            <p className="mt-1 text-xs text-yellow-600">
-                                                ⚠️ Low stock warning threshold is 5 units
+                                            <p className="mt-1.5 text-xs text-red-600">
+                                                {errors.quantity}
                                             </p>
                                         )}
+                                        {formData.quantity &&
+                                            Number(formData.quantity) < 5 &&
+                                            Number(formData.quantity) > 0 && (
+                                                <p className="mt-1 text-xs text-yellow-600">
+                                                    ⚠️ Low stock warning threshold is 5 units
+                                                </p>
+                                            )}
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                                    <label className="block mb-3 text-sm font-medium text-gray-700">
                                         Condition
                                     </label>
                                     <div className="grid grid-cols-3 gap-3">
@@ -458,31 +518,40 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                                     name="condition"
                                                     value={condition}
                                                     checked={formData.condition === condition}
-                                                    onChange={(e) => handleChange('condition', e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleChange('condition', e.target.value)
+                                                    }
                                                     className="sr-only"
                                                 />
-                                                <span className={`text-sm font-medium ${formData.condition === condition
-                                                        ? 'text-green-700'
-                                                        : 'text-gray-700'
-                                                    }`}>
+                                                <span
+                                                    className={`text-sm font-medium ${formData.condition === condition
+                                                            ? 'text-green-700'
+                                                            : 'text-gray-700'
+                                                        }`}
+                                                >
                                                     {condition}
                                                 </span>
                                                 {formData.condition === condition && (
-                                                    <Check className="absolute top-2 right-2 w-4 h-4 text-green-600" />
+                                                    <Check className="absolute w-4 h-4 text-green-600 top-2 right-2" />
                                                 )}
                                             </label>
                                         ))}
                                     </div>
                                 </div>
 
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div className="p-4 border border-blue-200 rounded-lg bg-blue-50">
                                     <div className="flex">
                                         <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                                         <div className="ml-3">
                                             <p className="text-sm text-blue-800">Inventory Tips</p>
                                             <ul className="mt-1 text-xs text-blue-700 space-y-0.5">
-                                                <li>• Set accurate quantities to track stock levels</li>
-                                                <li>• Parts with less than 5 units will trigger low stock alerts</li>
+                                                <li>
+                                                    • Set accurate quantities to track stock levels
+                                                </li>
+                                                <li>
+                                                    • Parts with less than 5 units will trigger low
+                                                    stock alerts
+                                                </li>
                                                 <li>• Use consistent pricing for similar parts</li>
                                             </ul>
                                         </div>
@@ -491,17 +560,22 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                             </div>
                         )}
 
-                        {/* Images Tab */}
-                        {activeTab === 'images' && (
+                        {/* Step 3: Images */}
+                        {currentStep === 3 && (
                             <div className="space-y-6 animate-fadeIn">
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div className="p-4 border border-blue-200 rounded-lg bg-blue-50">
                                     <div className="flex">
                                         <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                                         <div className="ml-3">
-                                            <p className="text-sm text-blue-800">Image Guidelines</p>
+                                            <p className="text-sm text-blue-800">
+                                                Image Guidelines
+                                            </p>
                                             <ul className="mt-1 text-xs text-blue-700 space-y-0.5">
                                                 <li>• Maximum {MAX_IMAGES} images allowed</li>
-                                                <li>• Accepted formats: JPEG, PNG, GIF, WebP (no SVG)</li>
+                                                <li>
+                                                    • Accepted formats: JPEG, PNG, GIF, WebP (no
+                                                    SVG)
+                                                </li>
                                                 <li>• Maximum file size: 5MB per image</li>
                                             </ul>
                                         </div>
@@ -519,13 +593,21 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                     >
                                         <input {...getInputProps()} />
                                         <div className="flex flex-col items-center">
-                                            <div className={`p-3 rounded-full ${isDragActive ? 'bg-green-100' : 'bg-gray-100'
-                                                }`}>
-                                                <Upload className={`w-8 h-8 ${isDragActive ? 'text-green-600' : 'text-gray-400'
-                                                    }`} />
+                                            <div
+                                                className={`p-3 rounded-full ${isDragActive ? 'bg-green-100' : 'bg-gray-100'
+                                                    }`}
+                                            >
+                                                <Upload
+                                                    className={`w-8 h-8 ${isDragActive
+                                                            ? 'text-green-600'
+                                                            : 'text-gray-400'
+                                                        }`}
+                                                />
                                             </div>
                                             <p className="mt-3 text-sm font-medium text-gray-700">
-                                                {isDragActive ? 'Drop images here' : 'Drag & drop images here'}
+                                                {isDragActive
+                                                    ? 'Drop images here'
+                                                    : 'Drag & drop images here'}
                                             </p>
                                             <p className="mt-1 text-xs text-gray-500">
                                                 or click to browse
@@ -539,14 +621,14 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
 
                                 {/* Image Preview */}
                                 {(existingImages.length > 0 || images.length > 0) && (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
                                         {existingImages.map((img, idx) => (
                                             <div key={img.id} className="relative group">
-                                                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                                                <div className="overflow-hidden bg-gray-100 rounded-lg aspect-square">
                                                     <img
                                                         src={img.url}
                                                         alt={`Part ${idx + 1}`}
-                                                        className="w-full h-full object-cover"
+                                                        className="object-cover w-full h-full"
                                                     />
                                                 </div>
                                                 <button
@@ -562,11 +644,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             const url = URL.createObjectURL(file);
                                             return (
                                                 <div key={idx} className="relative group">
-                                                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                                                    <div className="overflow-hidden bg-gray-100 rounded-lg aspect-square">
                                                         <img
                                                             src={url}
                                                             alt={`New ${idx + 1}`}
-                                                            className="w-full h-full object-cover"
+                                                            className="object-cover w-full h-full"
                                                         />
                                                     </div>
                                                     <button
@@ -585,8 +667,8 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                         )}
                     </div>
 
-                    {/* Footer */}
-                    <div className="border-t border-gray-200 bg-gray-50 px-6 py-4">
+                    {/* Footer with Navigation */}
+                    <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
                         <div className="flex items-center justify-between">
                             <div className="text-xs text-gray-500">
                                 {mode === 'edit' && part && (
@@ -594,6 +676,20 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                 )}
                             </div>
                             <div className="flex space-x-3">
+                                {/* Back Button (not shown on first step) */}
+                                {currentStep > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={handleBack}
+                                        className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 font-medium transition-colors flex items-center space-x-2"
+                                        disabled={isSubmitting}
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                        <span>Back</span>
+                                    </button>
+                                )}
+
+                                {/* Cancel Button */}
                                 <button
                                     type="button"
                                     onClick={onClose}
@@ -602,30 +698,49 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                 >
                                     Cancel
                                 </button>
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${mode === 'create'
-                                            ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600'
-                                            : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'
-                                        } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                            <span>Saving...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Check className="w-4 h-4" />
-                                            <span>{mode === 'create' ? 'Create Part' : 'Update Part'}</span>
-                                        </>
-                                    )}
-                                </button>
+
+                                {/* Next/Submit Button */}
+                                {currentStep < steps.length ? (
+                                    <button
+                                        type="button"
+                                        onClick={handleNext}
+                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${mode === 'create'
+                                                ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600'
+                                                : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'
+                                            }`}
+                                    >
+                                        <span>Next</span>
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={handleSubmit}
+                                        disabled={isSubmitting}
+                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${mode === 'create'
+                                                ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600'
+                                                : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'
+                                            } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                <span>Saving...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Check className="w-4 h-4" />
+                                                <span>
+                                                    {mode === 'create' ? 'Create Part' : 'Update Part'}
+                                                </span>
+                                            </>
+                                        )}
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );

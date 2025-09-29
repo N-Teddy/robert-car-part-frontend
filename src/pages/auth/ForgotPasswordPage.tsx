@@ -6,7 +6,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
-import { forgotPasswordSchema, type ForgotPasswordFormData } from '../../validation/auth.validation';
+import {
+    forgotPasswordSchema,
+    type ForgotPasswordFormData,
+} from '../../validation/auth.validation';
 import { useForgotPassword } from '../../hooks/authHook';
 import NotificationToast from '../../components/notifications/NotificationToast';
 
@@ -36,7 +39,9 @@ export const ForgotPasswordPage: React.FC = () => {
             });
         } catch (error: any) {
             setToast({
-                message: error.response?.data?.message || 'Failed to send reset email. Please try again.',
+                message:
+                    error.response?.data?.message ||
+                    'Failed to send reset email. Please try again.',
                 title: 'Email not Sent',
             });
         } finally {
@@ -46,12 +51,7 @@ export const ForgotPasswordPage: React.FC = () => {
 
     return (
         <>
-            {toast && (
-                <NotificationToast
-                   notification={toast}
-                    onClose={() => setToast(null)}
-                />
-            )}
+            {toast && <NotificationToast notification={toast} onClose={() => setToast(null)} />}
 
             <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8">
                 <div className="flex items-center gap-3 mb-6">
@@ -67,7 +67,8 @@ export const ForgotPasswordPage: React.FC = () => {
                 {!isSuccess ? (
                     <>
                         <p className="text-gray-600 mb-6">
-                            Enter your email address and we'll send you instructions to reset your password.
+                            Enter your email address and we'll send you instructions to reset your
+                            password.
                         </p>
 
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -98,7 +99,9 @@ export const ForgotPasswordPage: React.FC = () => {
                             <div className="flex items-start">
                                 <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                                 <div className="ml-3">
-                                    <p className="text-sm font-medium text-green-800">Check your email!</p>
+                                    <p className="text-sm font-medium text-green-800">
+                                        Check your email!
+                                    </p>
                                     <p className="text-sm text-green-700 mt-1">
                                         We've sent password reset instructions to{' '}
                                         <span className="font-medium">{getValues('email')}</span>

@@ -16,7 +16,7 @@ import {
     ChevronUp,
     Clock,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
 } from 'lucide-react';
 import type { OrderResponse } from '../../types/response/order';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -85,7 +85,9 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                                 <StatusBadge status={order.status} size="sm" />
                             </div>
                             <p className="text-sm text-gray-500 mt-1">
-                                {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+                                {formatDistanceToNow(new Date(order.createdAt), {
+                                    addSuffix: true,
+                                })}
                             </p>
                         </div>
                     </div>
@@ -145,7 +147,8 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         <div className="text-right">
                             <p className="text-xs text-gray-500">Delivery</p>
                             <p className="text-sm font-medium text-gray-900">
-                                {getDeliveryIcon()} {order.deliveryMethod === 'PICKUP' ? 'Pickup' : 'Shipping'}
+                                {getDeliveryIcon()}{' '}
+                                {order.deliveryMethod === 'PICKUP' ? 'Pickup' : 'Shipping'}
                             </p>
                         </div>
                     </div>
@@ -195,7 +198,10 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                     {isExpanded && (
                         <div className="mt-3 space-y-2 animate-fadeIn">
                             {order.items.map((item, index) => (
-                                <div key={item.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                                <div
+                                    key={item.id}
+                                    className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                                >
                                     <div className="flex items-center space-x-2">
                                         <span className="text-xs font-medium text-gray-500">
                                             {index + 1}.
@@ -208,7 +214,8 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                                                 {item.quantity} × {formatCurrency(item.unitPrice)}
                                                 {Number(item.discount) > 0 && (
                                                     <span className="text-red-600">
-                                                        {' '}- {formatCurrency(item.discount)}
+                                                        {' '}
+                                                        - {formatCurrency(item.discount)}
                                                     </span>
                                                 )}
                                             </p>

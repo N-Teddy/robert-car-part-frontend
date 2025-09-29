@@ -45,9 +45,7 @@ export const OrdersList: React.FC<OrdersListProps> = ({
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
                 <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-1">No orders found</h3>
-                <p className="text-sm text-gray-500">
-                    Create your first order to get started
-                </p>
+                <p className="text-sm text-gray-500">Create your first order to get started</p>
             </div>
         );
     }
@@ -125,11 +123,16 @@ export const OrdersList: React.FC<OrdersListProps> = ({
                                     <StatusBadge status={order.status} />
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.deliveryMethod === 'PICKUP'
-                                            ? 'bg-blue-100 text-blue-800'
-                                            : 'bg-purple-100 text-purple-800'
-                                        }`}>
-                                        {order.deliveryMethod === 'PICKUP' ? '🏪 Pickup' : '🚚 Shipping'}
+                                    <span
+                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                            order.deliveryMethod === 'PICKUP'
+                                                ? 'bg-blue-100 text-blue-800'
+                                                : 'bg-purple-100 text-purple-800'
+                                        }`}
+                                    >
+                                        {order.deliveryMethod === 'PICKUP'
+                                            ? '🏪 Pickup'
+                                            : '🚚 Shipping'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">

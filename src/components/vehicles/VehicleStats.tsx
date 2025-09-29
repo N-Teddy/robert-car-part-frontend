@@ -15,13 +15,11 @@ export const VehicleStats: React.FC<VehicleStatsProps> = ({ makeModelStats }) =>
     }
 
     // Sort and get top 5
-    const topMakes = makeModelStats.ByMake
-        ?.sort((a, b) => Number(b.count) - Number(a.count))
-        .slice(0, 5) || [];
+    const topMakes =
+        makeModelStats.ByMake?.sort((a, b) => Number(b.count) - Number(a.count)).slice(0, 5) || [];
 
-    const topModels = makeModelStats.ByModel
-        ?.sort((a, b) => Number(b.count) - Number(a.count))
-        .slice(0, 5) || [];
+    const topModels =
+        makeModelStats.ByModel?.sort((a, b) => Number(b.count) - Number(a.count)).slice(0, 5) || [];
 
     const maxMakeCount = topMakes.length > 0 ? Number(topMakes[0].count) : 1;
     const maxModelCount = topModels.length > 0 ? Number(topModels[0].count) : 1;

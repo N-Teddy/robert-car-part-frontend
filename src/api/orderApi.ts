@@ -1,9 +1,5 @@
 import { apiClient } from '../provider/AxiosClient';
-import type {
-    CreateOrderRequest,
-    UpdateOrderRequest,
-    OrderQueryDto,
-} from '../types/request/order';
+import type { CreateOrderRequest, UpdateOrderRequest, OrderQueryDto } from '../types/request/order';
 import type {
     OrderResponse,
     OrderStatsResponse,

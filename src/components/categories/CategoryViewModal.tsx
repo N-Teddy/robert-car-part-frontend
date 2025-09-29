@@ -9,7 +9,7 @@ import {
     Trash2,
     ChevronRight,
     Image as ImageIcon,
-    FolderOpen
+    FolderOpen,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import type { CategoryWithChildren } from '../../types/request/category';
@@ -96,7 +96,9 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
                         {/* Description */}
                         {category.description && (
                             <div className="mb-6">
-                                <h3 className="text-sm font-semibold text-gray-900 mb-2">Description</h3>
+                                <h3 className="text-sm font-semibold text-gray-900 mb-2">
+                                    Description
+                                </h3>
                                 <p className="text-sm text-gray-600">{category.description}</p>
                             </div>
                         )}
@@ -108,7 +110,9 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
                                     <Package className="w-5 h-5 text-blue-600" />
                                     <div>
                                         <p className="text-xs text-gray-500">Products</p>
-                                        <p className="text-lg font-semibold text-gray-900">{productsCount}</p>
+                                        <p className="text-lg font-semibold text-gray-900">
+                                            {productsCount}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -131,7 +135,9 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
                                     <div>
                                         <p className="text-xs text-gray-500">Created</p>
                                         <p className="text-sm font-semibold text-gray-900">
-                                            {formatDistanceToNow(new Date(category.createdAt), { addSuffix: true })}
+                                            {formatDistanceToNow(new Date(category.createdAt), {
+                                                addSuffix: true,
+                                            })}
                                         </p>
                                     </div>
                                 </div>
@@ -143,7 +149,9 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
                                     <div>
                                         <p className="text-xs text-gray-500">Updated</p>
                                         <p className="text-sm font-semibold text-gray-900">
-                                            {formatDistanceToNow(new Date(category.updatedAt), { addSuffix: true })}
+                                            {formatDistanceToNow(new Date(category.updatedAt), {
+                                                addSuffix: true,
+                                            })}
                                         </p>
                                     </div>
                                 </div>
@@ -153,7 +161,9 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
                         {/* Subcategories */}
                         {hasChildren && (
                             <div>
-                                <h3 className="text-sm font-semibold text-gray-900 mb-3">Subcategories</h3>
+                                <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                                    Subcategories
+                                </h3>
                                 <div className="space-y-2">
                                     {category.children.map((child) => (
                                         <div
@@ -173,7 +183,9 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
                                                     </div>
                                                 )}
                                                 <div>
-                                                    <p className="text-sm font-medium text-gray-900">{child.name}</p>
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                        {child.name}
+                                                    </p>
                                                     {child.description && (
                                                         <p className="text-xs text-gray-500 truncate max-w-xs">
                                                             {child.description}
@@ -183,7 +195,9 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
                                             </div>
                                             <div className="flex items-center space-x-2 text-xs text-gray-500">
                                                 {(child as any).productsCount > 0 && (
-                                                    <span>{(child as any).productsCount} items</span>
+                                                    <span>
+                                                        {(child as any).productsCount} items
+                                                    </span>
                                                 )}
                                                 {child.children && child.children.length > 0 && (
                                                     <span>{child.children.length} subs</span>
@@ -199,7 +213,10 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
                     {/* Footer */}
                     <div className="bg-gray-50 px-6 py-4 flex justify-between items-center">
                         <div className="text-xs text-gray-500">
-                            ID: <span className="font-mono text-gray-700">{category.id.slice(0, 8)}...</span>
+                            ID:{' '}
+                            <span className="font-mono text-gray-700">
+                                {category.id.slice(0, 8)}...
+                            </span>
                         </div>
                         <div className="flex space-x-2">
                             <Button
@@ -221,11 +238,7 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
                                     Delete
                                 </Button>
                             )}
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={onClose}
-                            >
+                            <Button variant="ghost" size="sm" onClick={onClose}>
                                 Close
                             </Button>
                         </div>

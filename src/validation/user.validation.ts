@@ -2,14 +2,18 @@
 import { z } from 'zod';
 
 // Schema for file upload validation
-const imageSchema = z.instanceof(File).optional()
+const imageSchema = z
+    .instanceof(File)
+    .optional()
     .refine((file) => {
         if (!file) return true; // Optional, so no file is acceptable
         return file.size <= 5 * 1024 * 1024; // 5MB max
     }, 'File size must be less than 5MB')
     .refine((file) => {
         if (!file) return true;
-        return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'].includes(file.type);
+        return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'].includes(
+            file.type
+        );
     }, 'File must be a valid image (JPEG, PNG, GIF, WebP)');
 
 // Alternative schema for when image is a string (URL) from existing data
@@ -21,10 +25,7 @@ export const updateProfileSchema = z.object({
         .min(3, 'Full name must be at least 3 characters')
         .max(100, 'Full name must be less than 100 characters')
         .optional(),
-    email: z
-        .string()
-        .email('Invalid email address')
-        .optional(),
+    email: z.string().email('Invalid email address').optional(),
     phoneNumber: z
         .string()
         .regex(/^\+?[\d\s-()]+$/, 'Invalid phone number format')
@@ -44,16 +45,15 @@ export const updateUserSchema = z.object({
         .min(3, 'Full name must be at least 3 characters')
         .max(100, 'Full name must be less than 100 characters')
         .optional(),
-    email: z
-        .string()
-        .email('Invalid email address')
-        .optional(),
+    email: z.string().email('Invalid email address').optional(),
     phoneNumber: z
         .string()
         .regex(/^\+?[\d\s-()]+$/, 'Invalid phone number format')
         .min(9, 'Phone number must be at least 9 digits')
         .optional(),
-    role: z.enum(['ADMIN', 'MANAGER', 'DEV', 'SALES', 'STAFF', 'CUSTOMER', 'UNKNOWN'] as const).optional(),
+    role: z
+        .enum(['ADMIN', 'MANAGER', 'DEV', 'SALES', 'STAFF', 'CUSTOMER', 'UNKNOWN'] as const)
+        .optional(),
     isActive: z.boolean().optional(),
     image: imageSchema.or(imageUrlSchema).optional(), // Use 'image' instead of 'avatar'
 });
@@ -64,10 +64,7 @@ export const createUserSchema = z.object({
         .min(1, 'Full name is required')
         .min(3, 'Full name must be at least 3 characters')
         .max(100, 'Full name must be less than 100 characters'),
-    email: z
-        .string()
-        .min(1, 'Email is required')
-        .email('Invalid email address'),
+    email: z.string().min(1, 'Email is required').email('Invalid email address'),
     phoneNumber: z
         .string()
         .min(1, 'Phone number is required')

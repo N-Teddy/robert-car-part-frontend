@@ -39,8 +39,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                                 {vehicle.images.slice(0, 5).map((_, idx) => (
                                     <div
                                         key={idx}
-                                        className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-white' : 'bg-white/60'
-                                            }`}
+                                        className={`w-2 h-2 rounded-full ${
+                                            idx === 0 ? 'bg-white' : 'bg-white/60'
+                                        }`}
                                     />
                                 ))}
                             </div>
@@ -59,10 +60,13 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
 
                 {/* Status Badge */}
                 <div className="absolute top-2 right-2">
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${vehicle.isPartedOut
-                            ? 'bg-orange-100 text-orange-700'
-                            : 'bg-green-100 text-green-700'
-                        }`}>
+                    <span
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                            vehicle.isPartedOut
+                                ? 'bg-orange-100 text-orange-700'
+                                : 'bg-green-100 text-green-700'
+                        }`}
+                    >
                         {vehicle.isPartedOut ? '🔧 Parted Out' : '✅ Active'}
                     </span>
                 </div>
@@ -86,7 +90,9 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                     </div>
                     <div className="flex items-center text-sm text-gray-600">
                         <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                        <span>Purchased: {format(new Date(vehicle.purchaseDate), 'MMM dd, yyyy')}</span>
+                        <span>
+                            Purchased: {format(new Date(vehicle.purchaseDate), 'MMM dd, yyyy')}
+                        </span>
                     </div>
                     {vehicle.auctionName && (
                         <div className="flex items-center text-sm text-gray-600">
@@ -123,10 +129,11 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
                     </div>
                     <button
                         onClick={() => onMarkAsPartedOut(vehicle)}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${vehicle.isPartedOut
+                        className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                            vehicle.isPartedOut
                                 ? 'bg-green-100 text-green-700 hover:bg-green-200'
                                 : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                            }`}
+                        }`}
                     >
                         {vehicle.isPartedOut ? 'Mark Active' : 'Mark Parted'}
                     </button>

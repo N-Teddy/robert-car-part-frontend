@@ -23,8 +23,10 @@ export const OrderStats: React.FC<OrderStatsProps> = ({ stats }) => {
         SHIPPING: { bg: 'bg-indigo-100', text: 'text-indigo-700', bar: 'bg-indigo-500' },
     };
 
-    const maxStatusCount = Math.max(...(stats.ordersByStatus?.map(s => s.count) || [1]));
-    const maxDeliveryCount = Math.max(...(stats.ordersByDeliveryMethod?.map(d => d.count) || [1]));
+    const maxStatusCount = Math.max(...(stats.ordersByStatus?.map((s) => s.count) || [1]));
+    const maxDeliveryCount = Math.max(
+        ...(stats.ordersByDeliveryMethod?.map((d) => d.count) || [1])
+    );
 
     return (
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -42,7 +44,9 @@ export const OrderStats: React.FC<OrderStatsProps> = ({ stats }) => {
                         return (
                             <div key={item.status}>
                                 <div className="flex items-center justify-between mb-1">
-                                    <span className={`text-sm font-medium ${colors.text} ${colors.bg} px-2 py-1 rounded`}>
+                                    <span
+                                        className={`text-sm font-medium ${colors.text} ${colors.bg} px-2 py-1 rounded`}
+                                    >
                                         {item.status}
                                     </span>
                                     <div className="text-right">
@@ -80,7 +84,9 @@ export const OrderStats: React.FC<OrderStatsProps> = ({ stats }) => {
                         return (
                             <div key={item.method}>
                                 <div className="flex items-center justify-between mb-1">
-                                    <span className={`text-sm font-medium ${colors.text} ${colors.bg} px-2 py-1 rounded`}>
+                                    <span
+                                        className={`text-sm font-medium ${colors.text} ${colors.bg} px-2 py-1 rounded`}
+                                    >
                                         {item.method === 'PICKUP' ? '🏪 Pickup' : '🚚 Shipping'}
                                     </span>
                                     <div className="text-right">
@@ -95,7 +101,9 @@ export const OrderStats: React.FC<OrderStatsProps> = ({ stats }) => {
                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                     <div
                                         className={`${colors.bar} h-2 rounded-full transition-all duration-500`}
-                                        style={{ width: `${(item.count / maxDeliveryCount) * 100}%` }}
+                                        style={{
+                                            width: `${(item.count / maxDeliveryCount) * 100}%`,
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -108,7 +116,9 @@ export const OrderStats: React.FC<OrderStatsProps> = ({ stats }) => {
                     <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-xl p-4 border border-purple-200">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-purple-600 font-medium">Average Order Value</p>
+                                <p className="text-sm text-purple-600 font-medium">
+                                    Average Order Value
+                                </p>
                                 <p className="text-2xl font-bold text-purple-900 mt-1">
                                     {formatCurrency(stats.averageOrderValue || 0)}
                                 </p>

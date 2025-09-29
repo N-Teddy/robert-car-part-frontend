@@ -27,18 +27,26 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
         return (
             <div className="fixed inset-0 z-50 overflow-y-auto">
                 <div className="flex items-center justify-center min-h-screen px-4">
-                    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm" onClick={onClose} />
+                    <div
+                        className="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm"
+                        onClick={onClose}
+                    />
                     <div className="relative bg-white rounded-xl max-w-md w-full p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Cannot Delete Category</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                            Cannot Delete Category
+                        </h3>
                         <p className="text-gray-600 mb-4">
                             This category cannot be deleted because it:
                         </p>
                         <ul className="list-disc list-inside text-sm text-gray-600 mb-6">
-                            {hasChildren && <li>Contains {category.children.length} subcategories</li>}
+                            {hasChildren && (
+                                <li>Contains {category.children.length} subcategories</li>
+                            )}
                             {productsCount > 0 && <li>Has {productsCount} products</li>}
                         </ul>
                         <p className="text-sm text-gray-500 mb-6">
-                            Please remove all subcategories and products before deleting this category.
+                            Please remove all subcategories and products before deleting this
+                            category.
                         </p>
                         <Button variant="primary" onClick={onClose} className="w-full">
                             Understood
@@ -52,7 +60,10 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen px-4">
-                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm" onClick={onClose} />
+                <div
+                    className="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm"
+                    onClick={onClose}
+                />
 
                 <div className="relative bg-white rounded-xl max-w-md w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
                     {/* Header */}
@@ -96,9 +107,13 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
                                     </div>
                                 )}
                                 <div className="flex-1">
-                                    <p className="text-sm font-medium text-gray-900">{category.name}</p>
+                                    <p className="text-sm font-medium text-gray-900">
+                                        {category.name}
+                                    </p>
                                     {category.description && (
-                                        <p className="text-xs text-gray-500 truncate">{category.description}</p>
+                                        <p className="text-xs text-gray-500 truncate">
+                                            {category.description}
+                                        </p>
                                     )}
                                 </div>
                             </div>
@@ -114,7 +129,10 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
                                         Are you absolutely sure?
                                     </h4>
                                     <div className="mt-1 text-xs text-amber-700">
-                                        <p>This will permanently delete the category "{category.name}".</p>
+                                        <p>
+                                            This will permanently delete the category "
+                                            {category.name}".
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -123,11 +141,7 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
 
                     {/* Footer */}
                     <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={onClose}
-                        >
+                        <Button variant="outline" size="sm" onClick={onClose}>
                             Cancel
                         </Button>
                         <Button

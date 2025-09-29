@@ -86,7 +86,9 @@ export const PartStats: React.FC<PartStatsProps> = ({ categoryStats }) => {
                             const valuePercentage = (Number(stat.totalValue) / totalValue) * 100;
                             return (
                                 <div key={stat.categoryName} className="bg-gray-50 rounded-lg p-3">
-                                    <p className="text-xs text-gray-600 truncate">{stat.categoryName}</p>
+                                    <p className="text-xs text-gray-600 truncate">
+                                        {stat.categoryName}
+                                    </p>
                                     <p className="text-sm font-semibold text-gray-900 mt-1">
                                         {formatCurrency(stat.totalValue)}
                                     </p>

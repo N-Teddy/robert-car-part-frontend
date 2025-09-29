@@ -11,7 +11,7 @@ import {
     User,
     FileText,
     Settings,
-    ChevronRight
+    ChevronRight,
 } from 'lucide-react';
 import type { Notification } from '../../types/request/notification';
 import { formatDistanceToNow } from 'date-fns';
@@ -34,18 +34,18 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
     const notifications = data?.items || [];
 
     const getNotificationIcon = (type: string) => {
-        const iconClass = "w-5 h-5";
+        const iconClass = 'w-5 h-5';
         const iconMap: Record<string, React.ReactNode> = {
-            'PART_LOW_STOCK': <AlertTriangle className={`${iconClass} text-yellow-500`} />,
-            'PART_CREATED': <Package className={`${iconClass} text-blue-500`} />,
-            'PART_UPDATED': <Package className={`${iconClass} text-blue-500`} />,
-            'PART_SOLD': <Package className={`${iconClass} text-green-500`} />,
-            'ORDER_CREATED': <ShoppingCart className={`${iconClass} text-indigo-500`} />,
-            'ORDER_COMPLETED': <ShoppingCart className={`${iconClass} text-green-500`} />,
-            'ORDER_CANCELLED': <ShoppingCart className={`${iconClass} text-red-500`} />,
-            'USER_UPDATED': <User className={`${iconClass} text-purple-500`} />,
-            'REPORT_READY': <FileText className={`${iconClass} text-indigo-500`} />,
-            'SYSTEM_UPDATE': <Settings className={`${iconClass} text-gray-500`} />,
+            PART_LOW_STOCK: <AlertTriangle className={`${iconClass} text-yellow-500`} />,
+            PART_CREATED: <Package className={`${iconClass} text-blue-500`} />,
+            PART_UPDATED: <Package className={`${iconClass} text-blue-500`} />,
+            PART_SOLD: <Package className={`${iconClass} text-green-500`} />,
+            ORDER_CREATED: <ShoppingCart className={`${iconClass} text-indigo-500`} />,
+            ORDER_COMPLETED: <ShoppingCart className={`${iconClass} text-green-500`} />,
+            ORDER_CANCELLED: <ShoppingCart className={`${iconClass} text-red-500`} />,
+            USER_UPDATED: <User className={`${iconClass} text-purple-500`} />,
+            REPORT_READY: <FileText className={`${iconClass} text-indigo-500`} />,
+            SYSTEM_UPDATE: <Settings className={`${iconClass} text-gray-500`} />,
         };
         return iconMap[type] || <Bell className={`${iconClass} text-gray-500`} />;
     };
@@ -75,7 +75,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
                         <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
                     </div>
                     <div className="flex items-center space-x-2">
-                        {notifications.some(n => !n.isRead) && (
+                        {notifications.some((n) => !n.isRead) && (
                             <button
                                 onClick={markAllAsRead}
                                 className="text-xs text-red-600 hover:text-red-700 font-medium flex items-center space-x-1"
@@ -115,7 +115,9 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
                     <div className="p-8 text-center">
                         <Bell className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                         <p className="text-sm text-gray-500">No notifications yet</p>
-                        <p className="text-xs text-gray-400 mt-1">We'll notify you when something arrives</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                            We'll notify you when something arrives
+                        </p>
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-100">
@@ -124,14 +126,18 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
                                 key={notification.id}
                                 to={getNotificationLink(notification)}
                                 onClick={() => handleNotificationClick(notification)}
-                                className={`block px-4 py-3 hover:bg-gray-50 transition-colors ${!notification.isRead ? 'bg-blue-50/50' : ''
-                                    }`}
+                                className={`block px-4 py-3 hover:bg-gray-50 transition-colors ${
+                                    !notification.isRead ? 'bg-blue-50/50' : ''
+                                }`}
                             >
                                 <div className="flex space-x-3">
                                     {/* Icon */}
                                     <div className="flex-shrink-0">
-                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${!notification.isRead ? 'bg-blue-100' : 'bg-gray-100'
-                                            }`}>
+                                        <div
+                                            className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                                !notification.isRead ? 'bg-blue-100' : 'bg-gray-100'
+                                            }`}
+                                        >
                                             {getNotificationIcon(notification.type)}
                                         </div>
                                     </div>
@@ -140,8 +146,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
-                                                <p className={`text-sm ${!notification.isRead ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'
-                                                    }`}>
+                                                <p
+                                                    className={`text-sm ${
+                                                        !notification.isRead
+                                                            ? 'font-semibold text-gray-900'
+                                                            : 'font-medium text-gray-700'
+                                                    }`}
+                                                >
                                                     {notification.title}
                                                 </p>
                                                 <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
@@ -150,7 +161,10 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
                                                 <div className="flex items-center mt-1 space-x-2">
                                                     <Clock className="w-3 h-3 text-gray-400" />
                                                     <span className="text-xs text-gray-500">
-                                                        {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                                                        {formatDistanceToNow(
+                                                            new Date(notification.createdAt),
+                                                            { addSuffix: true }
+                                                        )}
                                                     </span>
                                                 </div>
                                             </div>

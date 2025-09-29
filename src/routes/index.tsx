@@ -26,7 +26,6 @@ export const AppRoutes = () => {
             </Route>
             <Route path="/" element={<Navigate to="/login" replace />} />
 
-
             {/* Add your protected routes here */}
             <Route
                 element={

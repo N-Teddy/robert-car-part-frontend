@@ -56,22 +56,36 @@ export const PartsList: React.FC<PartsListProps> = ({
 
     const getStockStatusBadge = (quantity: number) => {
         if (quantity === 0) {
-            return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">Out of Stock</span>;
+            return (
+                <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">
+                    Out of Stock
+                </span>
+            );
         } else if (quantity < 5) {
-            return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">Low Stock</span>;
+            return (
+                <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">
+                    Low Stock
+                </span>
+            );
         }
-        return <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">In Stock</span>;
+        return (
+            <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+                In Stock
+            </span>
+        );
     };
 
     const getConditionBadge = (condition: string | null) => {
         if (!condition) return null;
         const colors = {
-            'New': 'bg-blue-100 text-blue-700',
-            'Used': 'bg-gray-100 text-gray-700',
-            'Refurbished': 'bg-purple-100 text-purple-700',
+            New: 'bg-blue-100 text-blue-700',
+            Used: 'bg-gray-100 text-gray-700',
+            Refurbished: 'bg-purple-100 text-purple-700',
         };
         return (
-            <span className={`px-2 py-1 text-xs font-medium rounded-full ${colors[condition as keyof typeof colors] || 'bg-gray-100 text-gray-700'}`}>
+            <span
+                className={`px-2 py-1 text-xs font-medium rounded-full ${colors[condition as keyof typeof colors] || 'bg-gray-100 text-gray-700'}`}
+            >
                 {condition}
             </span>
         );
@@ -111,8 +125,8 @@ export const PartsList: React.FC<PartsListProps> = ({
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {parts.map((part) => {
-                            const vehicle = vehicles.find(v => v.id === part.vehicleId);
-                            const category = categories.find(c => c.id === part.categoryId);
+                            const vehicle = vehicles.find((v) => v.id === part.vehicleId);
+                            const category = categories.find((c) => c.id === part.categoryId);
 
                             return (
                                 <tr key={part.id} className="hover:bg-gray-50">
@@ -143,7 +157,9 @@ export const PartsList: React.FC<PartsListProps> = ({
                                         {vehicle ? (
                                             <div className="text-sm text-gray-900">
                                                 {vehicle.make} {vehicle.model}
-                                                <div className="text-xs text-gray-500">{vehicle.year}</div>
+                                                <div className="text-xs text-gray-500">
+                                                    {vehicle.year}
+                                                </div>
                                             </div>
                                         ) : (
                                             <span className="text-sm text-gray-500">-</span>

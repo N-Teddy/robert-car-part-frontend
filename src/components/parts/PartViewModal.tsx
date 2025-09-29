@@ -19,7 +19,7 @@ import {
     QrCode,
     Clock,
     FileText,
-    Info
+    Info,
 } from 'lucide-react';
 import type { Part } from '../../types/request/part';
 import type { Vehicle } from '../../types/request/vehicle';
@@ -74,11 +74,26 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
 
     const getStockStatus = () => {
         if (part.quantity === 0) {
-            return { color: 'red', text: 'Out of Stock', bgColor: 'bg-red-50', borderColor: 'border-red-200' };
+            return {
+                color: 'red',
+                text: 'Out of Stock',
+                bgColor: 'bg-red-50',
+                borderColor: 'border-red-200',
+            };
         } else if (part.quantity < 5) {
-            return { color: 'yellow', text: 'Low Stock', bgColor: 'bg-yellow-50', borderColor: 'border-yellow-200' };
+            return {
+                color: 'yellow',
+                text: 'Low Stock',
+                bgColor: 'bg-yellow-50',
+                borderColor: 'border-yellow-200',
+            };
         }
-        return { color: 'green', text: 'In Stock', bgColor: 'bg-green-50', borderColor: 'border-green-200' };
+        return {
+            color: 'green',
+            text: 'In Stock',
+            bgColor: 'bg-green-50',
+            borderColor: 'border-green-200',
+        };
     };
 
     const stockStatus = getStockStatus();
@@ -103,9 +118,12 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
                     {/* Header */}
                     <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
                         <div className="absolute inset-0 opacity-10">
-                            <div className="absolute inset-0" style={{
-                                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                            }} />
+                            <div
+                                className="absolute inset-0"
+                                style={{
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                                }}
+                            />
                         </div>
 
                         <div className="relative px-6 py-5">
@@ -210,10 +228,11 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
                                                 <button
                                                     key={img.id}
                                                     onClick={() => setCurrentImageIndex(idx)}
-                                                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${idx === currentImageIndex
-                                                        ? 'border-green-500 shadow-lg scale-105'
-                                                        : 'border-gray-300 hover:border-gray-400'
-                                                        }`}
+                                                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                                                        idx === currentImageIndex
+                                                            ? 'border-green-500 shadow-lg scale-105'
+                                                            : 'border-gray-300 hover:border-gray-400'
+                                                    }`}
                                                 >
                                                     <img
                                                         src={img.url}
@@ -241,17 +260,34 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
                         <div className="p-6 space-y-6">
                             {/* Stock Alert */}
                             {stockStatus.color !== 'green' && (
-                                <div className={`${stockStatus.bgColor} ${stockStatus.borderColor} border rounded-lg p-4`}>
+                                <div
+                                    className={`${stockStatus.bgColor} ${stockStatus.borderColor} border rounded-lg p-4`}
+                                >
                                     <div className="flex items-start">
-                                        <AlertTriangle className={`w-5 h-5 ${stockStatus.color === 'red' ? 'text-red-600' : 'text-yellow-600'
-                                            } mt-0.5 mr-3`} />
+                                        <AlertTriangle
+                                            className={`w-5 h-5 ${
+                                                stockStatus.color === 'red'
+                                                    ? 'text-red-600'
+                                                    : 'text-yellow-600'
+                                            } mt-0.5 mr-3`}
+                                        />
                                         <div>
-                                            <p className={`font-semibold ${stockStatus.color === 'red' ? 'text-red-900' : 'text-yellow-900'
-                                                }`}>
+                                            <p
+                                                className={`font-semibold ${
+                                                    stockStatus.color === 'red'
+                                                        ? 'text-red-900'
+                                                        : 'text-yellow-900'
+                                                }`}
+                                            >
                                                 {stockStatus.text}
                                             </p>
-                                            <p className={`text-sm mt-1 ${stockStatus.color === 'red' ? 'text-red-700' : 'text-yellow-700'
-                                                }`}>
+                                            <p
+                                                className={`text-sm mt-1 ${
+                                                    stockStatus.color === 'red'
+                                                        ? 'text-red-700'
+                                                        : 'text-yellow-700'
+                                                }`}
+                                            >
                                                 {stockStatus.color === 'red'
                                                     ? 'This part is currently out of stock and needs immediate restocking.'
                                                     : `Only ${part.quantity} units remaining. Consider restocking soon.`}
@@ -266,7 +302,9 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
                                 <div className="bg-gradient-to-br from-green-50 to-green-100/50 rounded-xl p-4 border border-green-200">
                                     <div className="flex items-start justify-between">
                                         <div>
-                                            <p className="text-sm text-green-600 font-medium">Price</p>
+                                            <p className="text-sm text-green-600 font-medium">
+                                                Price
+                                            </p>
                                             <p className="text-2xl font-bold text-green-900 mt-1">
                                                 {formatCurrency(part.price)}
                                             </p>
@@ -277,29 +315,58 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
                                     </div>
                                 </div>
 
-                                <div className={`bg-gradient-to-br ${stockStatus.color === 'green'
-                                    ? 'from-blue-50 to-blue-100/50 border-blue-200'
-                                    : stockStatus.color === 'yellow'
-                                        ? 'from-yellow-50 to-yellow-100/50 border-yellow-200'
-                                        : 'from-red-50 to-red-100/50 border-red-200'
-                                    } rounded-xl p-4 border`}>
+                                <div
+                                    className={`bg-gradient-to-br ${
+                                        stockStatus.color === 'green'
+                                            ? 'from-blue-50 to-blue-100/50 border-blue-200'
+                                            : stockStatus.color === 'yellow'
+                                              ? 'from-yellow-50 to-yellow-100/50 border-yellow-200'
+                                              : 'from-red-50 to-red-100/50 border-red-200'
+                                    } rounded-xl p-4 border`}
+                                >
                                     <div className="flex items-start justify-between">
                                         <div>
-                                            <p className={`text-sm font-medium ${stockStatus.color === 'green' ? 'text-blue-600' :
-                                                stockStatus.color === 'yellow' ? 'text-yellow-600' : 'text-red-600'
-                                                }`}>Stock Level</p>
-                                            <p className={`text-2xl font-bold mt-1 ${stockStatus.color === 'green' ? 'text-blue-900' :
-                                                stockStatus.color === 'yellow' ? 'text-yellow-900' : 'text-red-900'
-                                                }`}>
+                                            <p
+                                                className={`text-sm font-medium ${
+                                                    stockStatus.color === 'green'
+                                                        ? 'text-blue-600'
+                                                        : stockStatus.color === 'yellow'
+                                                          ? 'text-yellow-600'
+                                                          : 'text-red-600'
+                                                }`}
+                                            >
+                                                Stock Level
+                                            </p>
+                                            <p
+                                                className={`text-2xl font-bold mt-1 ${
+                                                    stockStatus.color === 'green'
+                                                        ? 'text-blue-900'
+                                                        : stockStatus.color === 'yellow'
+                                                          ? 'text-yellow-900'
+                                                          : 'text-red-900'
+                                                }`}
+                                            >
                                                 {part.quantity} units
                                             </p>
                                         </div>
-                                        <div className={`p-2 rounded-lg ${stockStatus.color === 'green' ? 'bg-blue-200/50' :
-                                            stockStatus.color === 'yellow' ? 'bg-yellow-200/50' : 'bg-red-200/50'
-                                            }`}>
-                                            <Archive className={`w-5 h-5 ${stockStatus.color === 'green' ? 'text-blue-600' :
-                                                stockStatus.color === 'yellow' ? 'text-yellow-600' : 'text-red-600'
-                                                }`} />
+                                        <div
+                                            className={`p-2 rounded-lg ${
+                                                stockStatus.color === 'green'
+                                                    ? 'bg-blue-200/50'
+                                                    : stockStatus.color === 'yellow'
+                                                      ? 'bg-yellow-200/50'
+                                                      : 'bg-red-200/50'
+                                            }`}
+                                        >
+                                            <Archive
+                                                className={`w-5 h-5 ${
+                                                    stockStatus.color === 'green'
+                                                        ? 'text-blue-600'
+                                                        : stockStatus.color === 'yellow'
+                                                          ? 'text-yellow-600'
+                                                          : 'text-red-600'
+                                                }`}
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -308,7 +375,9 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
                                     <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-xl p-4 border border-purple-200">
                                         <div className="flex items-start justify-between">
                                             <div>
-                                                <p className="text-sm text-purple-600 font-medium">Condition</p>
+                                                <p className="text-sm text-purple-600 font-medium">
+                                                    Condition
+                                                </p>
                                                 <p className="text-lg font-bold text-purple-900 mt-1">
                                                     {part.condition}
                                                 </p>
@@ -343,14 +412,18 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
                                     </h3>
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                            <span className="text-sm text-gray-600">Part Number</span>
+                                            <span className="text-sm text-gray-600">
+                                                Part Number
+                                            </span>
                                             <span className="text-sm font-mono font-medium text-gray-900">
                                                 {part.partNumber}
                                             </span>
                                         </div>
                                         {vehicle && (
                                             <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                                <span className="text-sm text-gray-600">Vehicle</span>
+                                                <span className="text-sm text-gray-600">
+                                                    Vehicle
+                                                </span>
                                                 <span className="text-sm font-medium text-gray-900">
                                                     {vehicle.make} {vehicle.model} ({vehicle.year})
                                                 </span>
@@ -358,14 +431,18 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
                                         )}
                                         {category && (
                                             <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                                <span className="text-sm text-gray-600">Category</span>
+                                                <span className="text-sm text-gray-600">
+                                                    Category
+                                                </span>
                                                 <span className="text-sm font-medium text-gray-900">
                                                     {category.name}
                                                 </span>
                                             </div>
                                         )}
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                            <span className="text-sm text-gray-600">Total Value</span>
+                                            <span className="text-sm text-gray-600">
+                                                Total Value
+                                            </span>
                                             <span className="text-sm font-medium text-gray-900">
                                                 {formatCurrency(Number(part.price) * part.quantity)}
                                             </span>
@@ -386,7 +463,9 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                            <span className="text-sm text-gray-600">Last Updated</span>
+                                            <span className="text-sm text-gray-600">
+                                                Last Updated
+                                            </span>
                                             <span className="text-sm font-medium text-gray-900">
                                                 {format(new Date(part.updatedAt), 'MMM dd, yyyy')}
                                             </span>
@@ -394,7 +473,9 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">
                                             <span className="text-sm text-gray-600">Age</span>
                                             <span className="text-sm font-medium text-gray-900">
-                                                {formatDistanceToNow(new Date(part.createdAt), { addSuffix: true })}
+                                                {formatDistanceToNow(new Date(part.createdAt), {
+                                                    addSuffix: true,
+                                                })}
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between py-2 border-b border-gray-100">

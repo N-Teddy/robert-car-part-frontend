@@ -87,7 +87,11 @@ export const VehicleFilters: React.FC<VehicleFiltersProps> = ({
                             Filters
                             {hasActiveFilters && (
                                 <span className="ml-1 px-1.5 py-0.5 text-xs bg-red-600 text-white rounded-full">
-                                    {[make, model, minYear, maxYear, status !== 'all'].filter(Boolean).length}
+                                    {
+                                        [make, model, minYear, maxYear, status !== 'all'].filter(
+                                            Boolean
+                                        ).length
+                                    }
                                 </span>
                             )}
                         </Button>
@@ -95,20 +99,22 @@ export const VehicleFilters: React.FC<VehicleFiltersProps> = ({
                         <div className="flex items-center bg-gray-100 rounded-lg p-1">
                             <button
                                 onClick={() => onViewModeChange('grid')}
-                                className={`p-2 rounded transition-colors ${viewMode === 'grid'
+                                className={`p-2 rounded transition-colors ${
+                                    viewMode === 'grid'
                                         ? 'bg-white text-red-600 shadow-sm'
                                         : 'text-gray-500 hover:text-gray-700'
-                                    }`}
+                                }`}
                                 title="Grid View"
                             >
                                 <Grid3x3 size={18} />
                             </button>
                             <button
                                 onClick={() => onViewModeChange('list')}
-                                className={`p-2 rounded transition-colors ${viewMode === 'list'
+                                className={`p-2 rounded transition-colors ${
+                                    viewMode === 'list'
                                         ? 'bg-white text-red-600 shadow-sm'
                                         : 'text-gray-500 hover:text-gray-700'
-                                    }`}
+                                }`}
                                 title="List View"
                             >
                                 <List size={18} />
@@ -194,11 +200,7 @@ export const VehicleFilters: React.FC<VehicleFiltersProps> = ({
                         </div>
 
                         <div className="flex justify-end space-x-2 mt-4">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleClearFilters}
-                            >
+                            <Button variant="outline" size="sm" onClick={handleClearFilters}>
                                 Clear
                             </Button>
                             <Button

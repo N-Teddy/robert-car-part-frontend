@@ -34,8 +34,9 @@ export const NotificationBell: React.FC = () => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`relative p-2 text-gray-500 hover:text-gray-700 transition-colors ${isAnimating ? 'animate-bounce' : ''
-                    }`}
+                className={`relative p-2 text-gray-500 hover:text-gray-700 transition-colors ${
+                    isAnimating ? 'animate-bounce' : ''
+                }`}
             >
                 <Bell size={20} />
 
@@ -47,14 +48,15 @@ export const NotificationBell: React.FC = () => {
                 )}
 
                 {/* Connection indicator */}
-                <span className={`absolute bottom-1 right-1 h-2 w-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'
-                    }`} />
+                <span
+                    className={`absolute bottom-1 right-1 h-2 w-2 rounded-full ${
+                        isConnected ? 'bg-green-500' : 'bg-gray-400'
+                    }`}
+                />
             </button>
 
             {/* Dropdown */}
-            {isOpen && (
-                <NotificationDropdown onClose={() => setIsOpen(false)} />
-            )}
+            {isOpen && <NotificationDropdown onClose={() => setIsOpen(false)} />}
         </div>
     );
 };

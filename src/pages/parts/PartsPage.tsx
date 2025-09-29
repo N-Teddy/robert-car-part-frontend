@@ -3,17 +3,11 @@ import React, { useState, useMemo } from 'react';
 import {
     Package,
     Plus,
-    Search,
-    Grid3x3,
-    List,
     Download,
     AlertTriangle,
     DollarSign,
-    Archive,
     TrendingDown,
-    Filter,
     QrCode,
-    Camera
 } from 'lucide-react';
 import { PartsGrid } from '../../components/parts/PartsGrid';
 import { PartsList } from '../../components/parts/PartsList';
@@ -24,13 +18,13 @@ import { PartStats } from '../../components/parts/PartStats';
 import { LowStockAlert } from '../../components/parts/LowStockAlert';
 import { QRScannerModal } from '../../components/parts/QRScannerModal';
 import { Button } from '../../components/ui/Button';
-import { Toast } from '../../components/ui/Toast';
 import type { Part, PartFilterDto } from '../../types/request/part';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { useVehicle } from '../../hooks/vehicleHook';
 import { useCategory } from '../../hooks/categoryHook';
 import { usePart } from '../../hooks/partHook';
 import { PartFilters } from '../../components/parts/PartsFilter';
+import NotificationToast from '../../components/notifications/NotificationToast';
 
 type ViewMode = 'grid' | 'list';
 type GroupBy = 'none' | 'vehicle' | 'category';
@@ -46,7 +40,7 @@ export const PartsPage: React.FC = () => {
     });
 
     const [selectedPart, setSelectedPart] = useState<Part | null>(null);
-    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    const [toast, setToast] = useState<{ message: string; title: string } | null>(null);
 
     // Modal states
     const [modals, setModals] = useState({
@@ -67,7 +61,7 @@ export const PartsPage: React.FC = () => {
         useDeletePart,
         useGetPartStatistics,
         useGetCategoryStatistics,
-        useGetLowStockParts
+        useGetLowStockParts,
     } = usePart();
 
     const { useGetAllVehicles } = useVehicle();
@@ -94,7 +88,7 @@ export const PartsPage: React.FC = () => {
 
         const groups: Record<string, Part[]> = {};
 
-        partsData.items.forEach(part => {
+        partsData.items.forEach((part) => {
             const key = groupBy === 'vehicle' ? part.vehicleId : part.categoryId;
             if (!groups[key]) {
                 groups[key] = [];
@@ -107,31 +101,31 @@ export const PartsPage: React.FC = () => {
 
     // Handlers
     const handleFilterChange = (newFilters: Partial<PartFilterDto>) => {
-        setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
+        setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
     };
 
     const handlePageChange = (page: number) => {
-        setFilters(prev => ({ ...prev, page }));
+        setFilters((prev) => ({ ...prev, page }));
     };
 
     const openModal = (modal: keyof typeof modals, part?: Part) => {
         if (part) setSelectedPart(part);
-        setModals(prev => ({ ...prev, [modal]: true }));
+        setModals((prev) => ({ ...prev, [modal]: true }));
     };
 
     const closeModal = (modal: keyof typeof modals) => {
-        setModals(prev => ({ ...prev, [modal]: false }));
+        setModals((prev) => ({ ...prev, [modal]: false }));
         if (modal !== 'view') setSelectedPart(null);
     };
 
     const handleCreate = async (data: any) => {
         try {
             await createMutation.mutateAsync(data);
-            setToast({ message: 'Part created successfully', type: 'success' });
+            setToast({ message: 'Part created successfully', title: 'Part Created' });
             closeModal('create');
             refetch();
         } catch (error: any) {
-            setToast({ message: error.message || 'Failed to create part', type: 'error' });
+            setToast({ message: error.message || 'Failed to create part', title: 'Error Creating' });
         }
     };
 
@@ -139,11 +133,11 @@ export const PartsPage: React.FC = () => {
         if (!selectedPart) return;
         try {
             await updateMutation.mutateAsync({ id: selectedPart.id, data });
-            setToast({ message: 'Part updated successfully', type: 'success' });
+            setToast({ message: 'Part updated successfully', title: 'Part Updated' });
             closeModal('edit');
             refetch();
         } catch (error: any) {
-            setToast({ message: error.message || 'Failed to update part', type: 'error' });
+            setToast({ message: error.message || 'Failed to update part', title: 'Error Updating' });
         }
     };
 
@@ -151,22 +145,22 @@ export const PartsPage: React.FC = () => {
         if (!selectedPart) return;
         try {
             await deleteMutation.mutateAsync(selectedPart.id);
-            setToast({ message: 'Part deleted successfully', type: 'success' });
+            setToast({ message: 'Part deleted successfully', title: 'Part deleted' });
             closeModal('delete');
             refetch();
         } catch (error: any) {
-            setToast({ message: error.message || 'Failed to delete part', type: 'error' });
+            setToast({ message: error.message || 'Failed to delete part', title: 'Error Deleting' });
         }
     };
 
     const handleQRScanned = (partId: string) => {
-        const part = partsData?.items.find(p => p.id === partId);
+        const part = partsData?.items.find((p) => p.id === partId);
         if (part) {
             setSelectedPart(part);
             closeModal('scanner');
             openModal('view');
         } else {
-            setToast({ message: 'Part not found', type: 'error' });
+            setToast({ message: 'Part not found', title: 'Search Error' });
         }
     };
 
@@ -174,19 +168,31 @@ export const PartsPage: React.FC = () => {
         if (!partsData?.items?.length) return;
 
         const csvContent = [
-            ['Name', 'Part Number', 'Vehicle', 'Category', 'Price (FCFA)', 'Quantity', 'Condition', 'Status'],
-            ...partsData.items.map(p => [
+            [
+                'Name',
+                'Part Number',
+                'Vehicle',
+                'Category',
+                'Price (FCFA)',
+                'Quantity',
+                'Condition',
+                'Status',
+            ],
+            ...partsData.items.map((p) => [
                 p.name,
                 p.partNumber,
-                vehiclesData?.items.find(v => v.id === p.vehicleId)?.make + ' ' +
-                vehiclesData?.items.find(v => v.id === p.vehicleId)?.model || '',
-                categoriesData?.items.find(c => c.id === p.categoryId)?.name || '',
+                vehiclesData?.items.find((v) => v.id === p.vehicleId)?.make +
+                ' ' +
+                vehiclesData?.items.find((v) => v.id === p.vehicleId)?.model || '',
+                categoriesData?.items.find((c) => c.id === p.categoryId)?.name || '',
                 p.price,
                 p.quantity,
                 p.condition || 'N/A',
-                p.quantity === 0 ? 'Out of Stock' : p.quantity < 5 ? 'Low Stock' : 'In Stock'
-            ])
-        ].map(row => row.join(',')).join('\n');
+                p.quantity === 0 ? 'Out of Stock' : p.quantity < 5 ? 'Low Stock' : 'In Stock',
+            ]),
+        ]
+            .map((row) => row.join(','))
+            .join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = window.URL.createObjectURL(blob);
@@ -196,15 +202,14 @@ export const PartsPage: React.FC = () => {
         a.click();
         window.URL.revokeObjectURL(url);
 
-        setToast({ message: 'Parts exported successfully', type: 'success' });
+        setToast({ message: 'Parts exported successfully', title: 'Parts Exported' });
     };
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="px-4 py-8 sm:px-6 lg:px-8">
             {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
+                <NotificationToast
+                    notification={toast}
                     onClose={() => setToast(null)}
                 />
             )}
@@ -213,7 +218,7 @@ export const PartsPage: React.FC = () => {
             <div className="mb-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+                        <h1 className="flex items-center text-2xl font-bold text-gray-900">
                             <Package className="w-8 h-8 mr-2 text-green-600" />
                             Parts Inventory
                         </h1>
@@ -251,66 +256,66 @@ export const PartsPage: React.FC = () => {
             </div>
 
             {/* Statistics Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Total Parts</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-gray-900">
                                 {stats?.totalParts || 0}
                             </p>
                         </div>
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
                             <Package className="w-6 h-6 text-blue-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Low Stock</p>
-                            <p className="text-2xl font-bold text-yellow-600 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-yellow-600">
                                 {stats?.lowStockParts || 0}
                             </p>
                             {stats?.lowStockParts > 0 && (
                                 <button
                                     onClick={() => openModal('lowStock')}
-                                    className="text-xs text-yellow-600 hover:text-yellow-700 mt-1"
+                                    className="mt-1 text-xs text-yellow-600 hover:text-yellow-700"
                                 >
                                     View items →
                                 </button>
                             )}
                         </div>
-                        <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-lg">
                             <AlertTriangle className="w-6 h-6 text-yellow-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Out of Stock</p>
-                            <p className="text-2xl font-bold text-red-600 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-red-600">
                                 {stats?.outOfStockParts || 0}
                             </p>
                         </div>
-                        <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg">
                             <TrendingDown className="w-6 h-6 text-red-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Total Value</p>
-                            <p className="text-2xl font-bold text-purple-600 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-purple-600">
                                 {formatCurrency(stats?.totalValue || 0)}
                             </p>
                         </div>
-                        <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg">
                             <DollarSign className="w-6 h-6 text-purple-600" />
                         </div>
                     </div>
@@ -319,10 +324,10 @@ export const PartsPage: React.FC = () => {
 
             {/* Quick Actions */}
             {lowStockParts && lowStockParts.length > 0 && (
-                <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="p-4 mb-6 border border-yellow-200 rounded-lg bg-yellow-50">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                            <AlertTriangle className="w-5 h-5 text-yellow-600 mr-2" />
+                            <AlertTriangle className="w-5 h-5 mr-2 text-yellow-600" />
                             <span className="text-sm font-medium text-yellow-800">
                                 {lowStockParts.length} parts need restocking
                             </span>
@@ -331,7 +336,7 @@ export const PartsPage: React.FC = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => openModal('lowStock')}
-                            className="border-yellow-600 text-yellow-600 hover:bg-yellow-100"
+                            className="text-yellow-600 border-yellow-600 hover:bg-yellow-100"
                         >
                             View Low Stock Alert
                         </Button>
@@ -370,14 +375,14 @@ export const PartsPage: React.FC = () => {
                     vehicles={vehiclesData?.items || []}
                     categories={categoriesData?.items || []}
                     onView={(part) => openModal('view', part)}
-                        onEdit={(part) => openModal('edit', part)}
+                    onEdit={(part) => openModal('edit', part)}
                     onDelete={(part) => openModal('delete', part)}
                 />
             )}
 
             {/* Pagination */}
             {partsData?.meta && partsData.meta.totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-center space-x-2">
+                <div className="flex items-center justify-center mt-6 space-x-2">
                     <Button
                         variant="outline"
                         size="sm"
@@ -426,8 +431,8 @@ export const PartsPage: React.FC = () => {
             <PartViewModal
                 isOpen={modals.view}
                 part={selectedPart}
-                vehicle={vehiclesData?.items.find(v => v.id === selectedPart?.vehicleId)}
-                category={categoriesData?.items.find(c => c.id === selectedPart?.categoryId)}
+                vehicle={vehiclesData?.items.find((v) => v.id === selectedPart?.vehicleId)}
+                category={categoriesData?.items.find((c) => c.id === selectedPart?.categoryId)}
                 onClose={() => closeModal('view')}
                 onEdit={() => {
                     closeModal('view');
@@ -437,8 +442,6 @@ export const PartsPage: React.FC = () => {
                     closeModal('view');
                     openModal('delete', selectedPart!);
                 }}
-
-
             />
 
             <PartDeleteModal

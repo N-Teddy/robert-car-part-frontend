@@ -20,17 +20,17 @@ export const PartDeleteModal: React.FC<PartDeleteModalProps> = ({
     if (!isOpen || !part) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="w-full max-w-md overflow-hidden bg-white rounded-lg shadow-xl">
                 {/* Header */}
-                <div className="bg-red-50 px-6 py-6">
+                <div className="px-6 py-6 bg-red-50">
                     <div className="flex items-start">
                         <div className="flex-shrink-0">
-                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                            <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
                                 <AlertTriangle className="w-6 h-6 text-red-600" />
                             </div>
                         </div>
-                        <div className="ml-4 flex-1">
+                        <div className="flex-1 ml-4">
                             <h3 className="text-lg font-semibold text-gray-900">
                                 Confirm Delete Part
                             </h3>
@@ -49,47 +49,41 @@ export const PartDeleteModal: React.FC<PartDeleteModalProps> = ({
 
                 {/* Content */}
                 <div className="px-6 py-4">
-                    <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="p-4 rounded-lg bg-gray-50">
                         <div className="flex items-center space-x-3">
                             <div className="flex-shrink-0">
                                 {part.images && part.images.length > 0 ? (
                                     <img
                                         src={part.images[0].url}
                                         alt={part.name}
-                                        className="w-16 h-16 rounded-lg object-cover"
+                                        className="object-cover w-16 h-16 rounded-lg"
                                     />
                                 ) : (
-                                    <div className="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center">
+                                    <div className="flex items-center justify-center w-16 h-16 bg-gray-200 rounded-lg">
                                         <Package className="w-8 h-8 text-gray-400" />
                                     </div>
                                 )}
                             </div>
                             <div className="flex-1">
-                                <p className="text-sm font-semibold text-gray-900">
-                                    {part.name}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    Part #: {part.partNumber}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-sm font-semibold text-gray-900">{part.name}</p>
+                                <p className="text-sm text-gray-600">Part #: {part.partNumber}</p>
+                                <p className="mt-1 text-xs text-gray-500">
                                     Stock: {part.quantity} units • {formatCurrency(part.price)}
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <div className="p-4 mt-4 border rounded-lg bg-amber-50 border-amber-200">
                         <div className="flex">
                             <div className="flex-shrink-0">
                                 <AlertTriangle className="w-5 h-5 text-amber-600" />
                             </div>
                             <div className="ml-3">
-                                <h4 className="text-sm font-medium text-amber-800">
-                                    Warning
-                                </h4>
+                                <h4 className="text-sm font-medium text-amber-800">Warning</h4>
                                 <div className="mt-1 text-sm text-amber-700">
                                     <p>Deleting this part will:</p>
-                                    <ul className="list-disc list-inside mt-1">
+                                    <ul className="mt-1 list-disc list-inside">
                                         <li>Remove all part information</li>
                                         <li>Delete all associated images</li>
                                         <li>Remove from inventory tracking</li>
@@ -101,18 +95,17 @@ export const PartDeleteModal: React.FC<PartDeleteModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+                <div className="flex justify-end px-6 py-4 space-x-3 bg-gray-50">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition-colors"
+                        className="px-4 py-2 font-medium text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-100"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={onConfirm}
-                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors"
+                        className="px-4 py-2 font-medium text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
                     >
-                        // src/components/parts/PartDeleteModal.tsx (continued)
                         <Trash2 className="inline w-4 h-4 mr-1" />
                         Delete Part
                     </button>

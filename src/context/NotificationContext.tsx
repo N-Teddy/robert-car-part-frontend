@@ -49,37 +49,43 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     const { data: unreadData, refetch: refetchUnread } = useGetUnreadCount();
     const markAsReadMutation = useMarkAsRead();
 
-    const playSound = useCallback((type: 'normal' | 'critical' = 'normal') => {
-        if (!soundEnabled) return;
+    const playSound = useCallback(
+        (type: 'normal' | 'critical' = 'normal') => {
+            if (!soundEnabled) return;
 
-        const sound = type === 'critical' ? criticalSound : notificationSound;
-        sound.play().catch(err => console.error('Failed to play sound:', err));
-    }, [soundEnabled]);
+            const sound = type === 'critical' ? criticalSound : notificationSound;
+            sound.play().catch((err) => console.error('Failed to play sound:', err));
+        },
+        [soundEnabled]
+    );
 
-    const handleNewNotification = useCallback((notification: Notification) => {
-        // Add to notifications list
-        setNotifications(prev => [notification, ...prev]);
+    const handleNewNotification = useCallback(
+        (notification: Notification) => {
+            // Add to notifications list
+            setNotifications((prev) => [notification, ...prev]);
 
-        // Update unread count
-        refetchUnread();
+            // Update unread count
+            refetchUnread();
 
-        // Invalidate queries
-        queryClient.invalidateQueries({ queryKey: ['notifications'] });
+            // Invalidate queries
+            queryClient.invalidateQueries({ queryKey: ['notifications'] });
 
-        // Show toast
-        toastQueueRef.current.push(notification);
-        if (!showToast) {
-            setShowToast(toastQueueRef.current.shift() || null);
-        }
+            // Show toast
+            toastQueueRef.current.push(notification);
+            if (!showToast) {
+                setShowToast(toastQueueRef.current.shift() || null);
+            }
 
-        // Play sound based on notification type
-        const criticalTypes = ['PART_LOW_STOCK', 'ORDER_CANCELLED', 'SYSTEM_MAINTENANCE'];
-        if (criticalTypes.includes(notification.type)) {
-            playSound('critical');
-        } else {
-            playSound('normal');
-        }
-    }, [queryClient, refetchUnread, playSound, showToast]);
+            // Play sound based on notification type
+            const criticalTypes = ['PART_LOW_STOCK', 'ORDER_CANCELLED', 'SYSTEM_MAINTENANCE'];
+            if (criticalTypes.includes(notification.type)) {
+                playSound('critical');
+            } else {
+                playSound('normal');
+            }
+        },
+        [queryClient, refetchUnread, playSound, showToast]
+    );
 
     const { isConnected, isUsingPolling } = useWebSocket({
         onNotification: handleNewNotification,
@@ -103,37 +109,37 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         }
     }, [isUsingPolling, isConnected, refetchUnread]);
 
+    const markAsRead = useCallback(
+        async (notificationIds: string[]) => {
+            try {
+                await markAsReadMutation.mutateAsync({ notificationIds });
 
-    const markAsRead = useCallback(async (notificationIds: string[]) => {
-        try {
-            await markAsReadMutation.mutateAsync({ notificationIds });
+                // Update local state
+                setNotifications((prev) =>
+                    prev.map((n) => (notificationIds.includes(n.id) ? { ...n, isRead: true } : n))
+                );
 
-            // Update local state
-            setNotifications(prev =>
-                prev.map(n =>
-                    notificationIds.includes(n.id) ? { ...n, isRead: true } : n
-                )
-            );
+                // Refetch unread count
+                refetchUnread();
 
-            // Refetch unread count
-            refetchUnread();
-
-            // Invalidate queries
-            queryClient.invalidateQueries({ queryKey: ['notifications'] });
-        } catch (error) {
-            console.error('Failed to mark as read:', error);
-        }
-    }, [markAsReadMutation, queryClient, refetchUnread]);
+                // Invalidate queries
+                queryClient.invalidateQueries({ queryKey: ['notifications'] });
+            } catch (error) {
+                console.error('Failed to mark as read:', error);
+            }
+        },
+        [markAsReadMutation, queryClient, refetchUnread]
+    );
 
     const markAllAsRead = useCallback(async () => {
-        const unreadIds = notifications.filter(n => !n.isRead).map(n => n.id);
+        const unreadIds = notifications.filter((n) => !n.isRead).map((n) => n.id);
         if (unreadIds.length > 0) {
             await markAsRead(unreadIds);
         }
     }, [notifications, markAsRead]);
 
     const deleteNotification = useCallback((notificationId: string) => {
-        setNotifications(prev => prev.filter(n => n.id !== notificationId));
+        setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
     }, []);
 
     // Handle toast queue
@@ -163,7 +169,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                 soundEnabled,
                 setSoundEnabled,
             }}
-
         >
             {children}
             {showToast && (

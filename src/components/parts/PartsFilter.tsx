@@ -1,16 +1,6 @@
 // src/components/parts/PartFilters.tsx
 import React, { useState } from 'react';
-import {
-    Search,
-    Grid3x3,
-    List,
-    Filter,
-    X,
-    Package,
-    Car,
-    FolderOpen,
-    Layers
-} from 'lucide-react';
+import { Search, Grid3x3, List, Filter, X, Package, Car, FolderOpen, Layers } from 'lucide-react';
 import { Button } from '../ui/Button';
 import type { PartFilterDto } from '../../types/request/part';
 import type { Vehicle } from '../../types/request/vehicle';
@@ -90,8 +80,16 @@ export const PartFilters: React.FC<PartFiltersProps> = ({
         });
     };
 
-    const hasActiveFilters = search || vehicleId || categoryId || condition || stockStatus ||
-        minPrice || maxPrice || minQuantity || maxQuantity;
+    const hasActiveFilters =
+        search ||
+        vehicleId ||
+        categoryId ||
+        condition ||
+        stockStatus ||
+        minPrice ||
+        maxPrice ||
+        minQuantity ||
+        maxQuantity;
 
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
@@ -122,8 +120,18 @@ export const PartFilters: React.FC<PartFiltersProps> = ({
                             Filters
                             {hasActiveFilters && (
                                 <span className="ml-1 px-1.5 py-0.5 text-xs bg-green-600 text-white rounded-full">
-                                    {[vehicleId, categoryId, condition, stockStatus, minPrice, maxPrice, minQuantity, maxQuantity]
-                                        .filter(Boolean).length}
+                                    {
+                                        [
+                                            vehicleId,
+                                            categoryId,
+                                            condition,
+                                            stockStatus,
+                                            minPrice,
+                                            maxPrice,
+                                            minQuantity,
+                                            maxQuantity,
+                                        ].filter(Boolean).length
+                                    }
                                 </span>
                             )}
                         </Button>
@@ -132,30 +140,33 @@ export const PartFilters: React.FC<PartFiltersProps> = ({
                         <div className="flex items-center bg-gray-100 rounded-lg p-1">
                             <button
                                 onClick={() => onGroupByChange('none')}
-                                className={`p-2 rounded text-xs font-medium transition-colors ${groupBy === 'none'
+                                className={`p-2 rounded text-xs font-medium transition-colors ${
+                                    groupBy === 'none'
                                         ? 'bg-white text-green-600 shadow-sm'
                                         : 'text-gray-500 hover:text-gray-700'
-                                    }`}
+                                }`}
                                 title="No Grouping"
                             >
                                 <Layers size={16} />
                             </button>
                             <button
                                 onClick={() => onGroupByChange('vehicle')}
-                                className={`p-2 rounded text-xs font-medium transition-colors ${groupBy === 'vehicle'
+                                className={`p-2 rounded text-xs font-medium transition-colors ${
+                                    groupBy === 'vehicle'
                                         ? 'bg-white text-green-600 shadow-sm'
                                         : 'text-gray-500 hover:text-gray-700'
-                                    }`}
+                                }`}
                                 title="Group by Vehicle"
                             >
                                 <Car size={16} />
                             </button>
                             <button
                                 onClick={() => onGroupByChange('category')}
-                                className={`p-2 rounded text-xs font-medium transition-colors ${groupBy === 'category'
+                                className={`p-2 rounded text-xs font-medium transition-colors ${
+                                    groupBy === 'category'
                                         ? 'bg-white text-green-600 shadow-sm'
                                         : 'text-gray-500 hover:text-gray-700'
-                                    }`}
+                                }`}
                                 title="Group by Category"
                             >
                                 <FolderOpen size={16} />
@@ -166,20 +177,22 @@ export const PartFilters: React.FC<PartFiltersProps> = ({
                         <div className="flex items-center bg-gray-100 rounded-lg p-1">
                             <button
                                 onClick={() => onViewModeChange('grid')}
-                                className={`p-2 rounded transition-colors ${viewMode === 'grid'
+                                className={`p-2 rounded transition-colors ${
+                                    viewMode === 'grid'
                                         ? 'bg-white text-green-600 shadow-sm'
                                         : 'text-gray-500 hover:text-gray-700'
-                                    }`}
+                                }`}
                                 title="Grid View"
                             >
                                 <Grid3x3 size={18} />
                             </button>
                             <button
                                 onClick={() => onViewModeChange('list')}
-                                className={`p-2 rounded transition-colors ${viewMode === 'list'
+                                className={`p-2 rounded transition-colors ${
+                                    viewMode === 'list'
                                         ? 'bg-white text-green-600 shadow-sm'
                                         : 'text-gray-500 hover:text-gray-700'
-                                    }`}
+                                }`}
                                 title="List View"
                             >
                                 <List size={18} />
@@ -202,7 +215,7 @@ export const PartFilters: React.FC<PartFiltersProps> = ({
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                 >
                                     <option value="">All Vehicles</option>
-                                    {vehicles.map(v => (
+                                    {vehicles.map((v) => (
                                         <option key={v.id} value={v.id}>
                                             {v.make} {v.model} ({v.year})
                                         </option>
@@ -220,7 +233,7 @@ export const PartFilters: React.FC<PartFiltersProps> = ({
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
                                 >
                                     <option value="">All Categories</option>
-                                    {categories.map(c => (
+                                    {categories.map((c) => (
                                         <option key={c.id} value={c.id}>
                                             {c.name}
                                         </option>
@@ -314,11 +327,7 @@ export const PartFilters: React.FC<PartFiltersProps> = ({
                         </div>
 
                         <div className="flex justify-end space-x-2 mt-4">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleClearFilters}
-                            >
+                            <Button variant="outline" size="sm" onClick={handleClearFilters}>
                                 Clear
                             </Button>
                             <Button

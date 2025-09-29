@@ -40,9 +40,7 @@ export const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) 
 export const DialogContent: React.FC<{ children: React.ReactNode; className?: string }> = ({
     children,
     className = '',
-}) => (
-    <div className={`p-4 ${className}`}>{children}</div>
-);
+}) => <div className={`p-4 ${className}`}>{children}</div>;
 
 export const DialogHeader: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div className="border-b border-gray-200 px-4 py-2">{children}</div>
@@ -55,4 +53,8 @@ export const DialogTitle: React.FC<{ children: React.ReactNode }> = ({ children 
 export const DialogFooter: React.FC<{ children: React.ReactNode; className?: string }> = ({
     children,
     className = '',
-}) => <div className={`border-t border-gray-200 px-4 py-3 flex justify-end ${className}`}>{children}</div>;
+}) => (
+    <div className={`border-t border-gray-200 px-4 py-3 flex justify-end ${className}`}>
+        {children}
+    </div>
+);

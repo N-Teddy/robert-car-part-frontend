@@ -12,7 +12,7 @@ import {
     GripVertical,
     Folder,
     FolderOpen,
-    Package
+    Package,
 } from 'lucide-react';
 import type { CategoryWithChildren } from '../../types/request/category';
 
@@ -39,14 +39,9 @@ export const CategoryTreeItem: React.FC<CategoryTreeItemProps> = ({
     onDelete,
     onAddSubcategory,
 }) => {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging,
-    } = useSortable({ id: category.id });
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+        id: category.id,
+    });
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -71,8 +66,9 @@ export const CategoryTreeItem: React.FC<CategoryTreeItemProps> = ({
     return (
         <div ref={setNodeRef} style={style}>
             <div
-                className={`group flex items-center py-2 px-3 hover:bg-gray-50 rounded-lg transition-colors ${isDragging ? 'bg-gray-100' : ''
-                    }`}
+                className={`group flex items-center py-2 px-3 hover:bg-gray-50 rounded-lg transition-colors ${
+                    isDragging ? 'bg-gray-100' : ''
+                }`}
                 style={{ paddingLeft: `${level * 24 + 12}px` }}
             >
                 {/* Drag Handle */}
@@ -87,8 +83,9 @@ export const CategoryTreeItem: React.FC<CategoryTreeItemProps> = ({
                 {/* Expand/Collapse Arrow */}
                 <button
                     onClick={() => onToggleExpand(category.id)}
-                    className={`flex-shrink-0 p-1 hover:bg-gray-200 rounded transition-colors ${!hasChildren ? 'invisible' : ''
-                        }`}
+                    className={`flex-shrink-0 p-1 hover:bg-gray-200 rounded transition-colors ${
+                        !hasChildren ? 'invisible' : ''
+                    }`}
                 >
                     {isExpanded ? (
                         <ChevronDown className="w-4 h-4 text-gray-500" />

@@ -21,7 +21,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import type { User, ProfileImage } from '../../types/request/user';
-import { createUserSchema, updateUserSchema, type CreateUserFormData, type UpdateUserFormData, validateImageFile } from '../../validation/user.validation';
+import {
+    createUserSchema,
+    updateUserSchema,
+    type CreateUserFormData,
+    type UpdateUserFormData,
+    validateImageFile,
+} from '../../validation/user.validation';
 
 interface UserFormModalProps {
     isOpen: boolean;
@@ -64,16 +70,31 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     const currentRole = watchedRole || (user?.role as any) || 'STAFF';
 
     const roleOptions = [
-        { value: 'ADMIN', label: 'Administrator', description: 'Full system access', color: 'purple' },
-        { value: 'MANAGER', label: 'Manager', description: 'Manage teams and reports', color: 'blue' },
+        {
+            value: 'ADMIN',
+            label: 'Administrator',
+            description: 'Full system access',
+            color: 'purple',
+        },
+        {
+            value: 'MANAGER',
+            label: 'Manager',
+            description: 'Manage teams and reports',
+            color: 'blue',
+        },
         { value: 'DEV', label: 'Developer', description: 'Technical access', color: 'indigo' },
         { value: 'SALES', label: 'Sales', description: 'Sales operations', color: 'green' },
         { value: 'STAFF', label: 'Staff', description: 'General staff access', color: 'yellow' },
-        { value: 'CUSTOMER', label: 'Customer', description: 'Customer portal access', color: 'gray' },
+        {
+            value: 'CUSTOMER',
+            label: 'Customer',
+            description: 'Customer portal access',
+            color: 'gray',
+        },
     ];
 
     const getRoleColor = (role: string) => {
-        const option = roleOptions.find(opt => opt.value === role);
+        const option = roleOptions.find((opt) => opt.value === role);
         return option?.color || 'gray';
     };
 
@@ -91,7 +112,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                     text: 'text-purple-600',
                     border: 'border-purple-500',
                     ring: 'ring-purple-200',
-                    button: 'bg-purple-600 hover:bg-purple-700'
+                    button: 'bg-purple-600 hover:bg-purple-700',
                 };
             case 'blue':
                 return {
@@ -102,7 +123,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                     text: 'text-blue-600',
                     border: 'border-blue-500',
                     ring: 'ring-blue-200',
-                    button: 'bg-blue-600 hover:bg-blue-700'
+                    button: 'bg-blue-600 hover:bg-blue-700',
                 };
             case 'indigo':
                 return {
@@ -113,7 +134,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                     text: 'text-indigo-600',
                     border: 'border-indigo-500',
                     ring: 'ring-indigo-200',
-                    button: 'bg-indigo-600 hover:bg-indigo-700'
+                    button: 'bg-indigo-600 hover:bg-indigo-700',
                 };
             case 'green':
                 return {
@@ -124,7 +145,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                     text: 'text-green-600',
                     border: 'border-green-500',
                     ring: 'ring-green-200',
-                    button: 'bg-green-600 hover:bg-green-700'
+                    button: 'bg-green-600 hover:bg-green-700',
                 };
             case 'yellow':
                 return {
@@ -135,7 +156,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                     text: 'text-yellow-600',
                     border: 'border-yellow-500',
                     ring: 'ring-yellow-200',
-                    button: 'bg-yellow-600 hover:bg-yellow-700'
+                    button: 'bg-yellow-600 hover:bg-yellow-700',
                 };
             case 'gray':
                 return {
@@ -146,7 +167,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                     text: 'text-gray-600',
                     border: 'border-gray-500',
                     ring: 'ring-gray-200',
-                    button: 'bg-gray-600 hover:bg-gray-700'
+                    button: 'bg-gray-600 hover:bg-gray-700',
                 };
             default:
                 return {
@@ -157,7 +178,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                     text: 'text-red-600',
                     border: 'border-red-500',
                     ring: 'ring-red-200',
-                    button: 'bg-red-600 hover:bg-red-700'
+                    button: 'bg-red-600 hover:bg-red-700',
                 };
         }
     };
@@ -170,7 +191,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
         if (validationError) {
             setError('image', {
                 type: 'manual',
-                message: validationError
+                message: validationError,
             });
             return;
         }
@@ -279,7 +300,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
             const formData = new FormData();
 
             // Append all form fields
-            Object.keys(data).forEach(key => {
+            Object.keys(data).forEach((key) => {
                 if (key !== 'image' && data[key] !== undefined && data[key] !== null) {
                     formData.append(key, data[key]);
                 }
@@ -299,7 +320,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
             console.error('Form submission error:', error);
             setError('root', {
                 type: 'manual',
-                message: 'Failed to submit form. Please try again.'
+                message: 'Failed to submit form. Please try again.',
             });
         }
     };
@@ -317,7 +338,10 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                 />
 
                 {/* Center modal */}
-                <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+                <span
+                    className="hidden sm:inline-block sm:align-middle sm:h-screen"
+                    aria-hidden="true"
+                >
                     &#8203;
                 </span>
 
@@ -335,7 +359,9 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                         {isEditMode ? 'Edit User' : 'Create New User'}
                                     </h3>
                                     <p className="text-xs text-white/80">
-                                        {isEditMode ? 'Update user information' : 'Add a new user to the system'}
+                                        {isEditMode
+                                            ? 'Update user information'
+                                            : 'Add a new user to the system'}
                                     </p>
                                 </div>
                             </div>
@@ -354,19 +380,24 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                             {/* Profile Image Section */}
                             <div>
                                 <div className="flex items-center mb-4 space-x-2">
-                                    <div className={`w-8 h-8 ${colorClasses.bg} rounded-lg flex items-center justify-center`}>
+                                    <div
+                                        className={`w-8 h-8 ${colorClasses.bg} rounded-lg flex items-center justify-center`}
+                                    >
                                         <Camera className={`w-4 h-4 ${colorClasses.text}`} />
                                     </div>
-                                    <h4 className="text-sm font-semibold text-gray-900">Profile Image</h4>
+                                    <h4 className="text-sm font-semibold text-gray-900">
+                                        Profile Image
+                                    </h4>
                                 </div>
 
                                 <div className="space-y-4">
                                     {/* Drag and Drop Area */}
                                     <div
-                                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${isDragging
+                                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${
+                                            isDragging
                                                 ? 'border-red-500 bg-red-50'
                                                 : 'border-gray-300 hover:border-gray-400 bg-gray-50'
-                                            }`}
+                                        }`}
                                         onDragOver={handleDragOver}
                                         onDragLeave={handleDragLeave}
                                         onDrop={handleDrop}
@@ -405,13 +436,18 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
                                                 {/* Image Info */}
                                                 <div className="text-left">
-                                                    <p className="text-sm font-medium text-gray-900">Profile image selected</p>
+                                                    <p className="text-sm font-medium text-gray-900">
+                                                        Profile image selected
+                                                    </p>
                                                     {selectedImage && (
                                                         <p className="mt-1 text-xs text-gray-500">
-                                                            {selectedImage.name} • {formatFileSize(selectedImage.size)}
+                                                            {selectedImage.name} •{' '}
+                                                            {formatFileSize(selectedImage.size)}
                                                         </p>
                                                     )}
-                                                    <p className="mt-2 text-xs text-gray-400">Click to change image</p>
+                                                    <p className="mt-2 text-xs text-gray-400">
+                                                        Click to change image
+                                                    </p>
                                                 </div>
                                             </div>
                                         ) : (
@@ -451,7 +487,8 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                                             Current profile image
                                                         </p>
                                                         <p className="text-xs text-blue-700">
-                                                            {user.profileImage.format} • {formatFileSize(user.profileImage.size)}
+                                                            {user.profileImage.format} •{' '}
+                                                            {formatFileSize(user.profileImage.size)}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -480,10 +517,14 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                             {/* Personal Information Section */}
                             <div>
                                 <div className="flex items-center mb-4 space-x-2">
-                                    <div className={`w-8 h-8 ${colorClasses.bg} rounded-lg flex items-center justify-center`}>
+                                    <div
+                                        className={`w-8 h-8 ${colorClasses.bg} rounded-lg flex items-center justify-center`}
+                                    >
                                         <Info className={`w-4 h-4 ${colorClasses.text}`} />
                                     </div>
-                                    <h4 className="text-sm font-semibold text-gray-900">Personal Information</h4>
+                                    <h4 className="text-sm font-semibold text-gray-900">
+                                        Personal Information
+                                    </h4>
                                 </div>
 
                                 <div className="space-y-4">
@@ -520,10 +561,14 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                             {/* Role & Access Section */}
                             <div>
                                 <div className="flex items-center mb-4 space-x-2">
-                                    <div className={`w-8 h-8 ${colorClasses.bg} rounded-lg flex items-center justify-center`}>
+                                    <div
+                                        className={`w-8 h-8 ${colorClasses.bg} rounded-lg flex items-center justify-center`}
+                                    >
                                         <Shield className={`w-4 h-4 ${colorClasses.text}`} />
                                     </div>
-                                    <h4 className="text-sm font-semibold text-gray-900">Role & Access</h4>
+                                    <h4 className="text-sm font-semibold text-gray-900">
+                                        Role & Access
+                                    </h4>
                                 </div>
 
                                 <div className="space-y-4">
@@ -533,15 +578,18 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                         </label>
                                         <div className="grid grid-cols-2 gap-3">
                                             {roleOptions.map((option) => {
-                                                const optionColorClasses = getColorClasses(option.color);
+                                                const optionColorClasses = getColorClasses(
+                                                    option.color
+                                                );
                                                 const isSelected = watchedRole === option.value;
                                                 return (
                                                     <label
                                                         key={option.value}
-                                                        className={`relative flex items-start p-3 border rounded-lg cursor-pointer transition-all ${isSelected
-                                                            ? `${optionColorClasses.border} ${optionColorClasses.bg} ring-2 ${optionColorClasses.ring}`
-                                                            : 'border-gray-200 hover:border-gray-300'
-                                                            }`}
+                                                        className={`relative flex items-start p-3 border rounded-lg cursor-pointer transition-all ${
+                                                            isSelected
+                                                                ? `${optionColorClasses.border} ${optionColorClasses.bg} ring-2 ${optionColorClasses.ring}`
+                                                                : 'border-gray-200 hover:border-gray-300'
+                                                        }`}
                                                     >
                                                         <input
                                                             {...register('role')}
@@ -550,17 +598,29 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                                             className="sr-only"
                                                         />
                                                         <div className="flex-1">
-                                                            <p className={`text-sm font-medium ${isSelected ? `${optionColorClasses.text}` : 'text-gray-900'
-                                                                }`}>
+                                                            <p
+                                                                className={`text-sm font-medium ${
+                                                                    isSelected
+                                                                        ? `${optionColorClasses.text}`
+                                                                        : 'text-gray-900'
+                                                                }`}
+                                                            >
                                                                 {option.label}
                                                             </p>
-                                                            <p className={`text-xs mt-0.5 ${isSelected ? `${optionColorClasses.text}` : 'text-gray-500'
-                                                                }`}>
+                                                            <p
+                                                                className={`text-xs mt-0.5 ${
+                                                                    isSelected
+                                                                        ? `${optionColorClasses.text}`
+                                                                        : 'text-gray-500'
+                                                                }`}
+                                                            >
                                                                 {option.description}
                                                             </p>
                                                         </div>
                                                         {isSelected && (
-                                                            <CheckCircle className={`w-5 h-5 ${optionColorClasses.text} flex-shrink-0`} />
+                                                            <CheckCircle
+                                                                className={`w-5 h-5 ${optionColorClasses.text} flex-shrink-0`}
+                                                            />
                                                         )}
                                                     </label>
                                                 );
@@ -586,7 +646,8 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                             />
                                             <div className="p-3 mt-2 border rounded-lg bg-amber-50 border-amber-200">
                                                 <p className="text-xs text-amber-800">
-                                                    <strong>Password Requirements:</strong> Minimum 8 characters
+                                                    <strong>Password Requirements:</strong> Minimum
+                                                    8 characters
                                                 </p>
                                             </div>
                                         </div>
@@ -600,8 +661,12 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                                 className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
                                             />
                                             <label className="ml-3">
-                                                <p className="text-sm font-medium text-gray-900">Active Account</p>
-                                                <p className="text-xs text-gray-500">User can access the system</p>
+                                                <p className="text-sm font-medium text-gray-900">
+                                                    Active Account
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    User can access the system
+                                                </p>
                                             </label>
                                         </div>
                                     )}
