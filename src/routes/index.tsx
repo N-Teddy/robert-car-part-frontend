@@ -14,17 +14,27 @@ import { CategoriesPage } from '../pages/categories/CategoriesPage';
 import { VehiclesPage } from '../pages/vehicles/VehiclesPage';
 import { PartsPage } from '../pages/parts/PartsPage';
 import { OrdersPage } from '../pages/orders/OrdersPage';
+import NotFoundPage from '../pages/NotFound';
+import UnauthorizedRolePage from '../pages/UnauthorizedRole';
 
 export const AppRoutes = () => {
     return (
         <Routes>
+
             <Route element={<AuthLayout />}>
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
                 <Route path="forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="reset-password" element={<ResetPasswordPage />} />
             </Route>
+
+            
             <Route path="/" element={<Navigate to="/login" replace />} />
+
+            {/* Error Pages */}
+            <Route path="not-found" element={<NotFoundPage />} />
+            <Route path="unknown" element={<UnauthorizedRolePage />} />
+            <Route path="*" element={<NotFoundPage />} />
 
             {/* Add your protected routes here */}
             <Route
@@ -43,6 +53,7 @@ export const AppRoutes = () => {
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/categories" element={<CategoriesPage />} />
             </Route>
+
         </Routes>
     );
 };

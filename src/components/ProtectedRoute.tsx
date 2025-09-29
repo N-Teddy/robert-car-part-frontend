@@ -9,11 +9,15 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const { isAuthenticated, loading } = useAuthContext();
+    const { isAuthenticated, loading, user } = useAuthContext();
     const location = useLocation();
 
     if (loading) {
         return <LoadingScreen />;
+    }
+
+    if (user && user.role === 'UNKNOWN') {
+        return <Navigate to="/unknown" replace />;
     }
 
     if (!isAuthenticated) {

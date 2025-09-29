@@ -16,6 +16,7 @@ import type { CreateOrderRequest, OrderItemRequest } from '../../types/request/o
 import { Stepper } from '../ui/Stepper';
 import { ItemSelector } from './ItemSelector';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { usePart } from '../../hooks/partHook';
 
 interface OrderFormModalProps {
     isOpen: boolean;
@@ -47,6 +48,8 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
     const [orderItems, setOrderItems] = useState<OrderItemRequest[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { useGetPartById } = usePart();
 
     useEffect(() => {
         if (mode === 'edit' && order) {
