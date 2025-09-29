@@ -3,17 +3,10 @@ import React, { useState, useMemo } from 'react';
 import {
     ShoppingCart,
     Plus,
-    Search,
     Download,
-    TrendingUp,
     Clock,
     CheckCircle,
-    XCircle,
     DollarSign,
-    Filter,
-    Calendar,
-    Package,
-    Copy,
 } from 'lucide-react';
 import { OrderFormModal } from '../../components/orders/OrderFormModal';
 import { OrderViewModal } from '../../components/orders/OrderViewModal';
@@ -220,7 +213,7 @@ export const OrdersPage: React.FC = () => {
             .reduce((sum, order) => sum + Number(order.totalAmount), 0) || 0;
 
     return (
-        <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="px-4 py-8 sm:px-6 lg:px-8">
             {toast && (
                 <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
             )}
@@ -229,7 +222,7 @@ export const OrdersPage: React.FC = () => {
             <div className="mb-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+                        <h1 className="flex items-center text-2xl font-bold text-gray-900">
                             <ShoppingCart className="w-8 h-8 mr-2 text-purple-600" />
                             Order Management
                         </h1>
@@ -259,68 +252,68 @@ export const OrdersPage: React.FC = () => {
             </div>
 
             {/* Statistics Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Total Orders</p>
-                            <p className="text-2xl font-bold text-gray-900 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-gray-900">
                                 {stats?.totalOrders || 0}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">{todayOrders} today</p>
+                            <p className="mt-1 text-xs text-gray-500">{todayOrders} today</p>
                         </div>
-                        <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg">
                             <ShoppingCart className="w-6 h-6 text-purple-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Pending Orders</p>
-                            <p className="text-2xl font-bold text-yellow-600 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-yellow-600">
                                 {stats?.pendingOrders || 0}
                             </p>
                             {stats?.pendingOrders > 0 && (
-                                <p className="text-xs text-yellow-600 mt-1">Needs attention</p>
+                                <p className="mt-1 text-xs text-yellow-600">Needs attention</p>
                             )}
                         </div>
-                        <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-lg">
                             <Clock className="w-6 h-6 text-yellow-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Completed Today</p>
-                            <p className="text-2xl font-bold text-green-600 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-green-600">
                                 {stats?.completedOrders || 0}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="mt-1 text-xs text-gray-500">
                                 {formatCurrency(todayRevenue)}
                             </p>
                         </div>
-                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg">
                             <CheckCircle className="w-6 h-6 text-green-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                            <p className="text-2xl font-bold text-purple-600 mt-1">
+                            <p className="mt-1 text-2xl font-bold text-purple-600">
                                 {formatCurrency(stats?.totalRevenue || 0)}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="mt-1 text-xs text-gray-500">
                                 Avg: {formatCurrency(stats?.averageOrderValue || 0)}
                             </p>
                         </div>
-                        <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg">
                             <DollarSign className="w-6 h-6 text-purple-600" />
                         </div>
                     </div>
@@ -342,7 +335,7 @@ export const OrdersPage: React.FC = () => {
 
             {/* Pagination */}
             {ordersData?.meta && ordersData.meta.totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-center space-x-2">
+                <div className="flex items-center justify-center mt-6 space-x-2">
                     <Button
                         variant="outline"
                         size="sm"
