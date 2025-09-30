@@ -1,5 +1,5 @@
 // src/components/orders/ItemSelector.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Search,
     Plus,
@@ -8,11 +8,11 @@ import {
     X,
     ShoppingCart,
     QrCode,
+    Loader2,
 } from 'lucide-react';
 import type { Part } from '../../types/request/part';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { QRScannerModal } from './QRScannerModal';
-import { usePart } from '../../hooks/partHook';
 
 interface SelectedItem {
     partId: string;
@@ -28,6 +28,8 @@ interface ItemSelectorProps {
     onItemUpdate: (partId: string, quantity: number) => void;
     onItemRemove: (partId: string) => void;
     onDiscountUpdate: (partId: string, discount: number) => void;
+    onFetchPartById?: (partId: string) => Promise<Part | null>;
+    fetchingPartId?: string | null;
 }
 
 export const ItemSelector: React.FC<ItemSelectorProps> = ({
@@ -37,6 +39,8 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
     onItemUpdate,
     onItemRemove,
     onDiscountUpdate,
+    onFetchPartById,
+    fetchingPartId,
 }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -47,22 +51,37 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
     const [scanQuantity, setScanQuantity] = useState(1);
     const [showQuantityDialog, setShowQuantityDialog] = useState(false);
     const [pendingPart, setPendingPart] = useState<Part | null>(null);
-
-    const { useGetPartById } = usePart();
+    // Remove the duplicate fetchingPart state - we'll use only the prop
 
     // Extract unique categories safely
     const categories = Array.from(
         new Set(parts.map((p) => p.category?.name || 'Uncategorized').filter(Boolean))
     );
 
-    // Filter and sort parts - FIXED: Added more search fields
+    // Improved filtering and search logic
     const filteredParts = parts
         .filter((part) => {
-            const searchLower = searchTerm.toLowerCase();
+            const searchLower = searchTerm.toLowerCase().trim();
+
+            // If search term is empty, apply only category and availability filters
+            if (!searchLower) {
+                const matchesCategory =
+                    selectedCategory === 'all' ||
+                    (part.category?.name || 'Uncategorized') === selectedCategory;
+
+                const matchesAvailability = !showOnlyAvailable || part.quantity > 0;
+
+                return matchesCategory && matchesAvailability;
+            }
+
+            // Search across multiple fields
             const matchesSearch =
                 part.name.toLowerCase().includes(searchLower) ||
                 part.partNumber.toLowerCase().includes(searchLower) ||
-                part.description?.toLowerCase().includes(searchLower);
+                part.description?.toLowerCase().includes(searchLower) ||
+                (part.vehicle?.make?.toLowerCase().includes(searchLower)) ||
+                (part.vehicle?.model?.toLowerCase().includes(searchLower)) ||
+                (part.category?.name?.toLowerCase().includes(searchLower));
 
             const matchesCategory =
                 selectedCategory === 'all' ||
@@ -83,7 +102,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
             }
         });
 
-    // Handle QR code scan - UPDATED: Use hook to fetch part
+    // Handle QR code scan
     const handleQRScan = async (data: string) => {
         try {
             console.log('QR Data received:', data);
@@ -102,51 +121,42 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
             // First try to find in local parts list (faster)
             let scannedPart = parts.find((p) => p.id === partId);
 
-            // If not found locally, fetch from API using the hook
-            if (!scannedPart) {
+            // If not found locally and we have fetch capability, try API
+            if (!scannedPart && onFetchPartById) {
                 console.log('Part not found locally, fetching from API...');
+
                 try {
-                    // We'll use the hook but need to handle the async nature
-                    // For now, show loading and use a different approach
-                    setPendingPart(null);
-                    setShowQuantityDialog(false);
+                    const fetchedPart = await onFetchPartById(partId);
 
-                    // Create a temporary part object to show in UI while fetching
-                    const tempPart: Part = {
-                        id: partId,
-                        name: 'Loading...',
-                        partNumber: '...',
-                        price: '0',
-                        quantity: 0,
-                        description: 'Fetching part details...',
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString(),
-                    };
+                    if (!fetchedPart) {
+                        alert(`Part with ID ${partId} not found in database`);
+                        return;
+                    }
 
-                    setPendingPart(tempPart);
-                    setShowQuantityDialog(true);
-
-                    // Fetch part details using the hook (this would need to be handled differently)
-                    // Since hooks can't be called conditionally, we'll handle this in OrderFormModal
-                    // For now, we'll rely on the parts being properly loaded
-
+                    scannedPart = fetchedPart;
+                    console.log('Part fetched successfully:', fetchedPart.name);
                 } catch (error) {
                     console.error('Error fetching part:', error);
-                    alert('Part not found in database');
+                    alert('Error fetching part details from server');
                     return;
                 }
-            } else {
-                // Part found locally
-                if (scannedPart.quantity === 0) {
-                    alert(`${scannedPart.name} is out of stock`);
-                    return;
-                }
-
-                setLastScannedId(partId);
-                setPendingPart(scannedPart);
-                setShowQuantityDialog(true);
-                setScanQuantity(1);
+            } else if (!scannedPart) {
+                // No fetch capability and part not found locally
+                alert(`Part with ID ${partId} not found in current list`);
+                return;
             }
+
+            // Part found (either locally or via API)
+            if (scannedPart.quantity === 0) {
+                alert(`${scannedPart.name} is out of stock`);
+                return;
+            }
+
+            setLastScannedId(partId);
+            setPendingPart(scannedPart);
+            setShowQuantityDialog(true);
+            setScanQuantity(1);
+
         } catch (error) {
             console.error('QR Scan error:', error);
             alert('Invalid QR code format. Expected JSON with partId.');
@@ -156,12 +166,6 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
     // Confirm adding scanned part with quantity
     const confirmScannedPart = () => {
         if (!pendingPart) return;
-
-        // Don't proceed if part is still loading
-        if (pendingPart.name === 'Loading...') {
-            alert('Part details still loading, please wait...');
-            return;
-        }
 
         const existingItem = selectedItems.find((item) => item.partId === pendingPart.id);
 
@@ -175,6 +179,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
             // Add the part first, then update quantity if needed
             onItemAdd(pendingPart);
             if (scanQuantity > 1) {
+                // Use setTimeout to ensure the item is added before updating quantity
                 setTimeout(() => {
                     onItemUpdate(pendingPart.id, Math.min(scanQuantity, pendingPart.quantity));
                 }, 100);
@@ -208,6 +213,11 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
         return selectedItems.reduce((total, item) => total + calculateItemTotal(item), 0);
     };
 
+    // Clear search when category changes
+    useEffect(() => {
+        setSearchTerm('');
+    }, [selectedCategory]);
+
     return (
         <>
             <div className="space-y-4">
@@ -218,19 +228,32 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                             <Search className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
                             <input
                                 type="text"
-                                placeholder="Search parts by name or number..."
+                                placeholder="Search parts by name, number, vehicle, or category..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    className="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2 hover:text-gray-600"
+                                >
+                                    <X size={16} />
+                                </button>
+                            )}
                         </div>
 
                         <button
                             onClick={() => setShowScanner(true)}
-                            className="px-4 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center"
+                            disabled={fetchingPartId !== null}
+                            className="px-4 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <QrCode className="w-5 h-5 mr-2" />
-                            Scan QR
+                            {fetchingPartId ? (
+                                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            ) : (
+                                <QrCode className="w-5 h-5 mr-2" />
+                            )}
+                            {fetchingPartId ? 'Fetching...' : 'Scan QR'}
                         </button>
                     </div>
 
@@ -268,7 +291,22 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                             <span className="text-sm text-gray-700">Available only</span>
                         </label>
                     </div>
+
+                    {/* Search results info */}
+                    {searchTerm && (
+                        <div className="text-sm text-gray-600">
+                            Found {filteredParts.length} parts matching "{searchTerm}"
+                        </div>
+                    )}
                 </div>
+
+                {/* Loading state for part fetching - USING PROP ONLY */}
+                {fetchingPartId && (
+                    <div className="p-4 text-center rounded-lg bg-blue-50">
+                        <Loader2 className="w-6 h-6 mx-auto mb-2 text-blue-600 animate-spin" />
+                        <p className="text-sm text-blue-800">Fetching part details...</p>
+                    </div>
+                )}
 
                 {/* Parts List */}
                 <div className="overflow-y-auto bg-white border border-gray-200 rounded-lg max-h-96">
@@ -276,24 +314,24 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                         <div className="p-8 text-center">
                             <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                             <p className="text-gray-500">No parts found</p>
-                            <p className="mt-1 text-xs text-gray-400">Try adjusting your filters</p>
+                            <p className="mt-1 text-xs text-gray-400">
+                                {searchTerm ? 'Try adjusting your search term' : 'Try adjusting your filters'}
+                            </p>
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-200">
                             {filteredParts.map((part) => {
                                 const selectedItem = getSelectedItem(part.id);
-                                const isMaxQuantity =
-                                    (selectedItem?.quantity || 0) >= part.quantity;
+                                const isMaxQuantity = (selectedItem?.quantity || 0) >= part.quantity;
                                 const isLastScanned = lastScannedId === part.id;
 
                                 return (
                                     <div
                                         key={part.id}
-                                        className={`p-4 transition-all ${
-                                            isLastScanned
+                                        className={`p-4 transition-all ${isLastScanned
                                                 ? 'bg-purple-50 ring-2 ring-purple-500'
                                                 : 'hover:bg-gray-50'
-                                        }`}
+                                            }`}
                                     >
                                         <div className="flex items-start space-x-4">
                                             {/* Part Image */}
@@ -350,11 +388,10 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                             <button
                                                                 onClick={() => onItemAdd(part)}
                                                                 disabled={part.quantity === 0}
-                                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                                                    part.quantity === 0
+                                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${part.quantity === 0
                                                                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                                                         : 'bg-purple-600 text-white hover:bg-purple-700'
-                                                                }`}
+                                                                    }`}
                                                             >
                                                                 Add
                                                             </button>
@@ -365,11 +402,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                                         onClick={() =>
                                                                             onItemUpdate(
                                                                                 part.id,
-                                                                                Math.max(
-                                                                                    0,
-                                                                                    selectedItem.quantity -
-                                                                                        1
-                                                                                )
+                                                                                Math.max(0, selectedItem.quantity - 1)
                                                                             )
                                                                         }
                                                                         className="p-1.5 hover:bg-gray-100 transition-colors"
@@ -378,37 +411,18 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                                     </button>
                                                                     <input
                                                                         type="number"
-                                                                        value={
-                                                                            selectedItem.quantity
-                                                                        }
+                                                                        value={selectedItem.quantity}
                                                                         onChange={(e) => {
-                                                                            const val =
-                                                                                parseInt(
-                                                                                    e.target.value
-                                                                                ) || 0;
-                                                                            if (
-                                                                                val <=
-                                                                                    part.quantity &&
-                                                                                val >= 0
-                                                                            ) {
-                                                                                onItemUpdate(
-                                                                                    part.id,
-                                                                                    val
-                                                                                );
+                                                                            const val = parseInt(e.target.value) || 0;
+                                                                            if (val <= part.quantity && val >= 0) {
+                                                                                onItemUpdate(part.id, val);
                                                                             }
                                                                         }}
                                                                         className="w-12 text-sm text-center border-0 focus:ring-0"
                                                                     />
-                                                                    //
-                                                                    src/components/orders/ItemSelector.tsx
-                                                                    (continued)
                                                                     <button
                                                                         onClick={() =>
-                                                                            onItemUpdate(
-                                                                                part.id,
-                                                                                selectedItem.quantity +
-                                                                                    1
-                                                                            )
+                                                                            onItemUpdate(part.id, selectedItem.quantity + 1)
                                                                         }
                                                                         disabled={isMaxQuantity}
                                                                         className="p-1.5 hover:bg-gray-100 transition-colors disabled:opacity-50"
@@ -418,9 +432,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                                 </div>
 
                                                                 <button
-                                                                    onClick={() =>
-                                                                        onItemRemove(part.id)
-                                                                    }
+                                                                    onClick={() => onItemRemove(part.id)}
                                                                     className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
                                                                 >
                                                                     <X size={18} />
@@ -439,6 +451,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                         <input
                                                             type="number"
                                                             min="0"
+                                                            max={selectedItem.quantity * selectedItem.unitPrice}
                                                             value={selectedItem.discount || 0}
                                                             onChange={(e) =>
                                                                 onDiscountUpdate(
@@ -449,10 +462,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                             className="w-20 px-2 py-1 text-sm border border-gray-300 rounded"
                                                         />
                                                         <span className="text-xs text-gray-500">
-                                                            Subtotal:{' '}
-                                                            {formatCurrency(
-                                                                calculateItemTotal(selectedItem)
-                                                            )}
+                                                            Subtotal: {formatCurrency(calculateItemTotal(selectedItem))}
                                                         </span>
                                                     </div>
                                                 )}
@@ -557,9 +567,7 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                 />
                                 <button
                                     onClick={() =>
-                                        setScanQuantity(
-                                            Math.min(pendingPart.quantity, scanQuantity + 1)
-                                        )
+                                        setScanQuantity(Math.min(pendingPart.quantity, scanQuantity + 1))
                                     }
                                     className="p-2 border border-gray-300 rounded-lg hover:bg-gray-100"
                                 >

@@ -2,6 +2,7 @@
 import type { OrderResponse } from '../types/response/order';
 import { format } from 'date-fns';
 
+// Define the interface properly without the TypeScript error
 interface ReceiptOptions {
     companyName?: string;
     companyAddress?: string;
@@ -27,7 +28,7 @@ export class ReceiptGenerator {
     }
 
     /**
-     * Generate HTML receipt
+     * Generate HTML receipt (for display or printing)
      */
     generateHTML(order: OrderResponse): string {
         const subtotal = this.calculateSubtotal(order);
@@ -269,15 +270,14 @@ export class ReceiptGenerator {
                 <span>Subtotal:</span>
                 <span>${this.formatCurrency(subtotal)}</span>
             </div>
-            ${
-                discounts > 0
-                    ? `
+            ${discounts > 0
+                ? `
                 <div class="total-row">
                     <span>Discounts:</span>
                     <span>-${this.formatCurrency(discounts)}</span>
                 </div>
             `
-                    : ''
+                : ''
             }
             <div class="total-row grand-total">
                 <span>TOTAL:</span>
@@ -293,8 +293,7 @@ export class ReceiptGenerator {
             </div>
         </div>
 
-        ${
-            order.notes
+        ${order.notes
                 ? `
             <!-- Notes -->
             <div class="section">
@@ -303,17 +302,16 @@ export class ReceiptGenerator {
             </div>
         `
                 : ''
-        }
+            }
 
-        ${
-            this.options.showBarcode
+        ${this.options.showBarcode
                 ? `
             <!-- Barcode -->
             <div class="barcode"></div>
             <div style="text-align: center; font-size: 9px;">${order.id}</div>
         `
                 : ''
-        }
+            }
 
         <!-- Footer -->
         <div class="footer">
@@ -427,18 +425,224 @@ export class ReceiptGenerator {
     }
 
     /**
-     * Generate PDF receipt (returns base64 string)
-     * Note: This requires a PDF library like jsPDF
+     * Generate PDF receipt using jsPDF
      */
     async generatePDF(order: OrderResponse): Promise<string> {
-        // This is a placeholder - you would need to implement with a PDF library
-        // For now, we'll return the HTML which can be converted to PDF
-        const html = this.generateHTML(order);
+        try {
+            // Dynamically import jsPDF and html2canvas to avoid SSR issues
+            const { jsPDF } = await import('jspdf');
+            const html2canvas = await import('html2canvas').then(module => module.default);
 
-        // Convert HTML to PDF using a library like jsPDF or puppeteer
-        // Return base64 encoded PDF
+            // Create a temporary div to render the HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = this.generateHTML(order);
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.top = '0';
+            tempDiv.style.width = '80mm';
+            document.body.appendChild(tempDiv);
 
-        return btoa(html); // Placeholder: returns base64 encoded HTML
+            // Convert HTML to canvas
+            const canvas = await html2canvas(tempDiv, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                width: 226, // 80mm in pixels at 96 DPI
+                height: tempDiv.scrollHeight,
+                windowWidth: 226,
+                windowHeight: tempDiv.scrollHeight
+            });
+
+            // Remove temporary div
+            document.body.removeChild(tempDiv);
+
+            // Create PDF
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [80, 297] // 80mm width, variable height
+            });
+
+            // Add canvas to PDF
+            const imgData = canvas.toDataURL('image/png');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+            // Return PDF as base64 string
+            return pdf.output('datauristring');
+
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+
+            // Fallback: generate a simple text-based PDF
+            return this.generateFallbackPDF(order);
+        }
+    }
+
+    /**
+     * Fallback PDF generation without html2canvas
+     */
+    private async generateFallbackPDF(order: OrderResponse): Promise<string> {
+        try {
+            const { jsPDF } = await import('jspdf');
+
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [80, 297]
+            });
+
+            // Set font
+            pdf.setFont('helvetica');
+            pdf.setFontSize(10);
+
+            let yPosition = 10;
+
+            // Header
+            pdf.setFontSize(12);
+            pdf.text(this.options.companyName!, 40, yPosition, { align: 'center' });
+            yPosition += 5;
+
+            pdf.setFontSize(8);
+            pdf.text(this.options.companyAddress!, 40, yPosition, { align: 'center' });
+            yPosition += 3;
+            pdf.text(`Tel: ${this.options.companyPhone}`, 40, yPosition, { align: 'center' });
+            yPosition += 3;
+            pdf.text(`Email: ${this.options.companyEmail}`, 40, yPosition, { align: 'center' });
+            yPosition += 8;
+
+            // Separator
+            pdf.line(5, yPosition, 75, yPosition);
+            yPosition += 5;
+
+            // Title
+            pdf.setFontSize(10);
+            pdf.text('SALES RECEIPT', 40, yPosition, { align: 'center' });
+            yPosition += 4;
+            pdf.text(`#${order.id.slice(0, 8).toUpperCase()}`, 40, yPosition, { align: 'center' });
+            yPosition += 8;
+
+            // Date & Time
+            pdf.text(`Date: ${format(new Date(order.createdAt), 'dd/MM/yyyy')}`, 5, yPosition);
+            yPosition += 4;
+            pdf.text(`Time: ${format(new Date(order.createdAt), 'HH:mm:ss')}`, 5, yPosition);
+            yPosition += 8;
+
+            // Customer
+            pdf.setFont(undefined, 'bold');
+            pdf.text('CUSTOMER:', 5, yPosition);
+            pdf.setFont(undefined, 'normal');
+            yPosition += 4;
+            pdf.text(order.customerName, 5, yPosition);
+            yPosition += 4;
+            pdf.text(order.customerPhone, 5, yPosition);
+            if (order.customerEmail) {
+                yPosition += 4;
+                pdf.text(order.customerEmail, 5, yPosition);
+            }
+            yPosition += 8;
+
+            // Items
+            pdf.setFont(undefined, 'bold');
+            pdf.text('ITEMS:', 5, yPosition);
+            pdf.setFont(undefined, 'normal');
+            yPosition += 6;
+
+            order.items.forEach((item, index) => {
+                if (yPosition > 250) {
+                    pdf.addPage();
+                    yPosition = 10;
+                }
+
+                pdf.text(`${index + 1}. ${item.part.name}`, 5, yPosition);
+                yPosition += 4;
+                pdf.text(`   Part #: ${item.part.partNumber}`, 5, yPosition);
+                yPosition += 4;
+                pdf.text(`   ${item.quantity} x ${this.formatCurrency(Number(item.unitPrice))}`, 5, yPosition);
+                if (Number(item.discount) > 0) {
+                    yPosition += 4;
+                    pdf.text(`   Discount: -${this.formatCurrency(Number(item.discount))}`, 5, yPosition);
+                }
+                yPosition += 4;
+                pdf.text(`   Total: ${this.formatCurrency(Number(item.total))}`, 5, yPosition);
+                yPosition += 6;
+            });
+
+            // Totals
+            const subtotal = this.calculateSubtotal(order);
+            const discounts = this.calculateDiscounts(order);
+            const total = Number(order.totalAmount);
+
+            pdf.line(5, yPosition, 75, yPosition);
+            yPosition += 6;
+
+            pdf.text(`Subtotal: ${this.formatCurrency(subtotal)}`, 40, yPosition, { align: 'right' });
+            yPosition += 4;
+
+            if (discounts > 0) {
+                pdf.text(`Discounts: -${this.formatCurrency(discounts)}`, 40, yPosition, { align: 'right' });
+                yPosition += 4;
+            }
+
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`TOTAL: ${this.formatCurrency(total)}`, 40, yPosition, { align: 'right' });
+            yPosition += 8;
+
+            // Footer
+            pdf.setFont(undefined, 'normal');
+            pdf.setFontSize(8);
+            pdf.text('THANK YOU FOR YOUR PURCHASE!', 40, yPosition, { align: 'center' });
+            yPosition += 4;
+            pdf.text('Please keep this receipt for your records', 40, yPosition, { align: 'center' });
+            yPosition += 4;
+            pdf.text('Returns accepted within 7 days with receipt', 40, yPosition, { align: 'center' });
+
+            return pdf.output('datauristring');
+        } catch (error) {
+            console.error('Error in fallback PDF generation:', error);
+            throw new Error('Failed to generate PDF');
+        }
+    }
+
+    /**
+     * Download PDF receipt
+     */
+    async downloadPDF(order: OrderResponse, filename?: string): Promise<void> {
+        try {
+            const pdfData = await this.generatePDF(order);
+
+            // Create download link
+            const link = document.createElement('a');
+            link.href = pdfData;
+            link.download = filename || `receipt-${order.id.slice(0, 8)}.pdf`;
+            link.click();
+
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+            throw new Error('Failed to download PDF');
+        }
+    }
+
+    /**
+     * Print receipt
+     */
+    printReceipt(order: OrderResponse): void {
+        const htmlContent = this.generateHTML(order);
+        const printWindow = window.open('', '_blank');
+
+        if (printWindow) {
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            printWindow.focus();
+
+            // Wait for content to load before printing
+            printWindow.onload = () => {
+                printWindow.print();
+                // Don't close immediately - let user cancel print
+            };
+        }
     }
 
     /**

@@ -3,7 +3,7 @@ import type { DeliveryMethodEnum, OrderStatusEnum } from '../enum';
 export interface OrderItemRequest {
     partId: string;
     quantity: number;
-    unitPrice?: number;
+    unitPrice: number;
     discount?: number;
 }
 
