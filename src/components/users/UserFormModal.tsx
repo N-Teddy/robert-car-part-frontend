@@ -45,18 +45,19 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     onSubmit,
     user,
     mode,
-    selectedImage, // Receive from parent
-    onImageChange, // Receive from parent
+    selectedImage,
+    onImageChange,
 }) => {
     const isEditMode = mode === 'edit';
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [isImageRemoved, setIsImageRemoved] = useState(false);
 
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting, isDirty },
+        formState: { errors, isSubmitting },
         reset,
         setValue,
         watch,
@@ -64,33 +65,19 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
         clearErrors,
     } = useForm<CreateUserFormData | UpdateUserFormData>({
         resolver: zodResolver(isEditMode ? updateUserSchema : createUserSchema),
+        mode: 'onChange',
     });
 
     const watchedRole = watch('role');
     const currentRole = watchedRole || (user?.role as any) || 'STAFF';
 
     const roleOptions = [
-        {
-            value: 'ADMIN',
-            label: 'Administrator',
-            description: 'Full system access',
-            color: 'purple',
-        },
-        {
-            value: 'MANAGER',
-            label: 'Manager',
-            description: 'Manage teams and reports',
-            color: 'blue',
-        },
+        { value: 'ADMIN', label: 'Administrator', description: 'Full system access', color: 'purple' },
+        { value: 'MANAGER', label: 'Manager', description: 'Manage teams and reports', color: 'blue' },
         { value: 'DEV', label: 'Developer', description: 'Technical access', color: 'indigo' },
         { value: 'SALES', label: 'Sales', description: 'Sales operations', color: 'green' },
         { value: 'STAFF', label: 'Staff', description: 'General staff access', color: 'yellow' },
-        {
-            value: 'CUSTOMER',
-            label: 'Customer',
-            description: 'Customer portal access',
-            color: 'gray',
-        },
+        { value: 'CUSTOMER', label: 'Customer', description: 'Customer portal access', color: 'gray' },
     ];
 
     const getRoleColor = (role: string) => {
@@ -185,7 +172,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
     const colorClasses = getColorClasses(currentColor);
 
-    // Handle image selection - use onImageChange from props
+    // Handle image selection
     const handleImageSelect = (file: File) => {
         const validationError = validateImageFile(file);
         if (validationError) {
@@ -197,7 +184,8 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
         }
 
         clearErrors('image');
-        onImageChange(file); // Use parent's function instead of local state
+        onImageChange(file);
+        setIsImageRemoved(false); // Reset removal flag if new file is added
 
         // Create preview
         const reader = new FileReader();
@@ -236,10 +224,11 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
         }
     };
 
-    // Remove selected image - use onImageChange from props
+    // Remove selected image
     const handleRemoveImage = () => {
-        onImageChange(null); // Use parent's function instead of local state
+        onImageChange(null);
         setImagePreview(null);
+        setIsImageRemoved(true);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -262,6 +251,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
     useEffect(() => {
         if (isEditMode && user) {
+            // Set form values
             setValue('fullName', user.fullName);
             setValue('email', user.email);
             setValue('phoneNumber', user.phoneNumber);
@@ -272,14 +262,18 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
             if (user.profileImage?.url) {
                 setImagePreview(user.profileImage.url);
             }
+
+            // Reset image removal state when modal opens
+            setIsImageRemoved(false);
         } else {
             reset();
             setImagePreview(null);
+            setIsImageRemoved(false);
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
         }
-    }, [user, isEditMode, setValue, reset]);
+    }, [user, isEditMode, setValue, reset, isOpen]);
 
     // Update image preview when selectedImage changes from parent
     useEffect(() => {
@@ -296,25 +290,57 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
     const handleFormSubmit = async (data: any) => {
         try {
-            // Prepare form data with image file
+            console.log('Form data before submission:', data);
+            console.log('Selected image:', selectedImage);
+            console.log('Is image removed:', isImageRemoved);
+
+            // Prepare form data - FOLLOWING THE CATEGORY FORM PATTERN
             const formData = new FormData();
 
-            // Append all form fields
-            Object.keys(data).forEach((key) => {
-                if (key !== 'image' && data[key] !== undefined && data[key] !== null) {
-                    formData.append(key, data[key]);
-                }
-            });
+            // Append all form data - ALWAYS send all fields like CategoryFormModal does
+            formData.append('fullName', data.fullName);
+            formData.append('email', data.email);
 
-            // Append image file if selected - using 'image' field name
-            if (selectedImage) {
+            if (data.phoneNumber) {
+                formData.append('phoneNumber', data.phoneNumber);
+            } else {
+                formData.append('phoneNumber', '');
+            }
+
+            formData.append('role', data.role);
+            formData.append('isActive', data.isActive.toString());
+
+            // Handle image based on mode and actions - LIKE CATEGORY FORM
+            if (mode === 'create') {
+                // For create, image is required
+                if (!selectedImage) {
+                    alert('Please upload a profile image');
+                    return;
+                }
                 formData.append('image', selectedImage);
+            } else if (mode === 'edit') {
+                // For edit, handle different scenarios LIKE CATEGORY FORM
+                if (selectedImage) {
+                    // New image uploaded
+                    formData.append('image', selectedImage);
+                } else if (isImageRemoved) {
+                    // Image was removed by user
+                    formData.append('removeImage', 'true');
+                }
+                // If neither, keep the existing image (no action needed)
+            }
+
+            // Log the form data for debugging
+            console.log('FormData contents:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
             }
 
             await onSubmit(formData);
             reset();
-            onImageChange(null); // Reset image in parent
+            onImageChange(null);
             setImagePreview(null);
+            setIsImageRemoved(false);
             onClose();
         } catch (error) {
             console.error('Form submission error:', error);
@@ -325,19 +351,20 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
         }
     };
 
+    // Check if form can be submitted
+    const canSubmit = mode === 'create' ? true : true; // Always enabled for both modes like CategoryFormModal
+
     if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm">
             <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                {/* Background overlay with blur */}
                 <div
                     className="fixed inset-0 transition-opacity "
                     onClick={onClose}
                     aria-hidden="true"
                 />
 
-                {/* Center modal */}
                 <span
                     className="hidden sm:inline-block sm:align-middle sm:h-screen"
                     aria-hidden="true"
@@ -345,7 +372,6 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                     &#8203;
                 </span>
 
-                {/* Modal panel with animation */}
                 <div className="relative z-40 inline-block overflow-hidden text-left align-bottom transition-all duration-300 transform bg-white shadow-2xl rounded-xl sm:my-8 sm:align-middle sm:max-w-xl sm:w-full animate-in fade-in zoom-in">
                     {/* Header with dynamic gradient */}
                     <div className={`bg-gradient-to-r ${colorClasses.gradient} px-6 py-4`}>
@@ -393,11 +419,10 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                 <div className="space-y-4">
                                     {/* Drag and Drop Area */}
                                     <div
-                                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${
-                                            isDragging
-                                                ? 'border-red-500 bg-red-50'
-                                                : 'border-gray-300 hover:border-gray-400 bg-gray-50'
-                                        }`}
+                                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${isDragging
+                                            ? 'border-red-500 bg-red-50'
+                                            : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+                                            }`}
                                         onDragOver={handleDragOver}
                                         onDragLeave={handleDragLeave}
                                         onDrop={handleDrop}
@@ -413,7 +438,6 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
                                         {imagePreview ? (
                                             <div className="flex items-center justify-center space-x-6">
-                                                {/* Image Preview */}
                                                 <div className="relative">
                                                     <div className="w-20 h-20 overflow-hidden bg-white border-2 border-gray-200 rounded-full shadow-sm">
                                                         <img
@@ -434,7 +458,6 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                                     </button>
                                                 </div>
 
-                                                {/* Image Info */}
                                                 <div className="text-left">
                                                     <p className="text-sm font-medium text-gray-900">
                                                         Profile image selected
@@ -476,8 +499,8 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                         )}
                                     </div>
 
-                                    {/* Existing Image Info */}
-                                    {isEditMode && user?.profileImage && !selectedImage && (
+                                    {/* Existing Image Info - LIKE CATEGORY FORM */}
+                                    {isEditMode && user?.profileImage && !selectedImage && !isImageRemoved && (
                                         <div className="p-3 border border-blue-200 rounded-lg bg-blue-50">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center space-x-3">
@@ -501,6 +524,12 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                                 </button>
                                             </div>
                                         </div>
+                                    )}
+
+                                    {mode === 'edit' && isImageRemoved && (
+                                        <p className="mt-2 text-xs text-blue-500">
+                                            Image will be removed when you save changes
+                                        </p>
                                     )}
 
                                     {errors.image && (
@@ -585,11 +614,10 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                                 return (
                                                     <label
                                                         key={option.value}
-                                                        className={`relative flex items-start p-3 border rounded-lg cursor-pointer transition-all ${
-                                                            isSelected
-                                                                ? `${optionColorClasses.border} ${optionColorClasses.bg} ring-2 ${optionColorClasses.ring}`
-                                                                : 'border-gray-200 hover:border-gray-300'
-                                                        }`}
+                                                        className={`relative flex items-start p-3 border rounded-lg cursor-pointer transition-all ${isSelected
+                                                            ? `${optionColorClasses.border} ${optionColorClasses.bg} ring-2 ${optionColorClasses.ring}`
+                                                            : 'border-gray-200 hover:border-gray-300'
+                                                            }`}
                                                     >
                                                         <input
                                                             {...register('role')}
@@ -599,20 +627,18 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                                         />
                                                         <div className="flex-1">
                                                             <p
-                                                                className={`text-sm font-medium ${
-                                                                    isSelected
-                                                                        ? `${optionColorClasses.text}`
-                                                                        : 'text-gray-900'
-                                                                }`}
+                                                                className={`text-sm font-medium ${isSelected
+                                                                    ? `${optionColorClasses.text}`
+                                                                    : 'text-gray-900'
+                                                                    }`}
                                                             >
                                                                 {option.label}
                                                             </p>
                                                             <p
-                                                                className={`text-xs mt-0.5 ${
-                                                                    isSelected
-                                                                        ? `${optionColorClasses.text}`
-                                                                        : 'text-gray-500'
-                                                                }`}
+                                                                className={`text-xs mt-0.5 ${isSelected
+                                                                    ? `${optionColorClasses.text}`
+                                                                    : 'text-gray-500'
+                                                                    }`}
                                                             >
                                                                 {option.description}
                                                             </p>
@@ -674,7 +700,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                             </div>
                         </div>
 
-                        {/* Footer - Fixed to be always visible */}
+                        {/* Footer */}
                         <div className="flex justify-end px-6 py-4 space-x-3 border-t border-gray-200 bg-gray-50">
                             <Button
                                 type="button"
@@ -691,7 +717,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                 size="sm"
                                 icon={<Save size={16} />}
                                 isLoading={isSubmitting}
-                                disabled={!isDirty && isEditMode && !selectedImage}
+                                disabled={mode === 'create' && !selectedImage}
                                 className={colorClasses.button}
                             >
                                 {isEditMode ? 'Update User' : 'Create User'}

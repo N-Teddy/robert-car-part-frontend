@@ -69,18 +69,13 @@ export const UsersListPage: React.FC = () => {
         setFormModal({ isOpen: true, mode: 'create', user: null });
     };
 
-    const handleFormSubmit = async (data: any) => {
+    const handleFormSubmit = async (formData: FormData) => {
         try {
-            const formData = new FormData();
+            console.log('FormData received in parent:', formData);
 
-            Object.keys(data).forEach((key) => {
-                if (key !== 'image' && data[key] !== undefined && data[key] !== null) {
-                    formData.append(key, data[key]);
-                }
-            });
-
-            if (selectedImage) {
-                formData.append('image', selectedImage);
+            // Log all FormData entries for debugging
+            for (let [key, value] of formData.entries()) {
+                console.log(key, value);
             }
 
             if (formModal.mode === 'edit' && formModal.user) {
