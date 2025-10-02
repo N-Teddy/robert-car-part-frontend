@@ -18,12 +18,13 @@ import {
     Clock,
     CheckCircle,
     AlertCircle,
+    Download,
 } from 'lucide-react';
 import type { OrderResponse } from '../../types/response/order';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { format, formatDistanceToNow } from 'date-fns';
 import { StatusBadge } from './StatusBadge';
-import { OrderReceipt } from './OrderReceipt';
+import { receiptGenerator } from '../../utils/receiptGenerator';
 
 interface OrderViewModalProps {
     isOpen: boolean;
@@ -42,18 +43,34 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
     onDelete,
     onDuplicate,
 }) => {
-    const [showReceipt, setShowReceipt] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState(order?.status || 'PENDING');
+    const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
 
     if (!isOpen || !order) return null;
 
     const canEdit = order.status !== 'COMPLETED' && order.status !== 'CANCELLED';
 
-    const handlePrint = () => {
-        setShowReceipt(true);
-        setTimeout(() => {
-            window.print();
-        }, 100);
+    const handlePrintReceipt = async () => {
+        try {
+            setIsGeneratingReceipt(true);
+            receiptGenerator.printReceipt(order);
+        } catch (error) {
+            console.error('Error printing receipt:', error);
+            alert('Failed to print receipt. Please try again.');
+        } finally {
+            setIsGeneratingReceipt(false);
+        }
+    };
+
+    const handleDownloadReceipt = async () => {
+        try {
+            setIsGeneratingReceipt(true);
+            await receiptGenerator.downloadPDF(order);
+        } catch (error) {
+            console.error('Error downloading receipt:', error);
+            alert('Failed to download receipt. Please try again.');
+        } finally {
+            setIsGeneratingReceipt(false);
+        }
     };
 
     const getStatusIcon = (status: string) => {
@@ -135,11 +152,20 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <button
-                                        onClick={handlePrint}
-                                        className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
+                                        onClick={handlePrintReceipt}
+                                        disabled={isGeneratingReceipt}
+                                        className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         <Printer className="w-4 h-4 mr-1.5" />
-                                        Print Receipt
+                                        {isGeneratingReceipt ? 'Generating...' : 'Print Receipt'}
+                                    </button>
+                                    <button
+                                        onClick={handleDownloadReceipt}
+                                        disabled={isGeneratingReceipt}
+                                        className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <Download className="w-4 h-4 mr-1.5" />
+                                        {isGeneratingReceipt ? 'Generating...' : 'Download PDF'}
                                     </button>
                                     <button
                                         onClick={onDuplicate}
@@ -428,9 +454,6 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                     </div>
                 </div>
             </div>
-
-            {/* Receipt Modal for Printing */}
-            {showReceipt && <OrderReceipt order={order} onClose={() => setShowReceipt(false)} />}
         </>
     );
 };

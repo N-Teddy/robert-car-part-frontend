@@ -17,6 +17,7 @@ import { Stepper } from '../ui/Stepper';
 import { ItemSelector } from './ItemSelector';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { usePart } from '../../hooks/partHook';
+import { partApi } from '../../api/partApi';
 
 interface OrderFormModalProps {
     isOpen: boolean;
@@ -26,6 +27,13 @@ interface OrderFormModalProps {
     savedCustomers: Array<{ name: string; phone: string; email: string }>;
     onClose: () => void;
     onSubmit: (data: CreateOrderRequest) => void;
+}
+
+interface SelectedItem {
+    partId: string;
+    quantity: number;
+    unitPrice: number;
+    discount: number;
 }
 
 export const OrderFormModal: React.FC<OrderFormModalProps> = ({
@@ -48,6 +56,8 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
     const [orderItems, setOrderItems] = useState<OrderItemRequest[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [fetchingPartId, setFetchingPartId] = useState<string | null>(null);
 
     const { useGetPartById } = usePart();
 
@@ -82,6 +92,34 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
         setCurrentStep(1);
         setErrors({});
     }, [mode, order, isOpen]);
+
+    const convertToSelectedItems = (items: OrderItemRequest[]): SelectedItem[] => {
+        return items.map(item => ({
+            partId: item.partId,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice || 0,
+            discount: item.discount || 0,
+        }));
+    };
+
+    const handleFetchPartById = async (partId: string): Promise<Part | null> => {
+        try {
+            setFetchingPartId(partId);
+
+            // Use partApi directly - this avoids the hook call issue
+            const response = await partApi.getPart(partId);
+
+            // Adjust this based on your API response structure
+            // If your API returns { data: Part }, use response.data
+            // If it returns Part directly, use response
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching part:', error);
+            return null;
+        } finally {
+            setFetchingPartId(null);
+        }
+    };
 
     // ItemSelector handlers
     const handleItemAdd = (part: Part) => {
@@ -479,11 +517,13 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                 {/* ItemSelector Component */}
                                 <ItemSelector
                                     parts={parts}
-                                    selectedItems={orderItems}
+                                    selectedItems={convertToSelectedItems(orderItems)}
                                     onItemAdd={handleItemAdd}
                                     onItemUpdate={handleItemUpdate}
                                     onItemRemove={handleItemRemove}
                                     onDiscountUpdate={handleDiscountUpdate}
+                                    onFetchPartById={handleFetchPartById}
+                                    fetchingPartId={fetchingPartId}
                                 />
                             </div>
                         </div>
