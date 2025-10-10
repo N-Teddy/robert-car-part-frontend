@@ -66,7 +66,7 @@ export const OrdersPage: React.FC = () => {
     // Queries
     const { data: ordersData, isLoading, refetch } = useGetAllOrders(filters);
     const { data: stats } = useGetOrderStats();
-    const { data: partsData } = useGetAllParts({ limit: 100 });
+    const { data: partsData } = useGetAllParts({ page: 1, limit: 1000 });
 
     // Mutations
     const createMutation = useCreateOrder();
@@ -211,6 +211,10 @@ export const OrdersPage: React.FC = () => {
                 return orderDate === today && order.status === 'COMPLETED';
             })
             .reduce((sum, order) => sum + Number(order.totalAmount), 0) || 0;
+
+    console.log('Parts available:', partsData);
+
+
 
     return (
         <div className="px-4 py-8 sm:px-6 lg:px-8">
@@ -359,7 +363,7 @@ export const OrdersPage: React.FC = () => {
             )}
 
             {/* Statistics Section */}
-            <OrderStats stats={stats} />
+            {/* <OrderStats stats={stats} /> */}
 
             {/* Modals */}
             <OrderFormModal

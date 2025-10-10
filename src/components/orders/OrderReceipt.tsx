@@ -44,7 +44,7 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({ order, onClose }) =>
     return (
         <>
             {/* Print Styles */}
-            <style jsx>{`
+            <style>{`
                 @media print {
                     body * {
                         visibility: hidden;

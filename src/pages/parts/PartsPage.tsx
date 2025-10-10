@@ -406,7 +406,7 @@ export const PartsPage: React.FC = () => {
             )}
 
             {/* Statistics Section */}
-            <PartStats categoryStats={categoryStats} />
+            {/* <PartStats categoryStats={categoryStats} /> */}
 
             {/* Modals */}
             <PartFormModal

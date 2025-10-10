@@ -18,6 +18,12 @@ export interface PartResponse {
         id: string;
         name: string;
     };
+    images?: Array<{
+        id: string;
+        url: string;
+        publicId: string;
+        format: string;
+    }>;
     vehicleId?: string;
     categoryId?: string;
     createdAt: string;
