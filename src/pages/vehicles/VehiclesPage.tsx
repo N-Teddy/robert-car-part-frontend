@@ -324,7 +324,7 @@ export const VehiclesPage: React.FC = () => {
             )}
 
             {/* Statistics Section */}
-            <VehicleStats makeModelStats={makeModelStats} />
+            {/* <VehicleStats makeModelStats={makeModelStats} /> */}
 
             {/* Modals */}
             <VehicleFormModal
