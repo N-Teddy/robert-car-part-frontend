@@ -1,6 +1,6 @@
 // src/components/vehicles/VehicleStats.tsx
 import React from 'react';
-import { TrendingUp, TrendingDown, Car, Wrench } from 'lucide-react';
+import { Car, Wrench } from 'lucide-react';
 
 interface VehicleStatsProps {
     makeModelStats?: {

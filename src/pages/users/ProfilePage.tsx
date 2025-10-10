@@ -93,7 +93,7 @@ export const ProfilePage: React.FC = () => {
                                     {/* Avatar */}
                                     <div className="relative inline-block">
                                         <div className="flex items-center justify-center w-32 h-32 mx-auto text-3xl font-semibold text-white rounded-full bg-gradient-to-br from-red-500 to-red-600">
-                                            {currentProfile?.profileImage? (
+                                            {currentProfile?.profileImage ? (
                                                 <img
                                                     src={currentProfile.profileImage.url}
                                                     alt={currentProfile.fullName}

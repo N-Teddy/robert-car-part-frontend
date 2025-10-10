@@ -125,7 +125,10 @@ export const PartsPage: React.FC = () => {
             closeModal('create');
             refetch();
         } catch (error: any) {
-            setToast({ message: error.message || 'Failed to create part', title: 'Error Creating' });
+            setToast({
+                message: error.message || 'Failed to create part',
+                title: 'Error Creating',
+            });
         }
     };
 
@@ -137,7 +140,10 @@ export const PartsPage: React.FC = () => {
             closeModal('edit');
             refetch();
         } catch (error: any) {
-            setToast({ message: error.message || 'Failed to update part', title: 'Error Updating' });
+            setToast({
+                message: error.message || 'Failed to update part',
+                title: 'Error Updating',
+            });
         }
     };
 
@@ -149,7 +155,10 @@ export const PartsPage: React.FC = () => {
             closeModal('delete');
             refetch();
         } catch (error: any) {
-            setToast({ message: error.message || 'Failed to delete part', title: 'Error Deleting' });
+            setToast({
+                message: error.message || 'Failed to delete part',
+                title: 'Error Deleting',
+            });
         }
     };
 
@@ -182,8 +191,8 @@ export const PartsPage: React.FC = () => {
                 p.name,
                 p.partNumber,
                 vehiclesData?.items.find((v) => v.id === p.vehicleId)?.make +
-                ' ' +
-                vehiclesData?.items.find((v) => v.id === p.vehicleId)?.model || '',
+                    ' ' +
+                    vehiclesData?.items.find((v) => v.id === p.vehicleId)?.model || '',
                 categoriesData?.items.find((c) => c.id === p.categoryId)?.name || '',
                 p.price,
                 p.quantity,
@@ -207,12 +216,7 @@ export const PartsPage: React.FC = () => {
 
     return (
         <div className="px-4 py-8 sm:px-6 lg:px-8">
-            {toast && (
-                <NotificationToast
-                    notification={toast}
-                    onClose={() => setToast(null)}
-                />
-            )}
+            {toast && <NotificationToast notification={toast} onClose={() => setToast(null)} />}
 
             {/* Header */}
             <div className="mb-8">

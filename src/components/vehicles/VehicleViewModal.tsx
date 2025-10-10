@@ -15,8 +15,6 @@ import {
     ChevronLeft,
     ChevronRight,
     ZoomIn,
-    ExternalLink,
-    Hash,
     Info,
     Image as ImageIcon,
     Download,

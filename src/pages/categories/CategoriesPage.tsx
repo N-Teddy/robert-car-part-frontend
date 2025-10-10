@@ -1,15 +1,6 @@
 // src/pages/categories/CategoriesPage.tsx
 import React, { useState, useMemo } from 'react';
-import {
-    Plus,
-    Search,
-    Grid3x3,
-    List,
-    Download,
-    FolderTree,
-    Package,
-    Layers
-} from 'lucide-react';
+import { Plus, Search, Grid3x3, List, Download, FolderTree, Package, Layers } from 'lucide-react';
 import { CategoryTree } from '../../components/categories/CategoryTree';
 import { CategoryGrid } from '../../components/categories/CategoryGrid';
 import { CategoryFormModal } from '../../components/categories/CategoryFormModal';
@@ -68,13 +59,15 @@ export const CategoriesPage: React.FC = () => {
 
     // Calculate statistics
     const stats = useMemo(() => {
-        const countCategories = (cats: CategoryWithChildren[]): { total: number; withChildren: number; products: number } => {
+        const countCategories = (
+            cats: CategoryWithChildren[]
+        ): { total: number; withChildren: number; products: number } => {
             let total = 0;
             let withChildren = 0;
             let products = 0;
 
             const traverse = (items: CategoryWithChildren[]) => {
-                items.forEach(item => {
+                items.forEach((item) => {
                     total++;
                     if (item.children && item.children.length > 0) {
                         withChildren++;
@@ -98,7 +91,8 @@ export const CategoriesPage: React.FC = () => {
 
         const filterRecursive = (items: CategoryWithChildren[]): CategoryWithChildren[] => {
             return items.reduce((acc: CategoryWithChildren[], item) => {
-                const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                const matchesSearch =
+                    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                     item.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
                 const filteredChildren = item.children ? filterRecursive(item.children) : [];
@@ -110,7 +104,7 @@ export const CategoriesPage: React.FC = () => {
                     });
                     // Auto-expand parent if children match
                     if (filteredChildren.length > 0 && !expandedNodes.includes(item.id)) {
-                        setExpandedNodes(prev => [...prev, item.id]);
+                        setExpandedNodes((prev) => [...prev, item.id]);
                     }
                 }
 
@@ -177,8 +171,10 @@ export const CategoriesPage: React.FC = () => {
         const rows = ['Name,Description,Parent,Products Count'];
 
         const traverse = (items: CategoryWithChildren[], parent = '') => {
-            items.forEach(item => {
-                rows.push(`"${item.name}","${item.description || ''}","${parent}","${(item as any).productsCount || 0}"`);
+            items.forEach((item) => {
+                rows.push(
+                    `"${item.name}","${item.description || ''}","${parent}","${(item as any).productsCount || 0}"`
+                );
                 if (item.children && item.children.length > 0) {
                     traverse(item.children, item.name);
                 }
@@ -202,7 +198,7 @@ export const CategoriesPage: React.FC = () => {
     const expandAll = () => {
         const allIds: string[] = [];
         const traverse = (items: CategoryWithChildren[]) => {
-            items.forEach(item => {
+            items.forEach((item) => {
                 if (item.children && item.children.length > 0) {
                     allIds.push(item.id);
                     traverse(item.children);
@@ -220,11 +216,7 @@ export const CategoriesPage: React.FC = () => {
     return (
         <>
             {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
+                <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
             )}
 
             <CategoryFormModal
@@ -237,8 +229,11 @@ export const CategoriesPage: React.FC = () => {
                     refetch();
                     setFormModal({ isOpen: false, mode: 'create', category: null });
                     setToast({
-                        message: formModal.mode === 'create' ? 'Category created successfully' : 'Category updated successfully',
-                        type: 'success'
+                        message:
+                            formModal.mode === 'create'
+                                ? 'Category created successfully'
+                                : 'Category updated successfully',
+                        type: 'success',
                     });
                 }}
             />
@@ -299,8 +294,12 @@ export const CategoriesPage: React.FC = () => {
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Total Categories</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
+                                <p className="text-sm font-medium text-gray-600">
+                                    Total Categories
+                                </p>
+                                <p className="text-2xl font-bold text-gray-900 mt-1">
+                                    {stats.total}
+                                </p>
                             </div>
                             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                                 <FolderTree className="w-6 h-6 text-blue-600" />
@@ -311,8 +310,12 @@ export const CategoriesPage: React.FC = () => {
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Parent Categories</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.withChildren}</p>
+                                <p className="text-sm font-medium text-gray-600">
+                                    Parent Categories
+                                </p>
+                                <p className="text-2xl font-bold text-gray-900 mt-1">
+                                    {stats.withChildren}
+                                </p>
                             </div>
                             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                                 <Layers className="w-6 h-6 text-green-600" />
@@ -324,7 +327,9 @@ export const CategoriesPage: React.FC = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Total Products</p>
-                                <p className="text-2xl font-bold text-gray-900 mt-1">{stats.products}</p>
+                                <p className="text-2xl font-bold text-gray-900 mt-1">
+                                    {stats.products}
+                                </p>
                             </div>
                             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                                 <Package className="w-6 h-6 text-purple-600" />
@@ -352,18 +357,10 @@ export const CategoriesPage: React.FC = () => {
                         <div className="flex items-center space-x-2">
                             {viewMode === 'tree' && (
                                 <>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={expandAll}
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={expandAll}>
                                         Expand All
                                     </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={collapseAll}
-                                    >
+                                    <Button variant="ghost" size="sm" onClick={collapseAll}>
                                         Collapse All
                                     </Button>
                                 </>
@@ -372,20 +369,22 @@ export const CategoriesPage: React.FC = () => {
                             <div className="flex items-center bg-gray-100 rounded-lg p-1">
                                 <button
                                     onClick={() => setViewMode('tree')}
-                                    className={`p-2 rounded transition-colors ${viewMode === 'tree'
-                                        ? 'bg-white text-red-600 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
-                                        }`}
+                                    className={`p-2 rounded transition-colors ${
+                                        viewMode === 'tree'
+                                            ? 'bg-white text-red-600 shadow-sm'
+                                            : 'text-gray-500 hover:text-gray-700'
+                                    }`}
                                     title="Tree View"
                                 >
                                     <List size={18} />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2 rounded transition-colors ${viewMode === 'grid'
-                                        ? 'bg-white text-red-600 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
-                                        }`}
+                                    className={`p-2 rounded transition-colors ${
+                                        viewMode === 'grid'
+                                            ? 'bg-white text-red-600 shadow-sm'
+                                            : 'text-gray-500 hover:text-gray-700'
+                                    }`}
                                     title="Grid View"
                                 >
                                     <Grid3x3 size={18} />
@@ -414,9 +413,13 @@ export const CategoriesPage: React.FC = () => {
                     ) : filteredCategories.length === 0 ? (
                         <div className="p-12 text-center">
                             <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-1">No categories found</h3>
+                            <h3 className="text-lg font-medium text-gray-900 mb-1">
+                                No categories found
+                            </h3>
                             <p className="text-sm text-gray-500">
-                                {searchTerm ? 'Try adjusting your search' : 'Get started by creating your first category'}
+                                {searchTerm
+                                    ? 'Try adjusting your search'
+                                    : 'Get started by creating your first category'}
                             </p>
                             {!searchTerm && (
                                 <Button
@@ -437,9 +440,9 @@ export const CategoriesPage: React.FC = () => {
                                     categories={filteredCategories}
                                     expandedNodes={expandedNodes}
                                     onToggleExpand={(nodeId) => {
-                                        setExpandedNodes(prev =>
+                                        setExpandedNodes((prev) =>
                                             prev.includes(nodeId)
-                                                ? prev.filter(id => id !== nodeId)
+                                                ? prev.filter((id) => id !== nodeId)
                                                 : [...prev, nodeId]
                                         );
                                     }}

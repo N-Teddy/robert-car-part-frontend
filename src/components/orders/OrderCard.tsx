@@ -9,11 +9,11 @@ import {
     DollarSign,
     Eye,
     Edit2,
-    Copy,
     XCircle,
     ChevronDown,
     ChevronUp,
     AlertCircle,
+    CheckCircle,
 } from 'lucide-react';
 import type { OrderResponse } from '../../types/response/order';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -25,7 +25,7 @@ interface OrderCardProps {
     onView: (order: OrderResponse) => void;
     onEdit: (order: OrderResponse) => void;
     onDelete: (order: OrderResponse) => void;
-    onDuplicate: (order: OrderResponse) => void;
+    onComplete: (order: OrderResponse) => void;
 }
 
 export const OrderCard: React.FC<OrderCardProps> = ({
@@ -33,12 +33,13 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     onView,
     onEdit,
     onDelete,
-    onDuplicate,
+    onComplete,
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const canEdit = order.status !== 'COMPLETED' && order.status !== 'CANCELLED';
     const canCancel = order.status === 'PENDING';
+    const canComplete = order.status !== 'COMPLETED' && order.status !== 'CANCELLED';
 
     const getStatusGradient = () => {
         switch (order.status) {
@@ -98,6 +99,15 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                         >
                             <Eye size={18} />
                         </button>
+                        {canComplete && (
+                            <button
+                                onClick={() => onComplete(order)}
+                                className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                title="Complete Order"
+                            >
+                                <CheckCircle size={18} />
+                            </button>
+                        )}
                         {canEdit && (
                             <button
                                 onClick={() => onEdit(order)}
@@ -107,13 +117,6 @@ export const OrderCard: React.FC<OrderCardProps> = ({
                                 <Edit2 size={18} />
                             </button>
                         )}
-                        <button
-                            onClick={() => onDuplicate(order)}
-                            className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                            title="Duplicate Order"
-                        >
-                            <Copy size={18} />
-                        </button>
                         {canCancel && (
                             <button
                                 onClick={() => onDelete(order)}

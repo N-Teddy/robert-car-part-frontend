@@ -8,7 +8,6 @@ import {
     Edit2,
     Trash2,
     ChevronRight,
-    Image as ImageIcon,
     FolderOpen,
 } from 'lucide-react';
 import { Button } from '../ui/Button';

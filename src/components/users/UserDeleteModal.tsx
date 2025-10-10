@@ -23,7 +23,7 @@ export const UserDeleteModal: React.FC<UserDeleteModalProps> = ({
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
-            day: 'numeric'
+            day: 'numeric',
         });
     };
 
@@ -36,7 +36,7 @@ export const UserDeleteModal: React.FC<UserDeleteModalProps> = ({
             SALES: { name: 'Sales', color: 'text-green-600 bg-green-100', severity: 'medium' },
             STAFF: { name: 'Staff', color: 'text-orange-600 bg-orange-100', severity: 'medium' },
             CUSTOMER: { name: 'Customer', color: 'text-gray-600 bg-gray-100', severity: 'low' },
-            UNKNOWN: { name: 'Unknown', color: 'text-gray-400 bg-gray-100', severity: 'low' }
+            UNKNOWN: { name: 'Unknown', color: 'text-gray-400 bg-gray-100', severity: 'low' },
         };
         return roleConfig[role as keyof typeof roleConfig] || roleConfig.UNKNOWN;
     };
@@ -47,35 +47,35 @@ export const UserDeleteModal: React.FC<UserDeleteModalProps> = ({
     const getRoleWarnings = (role: string) => {
         const warnings = {
             ADMIN: [
-                "This user has full system administrator privileges",
-                "Deleting an admin may affect system operations",
-                "Ensure another admin exists to manage the system"
+                'This user has full system administrator privileges',
+                'Deleting an admin may affect system operations',
+                'Ensure another admin exists to manage the system',
             ],
             MANAGER: [
-                "This user has managerial access and permissions",
-                "They may be managing other users or important data",
-                "Verify no critical processes depend on this account"
+                'This user has managerial access and permissions',
+                'They may be managing other users or important data',
+                'Verify no critical processes depend on this account',
             ],
             DEV: [
-                "This user has developer-level access",
-                "They may have access to development tools and systems",
-                "Check if they are responsible for any ongoing projects"
+                'This user has developer-level access',
+                'They may have access to development tools and systems',
+                'Check if they are responsible for any ongoing projects',
             ],
             SALES: [
-                "This user has sales team access",
-                "They may have customer relationships or sales pipelines",
-                "Consider transferring any active sales activities"
+                'This user has sales team access',
+                'They may have customer relationships or sales pipelines',
+                'Consider transferring any active sales activities',
             ],
             STAFF: [
-                "This user has staff-level access",
-                "They may be involved in daily operations",
-                "Verify no critical tasks are assigned to this account"
+                'This user has staff-level access',
+                'They may be involved in daily operations',
+                'Verify no critical tasks are assigned to this account',
             ],
             CUSTOMER: [
-                "This is a customer account",
-                "Deleting will remove their order history and preferences",
-                "Consider disabling instead of deleting for record keeping"
-            ]
+                'This is a customer account',
+                'Deleting will remove their order history and preferences',
+                'Consider disabling instead of deleting for record keeping',
+            ],
         };
         return warnings[role as keyof typeof warnings] || [];
     };
@@ -133,7 +133,9 @@ export const UserDeleteModal: React.FC<UserDeleteModalProps> = ({
                                     <p className="text-lg font-semibold text-gray-900 truncate">
                                         {user.fullName}
                                     </p>
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${roleInfo.color}`}>
+                                    <span
+                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${roleInfo.color}`}
+                                    >
                                         <Shield className="w-3 h-3 mr-1" />
                                         {roleInfo.name}
                                     </span>
@@ -159,12 +161,18 @@ export const UserDeleteModal: React.FC<UserDeleteModalProps> = ({
                                 </div>
 
                                 <div className="flex items-center mt-2">
-                                    <div className={`inline-flex items-center px-2 py-1 rounded text-xs ${user.isActive
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'
-                                        }`}>
-                                        <div className={`w-1.5 h-1.5 rounded-full mr-1 ${user.isActive ? 'bg-green-500' : 'bg-red-500'
-                                            }`} />
+                                    <div
+                                        className={`inline-flex items-center px-2 py-1 rounded text-xs ${
+                                            user.isActive
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-red-100 text-red-800'
+                                        }`}
+                                    >
+                                        <div
+                                            className={`w-1.5 h-1.5 rounded-full mr-1 ${
+                                                user.isActive ? 'bg-green-500' : 'bg-red-500'
+                                            }`}
+                                        />
                                         {user.isActive ? 'Active' : 'Inactive'}
                                     </div>
                                 </div>
@@ -209,7 +217,9 @@ export const UserDeleteModal: React.FC<UserDeleteModalProps> = ({
                                         <ul className="mt-1 space-y-1 list-disc list-inside">
                                             <li>They may be currently using the system</li>
                                             <li>Active sessions will be terminated immediately</li>
-                                            <li>Consider disabling the account instead of deleting</li>
+                                            <li>
+                                                Consider disabling the account instead of deleting
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -226,7 +236,8 @@ export const UserDeleteModal: React.FC<UserDeleteModalProps> = ({
                                     Permanent Deletion
                                 </p>
                                 <p className="text-xs text-red-700 mt-0.5">
-                                    All user data, preferences, and access will be permanently removed and cannot be recovered.
+                                    All user data, preferences, and access will be permanently
+                                    removed and cannot be recovered.
                                 </p>
                             </div>
                         </div>

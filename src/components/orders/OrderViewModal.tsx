@@ -6,18 +6,14 @@ import {
     User,
     Phone,
     Mail,
-    Calendar,
     Truck,
     Package,
-    DollarSign,
     FileText,
     Printer,
     Edit2,
-    Copy,
     XCircle,
     Clock,
     CheckCircle,
-    AlertCircle,
     Download,
     Image as ImageIcon,
     ChevronLeft,
@@ -35,7 +31,7 @@ interface OrderViewModalProps {
     onClose: () => void;
     onEdit: () => void;
     onDelete: () => void;
-    onDuplicate: () => void;
+    onComplete: () => void;
 }
 
 export const OrderViewModal: React.FC<OrderViewModalProps> = ({
@@ -44,7 +40,7 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
     onClose,
     onEdit,
     onDelete,
-    onDuplicate,
+    onComplete,
 }) => {
     const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
     const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
@@ -83,32 +79,17 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
     };
 
     const nextImage = (itemId: string, currentIndex: number, totalImages: number) => {
-        setImageIndexes(prev => ({
+        setImageIndexes((prev) => ({
             ...prev,
-            [itemId]: (currentIndex + 1) % totalImages
+            [itemId]: (currentIndex + 1) % totalImages,
         }));
     };
 
     const prevImage = (itemId: string, currentIndex: number, totalImages: number) => {
-        setImageIndexes(prev => ({
+        setImageIndexes((prev) => ({
             ...prev,
-            [itemId]: (currentIndex - 1 + totalImages) % totalImages
+            [itemId]: (currentIndex - 1 + totalImages) % totalImages,
         }));
-    };
-
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'PENDING':
-                return <Clock className="w-5 h-5 text-yellow-600" />;
-            case 'PROCESSING':
-                return <AlertCircle className="w-5 h-5 text-blue-600" />;
-            case 'COMPLETED':
-                return <CheckCircle className="w-5 h-5 text-green-600" />;
-            case 'CANCELLED':
-                return <XCircle className="w-5 h-5 text-red-600" />;
-            default:
-                return null;
-        }
     };
 
     const calculateSubtotal = () => {
@@ -190,13 +171,6 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                         <Download className="w-4 h-4 mr-1.5" />
                                         {isGeneratingReceipt ? 'Generating...' : 'Download PDF'}
                                     </button>
-                                    <button
-                                        onClick={onDuplicate}
-                                        className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
-                                    >
-                                        <Copy className="w-4 h-4 mr-1.5" />
-                                        Duplicate
-                                    </button>
                                 </div>
                                 {canEdit && (
                                     <button
@@ -205,6 +179,15 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                     >
                                         <Edit2 className="w-4 h-4 mr-1.5" />
                                         Edit Order
+                                    </button>
+                                )}
+                                {canEdit && (
+                                    <button
+                                        onClick={onComplete}
+                                        className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex items-center"
+                                    >
+                                        <CheckCircle className="w-4 h-4 mr-1.5" />
+                                        Complete Order
                                     </button>
                                 )}
                             </div>
@@ -220,7 +203,22 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                     {['PENDING', 'PROCESSING', 'COMPLETED'].map((status, index) => (
                                         <div key={status} className="flex items-center">
                                             <div
-                                                className={`flex flex-col items-center ${order.status === status ||
+                                                className={`flex flex-col items-center ${
+                                                    order.status === status ||
+                                                    (order.status === 'CANCELLED' &&
+                                                        status === 'PENDING') ||
+                                                    (order.status === 'PROCESSING' &&
+                                                        status === 'PENDING') ||
+                                                    (order.status === 'COMPLETED' &&
+                                                        (status === 'PENDING' ||
+                                                            status === 'PROCESSING'))
+                                                        ? 'text-purple-600'
+                                                        : 'text-gray-400'
+                                                }`}
+                                            >
+                                                <div
+                                                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                                        order.status === status ||
                                                         (order.status === 'CANCELLED' &&
                                                             status === 'PENDING') ||
                                                         (order.status === 'PROCESSING' &&
@@ -228,22 +226,9 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                                         (order.status === 'COMPLETED' &&
                                                             (status === 'PENDING' ||
                                                                 status === 'PROCESSING'))
-                                                        ? 'text-purple-600'
-                                                        : 'text-gray-400'
-                                                    }`}
-                                            >
-                                                <div
-                                                    className={`w-10 h-10 rounded-full flex items-center justify-center ${order.status === status ||
-                                                            (order.status === 'CANCELLED' &&
-                                                                status === 'PENDING') ||
-                                                            (order.status === 'PROCESSING' &&
-                                                                status === 'PENDING') ||
-                                                            (order.status === 'COMPLETED' &&
-                                                                (status === 'PENDING' ||
-                                                                    status === 'PROCESSING'))
                                                             ? 'bg-purple-600 text-white'
                                                             : 'bg-gray-200'
-                                                        }`}
+                                                    }`}
                                                 >
                                                     {status === 'PENDING' && <Clock size={20} />}
                                                     {status === 'PROCESSING' && (
@@ -259,12 +244,13 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                             </div>
                                             {index < 2 && (
                                                 <div
-                                                    className={`w-full h-1 mx-2 ${(order.status === 'PROCESSING' &&
+                                                    className={`w-full h-1 mx-2 ${
+                                                        (order.status === 'PROCESSING' &&
                                                             index === 0) ||
-                                                            (order.status === 'COMPLETED' && index <= 1)
+                                                        (order.status === 'COMPLETED' && index <= 1)
                                                             ? 'bg-purple-600'
                                                             : 'bg-gray-200'
-                                                        }`}
+                                                    }`}
                                                     style={{ width: '100px' }}
                                                 />
                                             )}
@@ -366,10 +352,13 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                 </div>
                                 <div className="divide-y divide-gray-200">
                                     {order.items.map((item, index) => {
-                                        const hasImages = item.part.images && item.part.images.length > 0;
+                                        const hasImages =
+                                            item.part.images && item.part.images.length > 0;
                                         const isExpanded = expandedItemId === item.id;
                                         const currentImageIndex = imageIndexes[item.id] || 0;
-                                        const currentImage = hasImages ? item.part.images[currentImageIndex] : null;
+                                        const currentImage = hasImages
+                                            ? item.part.images[currentImageIndex]
+                                            : null;
 
                                         return (
                                             <div key={item.id} className="px-5 py-4">
@@ -381,16 +370,27 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                                                 <div className="flex-shrink-0">
                                                                     <div
                                                                         className="relative w-16 h-16 overflow-hidden bg-gray-100 rounded-lg cursor-pointer group"
-                                                                        onClick={() => toggleItemExpansion(item.id)}
+                                                                        onClick={() =>
+                                                                            toggleItemExpansion(
+                                                                                item.id
+                                                                            )
+                                                                        }
                                                                     >
                                                                         <img
                                                                             src={currentImage?.url}
                                                                             alt={item.part.name}
                                                                             className="object-cover w-full h-full transition-transform group-hover:scale-105"
                                                                         />
-                                                                        {item.part.images.length > 1 && (
+                                                                        {item.part.images.length >
+                                                                            1 && (
                                                                             <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/70 text-white text-xs rounded">
-                                                                                {currentImageIndex + 1}/{item.part.images.length}
+                                                                                {currentImageIndex +
+                                                                                    1}
+                                                                                /
+                                                                                {
+                                                                                    item.part.images
+                                                                                        .length
+                                                                                }
                                                                             </div>
                                                                         )}
                                                                     </div>
@@ -398,7 +398,9 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                                             ) : (
                                                                 <div
                                                                     className="flex items-center justify-center flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg cursor-pointer"
-                                                                    onClick={() => toggleItemExpansion(item.id)}
+                                                                    onClick={() =>
+                                                                        toggleItemExpansion(item.id)
+                                                                    }
                                                                 >
                                                                     <ImageIcon className="w-6 h-6 text-gray-400" />
                                                                 </div>
@@ -408,24 +410,51 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                                                 <div className="flex items-start justify-between">
                                                                     <div className="flex-1">
                                                                         <p className="text-base font-medium text-gray-900">
-                                                                            {index + 1}. {item.part.name}
+                                                                            {index + 1}.{' '}
+                                                                            {item.part.name}
                                                                         </p>
                                                                         <p className="mt-1 text-sm text-gray-500">
-                                                                            Part #: {item.part.partNumber}
+                                                                            Part #:{' '}
+                                                                            {item.part.partNumber}
                                                                         </p>
                                                                         {item.part.vehicle && (
                                                                             <p className="mt-1 text-xs text-gray-400">
-                                                                                {item.part.vehicle.make}{' '}
-                                                                                {item.part.vehicle.model} (
-                                                                                {item.part.vehicle.year})
+                                                                                {
+                                                                                    item.part
+                                                                                        .vehicle
+                                                                                        .make
+                                                                                }{' '}
+                                                                                {
+                                                                                    item.part
+                                                                                        .vehicle
+                                                                                        .model
+                                                                                }{' '}
+                                                                                (
+                                                                                {
+                                                                                    item.part
+                                                                                        .vehicle
+                                                                                        .year
+                                                                                }
+                                                                                )
                                                                             </p>
                                                                         )}
                                                                         <div className="flex items-center mt-2 space-x-4 text-sm text-gray-600">
-                                                                            <span>Qty: {item.quantity}</span>
-                                                                            <span>Price: {formatCurrency(item.unitPrice)}</span>
-                                                                            {Number(item.discount) > 0 && (
+                                                                            <span>
+                                                                                Qty: {item.quantity}
+                                                                            </span>
+                                                                            <span>
+                                                                                Price:{' '}
+                                                                                {formatCurrency(
+                                                                                    item.unitPrice
+                                                                                )}
+                                                                            </span>
+                                                                            {Number(item.discount) >
+                                                                                0 && (
                                                                                 <span className="text-red-600">
-                                                                                    Discount: -{formatCurrency(item.discount)}
+                                                                                    Discount: -
+                                                                                    {formatCurrency(
+                                                                                        item.discount
+                                                                                    )}
                                                                                 </span>
                                                                             )}
                                                                         </div>
@@ -437,10 +466,19 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                                                     <div className="mt-4 p-4 bg-gray-50 rounded-lg animate-fadeIn">
                                                                         <div className="flex items-center justify-between mb-3">
                                                                             <h4 className="text-sm font-medium text-gray-900">
-                                                                                Part Images ({item.part.images.length})
+                                                                                Part Images (
+                                                                                {
+                                                                                    item.part.images
+                                                                                        .length
+                                                                                }
+                                                                                )
                                                                             </h4>
                                                                             <button
-                                                                                onClick={() => setExpandedItemId(null)}
+                                                                                onClick={() =>
+                                                                                    setExpandedItemId(
+                                                                                        null
+                                                                                    )
+                                                                                }
                                                                                 className="text-gray-400 hover:text-gray-600"
                                                                             >
                                                                                 <X size={16} />
@@ -450,38 +488,85 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                                                         <div className="relative">
                                                                             <div className="flex items-center justify-center">
                                                                                 <img
-                                                                                    src={currentImage?.url}
+                                                                                    src={
+                                                                                        currentImage?.url
+                                                                                    }
                                                                                     alt={`${item.part.name} - Image ${currentImageIndex + 1}`}
                                                                                     className="max-h-64 max-w-full object-contain rounded-lg"
                                                                                 />
                                                                             </div>
 
-                                                                            {item.part.images.length > 1 && (
+                                                                            {item.part.images
+                                                                                .length > 1 && (
                                                                                 <>
                                                                                     <button
-                                                                                        onClick={() => prevImage(item.id, currentImageIndex, item.part.images.length)}
+                                                                                        onClick={() =>
+                                                                                            prevImage(
+                                                                                                item.id,
+                                                                                                currentImageIndex,
+                                                                                                item
+                                                                                                    .part
+                                                                                                    .images
+                                                                                                    .length
+                                                                                            )
+                                                                                        }
                                                                                         className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
                                                                                     >
-                                                                                        <ChevronLeft size={20} />
+                                                                                        <ChevronLeft
+                                                                                            size={
+                                                                                                20
+                                                                                            }
+                                                                                        />
                                                                                     </button>
                                                                                     <button
-                                                                                        onClick={() => nextImage(item.id, currentImageIndex, item.part.images.length)}
+                                                                                        onClick={() =>
+                                                                                            nextImage(
+                                                                                                item.id,
+                                                                                                currentImageIndex,
+                                                                                                item
+                                                                                                    .part
+                                                                                                    .images
+                                                                                                    .length
+                                                                                            )
+                                                                                        }
                                                                                         className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
                                                                                     >
-                                                                                        <ChevronRight size={20} />
+                                                                                        <ChevronRight
+                                                                                            size={
+                                                                                                20
+                                                                                            }
+                                                                                        />
                                                                                     </button>
                                                                                 </>
                                                                             )}
 
                                                                             <div className="flex justify-center mt-3 space-x-2">
-                                                                                {item.part.images.map((_, idx) => (
-                                                                                    <button
-                                                                                        key={idx}
-                                                                                        onClick={() => setImageIndexes(prev => ({ ...prev, [item.id]: idx }))}
-                                                                                        className={`w-2 h-2 rounded-full transition-colors ${idx === currentImageIndex ? 'bg-purple-600' : 'bg-gray-300'
+                                                                                {item.part.images.map(
+                                                                                    (_, idx) => (
+                                                                                        <button
+                                                                                            key={
+                                                                                                idx
+                                                                                            }
+                                                                                            onClick={() =>
+                                                                                                setImageIndexes(
+                                                                                                    (
+                                                                                                        prev
+                                                                                                    ) => ({
+                                                                                                        ...prev,
+                                                                                                        [item.id]:
+                                                                                                            idx,
+                                                                                                    })
+                                                                                                )
+                                                                                            }
+                                                                                            className={`w-2 h-2 rounded-full transition-colors ${
+                                                                                                idx ===
+                                                                                                currentImageIndex
+                                                                                                    ? 'bg-purple-600'
+                                                                                                    : 'bg-gray-300'
                                                                                             }`}
-                                                                                    />
-                                                                                ))}
+                                                                                        />
+                                                                                    )
+                                                                                )}
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -495,10 +580,15 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                                         </p>
                                                         {hasImages && !isExpanded && (
                                                             <button
-                                                                onClick={() => toggleItemExpansion(item.id)}
+                                                                onClick={() =>
+                                                                    toggleItemExpansion(item.id)
+                                                                }
                                                                 className="mt-2 text-xs text-purple-600 hover:text-purple-700"
                                                             >
-                                                                View {item.part.images.length} image{item.part.images.length > 1 ? 's' : ''}
+                                                                View {item.part.images.length} image
+                                                                {item.part.images.length > 1
+                                                                    ? 's'
+                                                                    : ''}
                                                             </button>
                                                         )}
                                                     </div>

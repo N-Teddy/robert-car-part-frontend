@@ -56,14 +56,9 @@ export const userApi = {
 
     // Update user by ID - Updated to handle FormData
     updateUser: async (id: string, data: UpdateUserRequest | FormData): Promise<User> => {
-
-        const response = await apiClient.put<UpdateUserResponse>(
-            `/users/${id}`,
-            data,
-            {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            }
-        );
+        const response = await apiClient.put<UpdateUserResponse>(`/users/${id}`, data, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
         return response.data.data;
     },
 

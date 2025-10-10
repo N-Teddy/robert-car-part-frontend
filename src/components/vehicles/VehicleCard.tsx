@@ -21,8 +21,6 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
     onDelete,
     onMarkAsPartedOut,
 }) => {
-    const [showMenu, setShowMenu] = React.useState(false);
-
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
             {/* Image Section */}

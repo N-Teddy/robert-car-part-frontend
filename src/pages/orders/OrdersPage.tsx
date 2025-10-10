@@ -1,13 +1,6 @@
 // src/pages/orders/OrdersPage.tsx
 import React, { useState, useMemo } from 'react';
-import {
-    ShoppingCart,
-    Plus,
-    Download,
-    Clock,
-    CheckCircle,
-    DollarSign,
-} from 'lucide-react';
+import { ShoppingCart, Plus, Download, Clock, CheckCircle, DollarSign } from 'lucide-react';
 import { OrderFormModal } from '../../components/orders/OrderFormModal';
 import { OrderViewModal } from '../../components/orders/OrderViewModal';
 import { OrderDeleteModal } from '../../components/orders/OrderDeleteModal';
@@ -21,6 +14,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { useOrder } from '../../hooks/orderHook';
 import { usePart } from '../../hooks/partHook';
 import { OrdersList } from '../../components/orders/OrderList';
+import { OrderCompletionModal } from '../../components/orders/OrderCompletionModal';
 
 export const OrdersPage: React.FC = () => {
     const [filters, setFilters] = useState<OrderQueryDto>({
@@ -39,6 +33,7 @@ export const OrdersPage: React.FC = () => {
         edit: false,
         view: false,
         delete: false,
+        complete: false,
     });
 
     // Customer data for autocomplete
@@ -145,24 +140,39 @@ export const OrdersPage: React.FC = () => {
         }
     };
 
-    const handleDuplicate = (order: OrderResponse) => {
-        // Pre-fill create form with order data
-        const duplicateData = {
-            customerName: order.customerName,
-            customerPhone: order.customerPhone,
-            customerEmail: order.customerEmail,
-            deliveryMethod: order.deliveryMethod,
-            notes: order.notes,
-            items: order.items.map((item) => ({
-                partId: item.part.id,
-                quantity: item.quantity,
-                unitPrice: Number(item.unitPrice),
-                discount: Number(item.discount),
-            })),
-        };
-        // Open create modal with pre-filled data
-        openModal('create');
-        // You'll need to pass this data to the form modal
+    const handleCompleteOrder = async () => {
+        if (!selectedOrder) return;
+
+        try {
+            await updateMutation.mutateAsync({
+                id: selectedOrder.id,
+                data: {
+                    status: 'COMPLETED',
+                    // Include other required fields if needed by your API
+                    customerName: selectedOrder.customerName,
+                    customerPhone: selectedOrder.customerPhone,
+                    customerEmail: selectedOrder.customerEmail,
+                    deliveryMethod: selectedOrder.deliveryMethod,
+                    items: selectedOrder.items.map((item) => ({
+                        partId: item.part.id,
+                        quantity: item.quantity,
+                        unitPrice: Number(item.unitPrice),
+                        discount: Number(item.discount),
+                    })),
+                },
+            });
+
+            setToast({ message: 'Order completed successfully', type: 'success' });
+            closeModal('complete');
+            refetch(); // Auto-refresh the orders list
+        } catch (error: any) {
+            setToast({ message: error.message || 'Failed to complete order', type: 'error' });
+        }
+    };
+
+    const handleComplete = (order: OrderResponse) => {
+        setSelectedOrder(order);
+        openModal('complete');
     };
 
     const handleExport = () => {
@@ -213,8 +223,6 @@ export const OrdersPage: React.FC = () => {
             .reduce((sum, order) => sum + Number(order.totalAmount), 0) || 0;
 
     console.log('Parts available:', partsData);
-
-
 
     return (
         <div className="px-4 py-8 sm:px-6 lg:px-8">
@@ -334,7 +342,7 @@ export const OrdersPage: React.FC = () => {
                 onView={(order) => openModal('view', order)}
                 onEdit={(order) => openModal('edit', order)}
                 onDelete={(order) => openModal('delete', order)}
-                onDuplicate={handleDuplicate}
+                onComplete={handleComplete}
             />
 
             {/* Pagination */}
@@ -397,10 +405,18 @@ export const OrdersPage: React.FC = () => {
                     closeModal('view');
                     openModal('delete', selectedOrder!);
                 }}
-                onDuplicate={() => {
+                onComplete={() => {
                     closeModal('view');
-                    handleDuplicate(selectedOrder!);
+                    openModal('complete', selectedOrder!);
                 }}
+            />
+
+            <OrderCompletionModal
+                isOpen={modals.complete}
+                order={selectedOrder}
+                onClose={() => closeModal('complete')}
+                onConfirm={handleCompleteOrder}
+                isCompleting={updateMutation.isPending}
             />
 
             <OrderDeleteModal
