@@ -270,14 +270,15 @@ export class ReceiptGenerator {
                 <span>Subtotal:</span>
                 <span>${this.formatCurrency(subtotal)}</span>
             </div>
-            ${discounts > 0
-                ? `
+            ${
+                discounts > 0
+                    ? `
                 <div class="total-row">
                     <span>Discounts:</span>
                     <span>-${this.formatCurrency(discounts)}</span>
                 </div>
             `
-                : ''
+                    : ''
             }
             <div class="total-row grand-total">
                 <span>TOTAL:</span>
@@ -293,7 +294,8 @@ export class ReceiptGenerator {
             </div>
         </div>
 
-        ${order.notes
+        ${
+            order.notes
                 ? `
             <!-- Notes -->
             <div class="section">
@@ -302,16 +304,17 @@ export class ReceiptGenerator {
             </div>
         `
                 : ''
-            }
+        }
 
-        ${this.options.showBarcode
+        ${
+            this.options.showBarcode
                 ? `
             <!-- Barcode -->
             <div class="barcode"></div>
             <div style="text-align: center; font-size: 9px;">${order.id}</div>
         `
                 : ''
-            }
+        }
 
         <!-- Footer -->
         <div class="footer">
@@ -431,7 +434,7 @@ export class ReceiptGenerator {
         try {
             // Dynamically import jsPDF and html2canvas to avoid SSR issues
             const { jsPDF } = await import('jspdf');
-            const html2canvas = await import('html2canvas').then(module => module.default);
+            const html2canvas = await import('html2canvas').then((module) => module.default);
 
             // Create a temporary div to render the HTML
             const tempDiv = document.createElement('div');
@@ -450,7 +453,7 @@ export class ReceiptGenerator {
                 width: 226, // 80mm in pixels at 96 DPI
                 height: tempDiv.scrollHeight,
                 windowWidth: 226,
-                windowHeight: tempDiv.scrollHeight
+                windowHeight: tempDiv.scrollHeight,
             });
 
             // Remove temporary div
@@ -460,7 +463,7 @@ export class ReceiptGenerator {
             const pdf = new jsPDF({
                 orientation: 'portrait',
                 unit: 'mm',
-                format: [80, 297] // 80mm width, variable height
+                format: [80, 297], // 80mm width, variable height
             });
 
             // Add canvas to PDF
@@ -472,7 +475,6 @@ export class ReceiptGenerator {
 
             // Return PDF as base64 string
             return pdf.output('datauristring');
-
         } catch (error) {
             console.error('Error generating PDF:', error);
 
@@ -491,7 +493,7 @@ export class ReceiptGenerator {
             const pdf = new jsPDF({
                 orientation: 'portrait',
                 unit: 'mm',
-                format: [80, 297]
+                format: [80, 297],
             });
 
             // Set font
@@ -560,10 +562,18 @@ export class ReceiptGenerator {
                 yPosition += 4;
                 pdf.text(`   Part #: ${item.part.partNumber}`, 5, yPosition);
                 yPosition += 4;
-                pdf.text(`   ${item.quantity} x ${this.formatCurrency(Number(item.unitPrice))}`, 5, yPosition);
+                pdf.text(
+                    `   ${item.quantity} x ${this.formatCurrency(Number(item.unitPrice))}`,
+                    5,
+                    yPosition
+                );
                 if (Number(item.discount) > 0) {
                     yPosition += 4;
-                    pdf.text(`   Discount: -${this.formatCurrency(Number(item.discount))}`, 5, yPosition);
+                    pdf.text(
+                        `   Discount: -${this.formatCurrency(Number(item.discount))}`,
+                        5,
+                        yPosition
+                    );
                 }
                 yPosition += 4;
                 pdf.text(`   Total: ${this.formatCurrency(Number(item.total))}`, 5, yPosition);
@@ -578,11 +588,15 @@ export class ReceiptGenerator {
             pdf.line(5, yPosition, 75, yPosition);
             yPosition += 6;
 
-            pdf.text(`Subtotal: ${this.formatCurrency(subtotal)}`, 40, yPosition, { align: 'right' });
+            pdf.text(`Subtotal: ${this.formatCurrency(subtotal)}`, 40, yPosition, {
+                align: 'right',
+            });
             yPosition += 4;
 
             if (discounts > 0) {
-                pdf.text(`Discounts: -${this.formatCurrency(discounts)}`, 40, yPosition, { align: 'right' });
+                pdf.text(`Discounts: -${this.formatCurrency(discounts)}`, 40, yPosition, {
+                    align: 'right',
+                });
                 yPosition += 4;
             }
 
@@ -595,9 +609,13 @@ export class ReceiptGenerator {
             pdf.setFontSize(8);
             pdf.text('THANK YOU FOR YOUR PURCHASE!', 40, yPosition, { align: 'center' });
             yPosition += 4;
-            pdf.text('Please keep this receipt for your records', 40, yPosition, { align: 'center' });
+            pdf.text('Please keep this receipt for your records', 40, yPosition, {
+                align: 'center',
+            });
             yPosition += 4;
-            pdf.text('Returns accepted within 7 days with receipt', 40, yPosition, { align: 'center' });
+            pdf.text('Returns accepted within 7 days with receipt', 40, yPosition, {
+                align: 'center',
+            });
 
             return pdf.output('datauristring');
         } catch (error) {
@@ -618,7 +636,6 @@ export class ReceiptGenerator {
             link.href = pdfData;
             link.download = filename || `receipt-${order.id.slice(0, 8)}.pdf`;
             link.click();
-
         } catch (error) {
             console.error('Error downloading PDF:', error);
             throw new Error('Failed to download PDF');

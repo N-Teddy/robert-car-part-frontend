@@ -1,6 +1,6 @@
 // src/components/orders/OrdersList.tsx
 import React from 'react';
-import { Eye, Edit2, Trash2, Copy, ShoppingCart, MoreVertical, CheckCircle } from 'lucide-react';
+import { Eye, Edit2, Trash2, ShoppingCart, CheckCircle } from 'lucide-react';
 import type { OrderResponse } from '../../types/response/order';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { format } from 'date-fns';
@@ -124,10 +124,11 @@ export const OrdersList: React.FC<OrdersListProps> = ({
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span
-                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.deliveryMethod === 'PICKUP'
+                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                            order.deliveryMethod === 'PICKUP'
                                                 ? 'bg-blue-100 text-blue-800'
                                                 : 'bg-purple-100 text-purple-800'
-                                            }`}
+                                        }`}
                                     >
                                         {order.deliveryMethod === 'PICKUP'
                                             ? '🏪 Pickup'

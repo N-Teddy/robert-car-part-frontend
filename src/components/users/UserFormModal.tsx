@@ -72,12 +72,27 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     const currentRole = watchedRole || (user?.role as any) || 'STAFF';
 
     const roleOptions = [
-        { value: 'ADMIN', label: 'Administrator', description: 'Full system access', color: 'purple' },
-        { value: 'MANAGER', label: 'Manager', description: 'Manage teams and reports', color: 'blue' },
+        {
+            value: 'ADMIN',
+            label: 'Administrator',
+            description: 'Full system access',
+            color: 'purple',
+        },
+        {
+            value: 'MANAGER',
+            label: 'Manager',
+            description: 'Manage teams and reports',
+            color: 'blue',
+        },
         { value: 'DEV', label: 'Developer', description: 'Technical access', color: 'indigo' },
         { value: 'SALES', label: 'Sales', description: 'Sales operations', color: 'green' },
         { value: 'STAFF', label: 'Staff', description: 'General staff access', color: 'yellow' },
-        { value: 'CUSTOMER', label: 'Customer', description: 'Customer portal access', color: 'gray' },
+        {
+            value: 'CUSTOMER',
+            label: 'Customer',
+            description: 'Customer portal access',
+            color: 'gray',
+        },
     ];
 
     const getRoleColor = (role: string) => {
@@ -419,10 +434,11 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                 <div className="space-y-4">
                                     {/* Drag and Drop Area */}
                                     <div
-                                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${isDragging
-                                            ? 'border-red-500 bg-red-50'
-                                            : 'border-gray-300 hover:border-gray-400 bg-gray-50'
-                                            }`}
+                                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${
+                                            isDragging
+                                                ? 'border-red-500 bg-red-50'
+                                                : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+                                        }`}
                                         onDragOver={handleDragOver}
                                         onDragLeave={handleDragLeave}
                                         onDrop={handleDrop}
@@ -500,31 +516,36 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                     </div>
 
                                     {/* Existing Image Info - LIKE CATEGORY FORM */}
-                                    {isEditMode && user?.profileImage && !selectedImage && !isImageRemoved && (
-                                        <div className="p-3 border border-blue-200 rounded-lg bg-blue-50">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center space-x-3">
-                                                    <ImageIcon className="w-4 h-4 text-blue-600" />
-                                                    <div>
-                                                        <p className="text-xs font-medium text-blue-900">
-                                                            Current profile image
-                                                        </p>
-                                                        <p className="text-xs text-blue-700">
-                                                            {user.profileImage.format} •{' '}
-                                                            {formatFileSize(user.profileImage.size)}
-                                                        </p>
+                                    {isEditMode &&
+                                        user?.profileImage &&
+                                        !selectedImage &&
+                                        !isImageRemoved && (
+                                            <div className="p-3 border border-blue-200 rounded-lg bg-blue-50">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center space-x-3">
+                                                        <ImageIcon className="w-4 h-4 text-blue-600" />
+                                                        <div>
+                                                            <p className="text-xs font-medium text-blue-900">
+                                                                Current profile image
+                                                            </p>
+                                                            <p className="text-xs text-blue-700">
+                                                                {user.profileImage.format} •{' '}
+                                                                {formatFileSize(
+                                                                    user.profileImage.size
+                                                                )}
+                                                            </p>
+                                                        </div>
                                                     </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleImageClick}
+                                                        className="text-xs font-medium text-blue-600 hover:text-blue-800"
+                                                    >
+                                                        Change
+                                                    </button>
                                                 </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={handleImageClick}
-                                                    className="text-xs font-medium text-blue-600 hover:text-blue-800"
-                                                >
-                                                    Change
-                                                </button>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
 
                                     {mode === 'edit' && isImageRemoved && (
                                         <p className="mt-2 text-xs text-blue-500">
@@ -614,10 +635,11 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                                 return (
                                                     <label
                                                         key={option.value}
-                                                        className={`relative flex items-start p-3 border rounded-lg cursor-pointer transition-all ${isSelected
-                                                            ? `${optionColorClasses.border} ${optionColorClasses.bg} ring-2 ${optionColorClasses.ring}`
-                                                            : 'border-gray-200 hover:border-gray-300'
-                                                            }`}
+                                                        className={`relative flex items-start p-3 border rounded-lg cursor-pointer transition-all ${
+                                                            isSelected
+                                                                ? `${optionColorClasses.border} ${optionColorClasses.bg} ring-2 ${optionColorClasses.ring}`
+                                                                : 'border-gray-200 hover:border-gray-300'
+                                                        }`}
                                                     >
                                                         <input
                                                             {...register('role')}
@@ -627,18 +649,20 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                                                         />
                                                         <div className="flex-1">
                                                             <p
-                                                                className={`text-sm font-medium ${isSelected
-                                                                    ? `${optionColorClasses.text}`
-                                                                    : 'text-gray-900'
-                                                                    }`}
+                                                                className={`text-sm font-medium ${
+                                                                    isSelected
+                                                                        ? `${optionColorClasses.text}`
+                                                                        : 'text-gray-900'
+                                                                }`}
                                                             >
                                                                 {option.label}
                                                             </p>
                                                             <p
-                                                                className={`text-xs mt-0.5 ${isSelected
-                                                                    ? `${optionColorClasses.text}`
-                                                                    : 'text-gray-500'
-                                                                    }`}
+                                                                className={`text-xs mt-0.5 ${
+                                                                    isSelected
+                                                                        ? `${optionColorClasses.text}`
+                                                                        : 'text-gray-500'
+                                                                }`}
                                                             >
                                                                 {option.description}
                                                             </p>

@@ -148,7 +148,6 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
             // Close scanner immediately after successful scan
             setShowScanner(false);
-
         } catch (error) {
             console.error('QR Scan error:', error);
             alert('Invalid QR code format. Expected JSON with partId.');
@@ -190,10 +189,11 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
         if (!searchTerm.trim()) return;
 
         // Find part by name, part number, or ID
-        const foundPart = parts.find((part) =>
-            part.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            part.partNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            part.id === searchTerm
+        const foundPart = parts.find(
+            (part) =>
+                part.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                part.partNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                part.id === searchTerm
         );
 
         if (foundPart) {
@@ -270,7 +270,7 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
     // Calculation functions
     const calculateItemTotal = (item: OrderItemRequest) => {
-        return (item.quantity * item.unitPrice) - (item.discount || 0);
+        return item.quantity * item.unitPrice - (item.discount || 0);
     };
 
     const calculateOrderTotal = () => {
@@ -278,7 +278,7 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
     };
 
     const calculateSubtotal = () => {
-        return orderItems.reduce((total, item) => total + (item.quantity * item.unitPrice), 0);
+        return orderItems.reduce((total, item) => total + item.quantity * item.unitPrice, 0);
     };
 
     const calculateTotalDiscount = () => {
@@ -341,10 +341,10 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
         orderItems,
         parts: parts,
         partsLength: parts.length,
-        orderItemsWithParts: orderItems.map(item => ({
+        orderItemsWithParts: orderItems.map((item) => ({
             item,
-            part: getPartDetails(item.partId)
-        }))
+            part: getPartDetails(item.partId),
+        })),
     });
 
     return (
@@ -456,10 +456,11 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                         customerName: e.target.value,
                                                     })
                                                 }
-                                                className={`w-full px-4 py-2.5 rounded-lg border ${errors.customerName
-                                                    ? 'border-red-300 focus:ring-red-500'
-                                                    : 'border-gray-300 focus:ring-purple-500'
-                                                    } focus:ring-2 focus:border-transparent transition-all`}
+                                                className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                    errors.customerName
+                                                        ? 'border-red-300 focus:ring-red-500'
+                                                        : 'border-gray-300 focus:ring-purple-500'
+                                                } focus:ring-2 focus:border-transparent transition-all`}
                                                 placeholder="John Doe"
                                             />
                                             {errors.customerName && (
@@ -483,10 +484,11 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                         customerPhone: e.target.value,
                                                     })
                                                 }
-                                                className={`w-full px-4 py-2.5 rounded-lg border ${errors.customerPhone
-                                                    ? 'border-red-300 focus:ring-red-500'
-                                                    : 'border-gray-300 focus:ring-purple-500'
-                                                    } focus:ring-2 focus:border-transparent transition-all`}
+                                                className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                    errors.customerPhone
+                                                        ? 'border-red-300 focus:ring-red-500'
+                                                        : 'border-gray-300 focus:ring-purple-500'
+                                                } focus:ring-2 focus:border-transparent transition-all`}
                                                 placeholder="+237 6XX XXX XXX"
                                             />
                                             {errors.customerPhone && (
@@ -509,10 +511,11 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                         customerEmail: e.target.value,
                                                     })
                                                 }
-                                                className={`w-full px-4 py-2.5 rounded-lg border ${errors.customerEmail
-                                                    ? 'border-red-300 focus:ring-red-500'
-                                                    : 'border-gray-300 focus:ring-purple-500'
-                                                    } focus:ring-2 focus:border-transparent transition-all`}
+                                                className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                    errors.customerEmail
+                                                        ? 'border-red-300 focus:ring-red-500'
+                                                        : 'border-gray-300 focus:ring-purple-500'
+                                                } focus:ring-2 focus:border-transparent transition-all`}
                                                 placeholder="john@example.com (optional)"
                                             />
                                             {errors.customerEmail && (
@@ -529,17 +532,20 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                             </label>
                                             <div className="grid grid-cols-2 gap-2">
                                                 <label
-                                                    className={`relative flex items-center justify-center px-4 py-2.5 border-2 rounded-lg cursor-pointer transition-all ${formData.deliveryMethod === 'PICKUP'
-                                                        ? 'border-purple-500 bg-purple-50'
-                                                        : 'border-gray-200 hover:border-gray-300'
-                                                        }`}
+                                                    className={`relative flex items-center justify-center px-4 py-2.5 border-2 rounded-lg cursor-pointer transition-all ${
+                                                        formData.deliveryMethod === 'PICKUP'
+                                                            ? 'border-purple-500 bg-purple-50'
+                                                            : 'border-gray-200 hover:border-gray-300'
+                                                    }`}
                                                 >
                                                     <input
                                                         type="radio"
                                                         name="deliveryMethod"
                                                         value="PICKUP"
-                                                        checked={formData.deliveryMethod === 'PICKUP'}
-                                                        onChange={(e) =>
+                                                        checked={
+                                                            formData.deliveryMethod === 'PICKUP'
+                                                        }
+                                                        onChange={() =>
                                                             setFormData({
                                                                 ...formData,
                                                                 deliveryMethod: 'PICKUP',
@@ -548,26 +554,30 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                         className="sr-only"
                                                     />
                                                     <span
-                                                        className={`text-sm font-medium ${formData.deliveryMethod === 'PICKUP'
-                                                            ? 'text-purple-700'
-                                                            : 'text-gray-700'
-                                                            }`}
+                                                        className={`text-sm font-medium ${
+                                                            formData.deliveryMethod === 'PICKUP'
+                                                                ? 'text-purple-700'
+                                                                : 'text-gray-700'
+                                                        }`}
                                                     >
                                                         🏪 Pickup
                                                     </span>
                                                 </label>
                                                 <label
-                                                    className={`relative flex items-center justify-center px-4 py-2.5 border-2 rounded-lg cursor-pointer transition-all ${formData.deliveryMethod === 'SHIPPING'
-                                                        ? 'border-purple-500 bg-purple-50'
-                                                        : 'border-gray-200 hover:border-gray-300'
-                                                        }`}
+                                                    className={`relative flex items-center justify-center px-4 py-2.5 border-2 rounded-lg cursor-pointer transition-all ${
+                                                        formData.deliveryMethod === 'SHIPPING'
+                                                            ? 'border-purple-500 bg-purple-50'
+                                                            : 'border-gray-200 hover:border-gray-300'
+                                                    }`}
                                                 >
                                                     <input
                                                         type="radio"
                                                         name="deliveryMethod"
                                                         value="SHIPPING"
-                                                        checked={formData.deliveryMethod === 'SHIPPING'}
-                                                        onChange={(e) =>
+                                                        checked={
+                                                            formData.deliveryMethod === 'SHIPPING'
+                                                        }
+                                                        onChange={() =>
                                                             setFormData({
                                                                 ...formData,
                                                                 deliveryMethod: 'SHIPPING',
@@ -576,10 +586,11 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                         className="sr-only"
                                                     />
                                                     <span
-                                                        className={`text-sm font-medium ${formData.deliveryMethod === 'SHIPPING'
-                                                            ? 'text-purple-700'
-                                                            : 'text-gray-700'
-                                                            }`}
+                                                        className={`text-sm font-medium ${
+                                                            formData.deliveryMethod === 'SHIPPING'
+                                                                ? 'text-purple-700'
+                                                                : 'text-gray-700'
+                                                        }`}
                                                     >
                                                         🚚 Shipping
                                                     </span>
@@ -619,9 +630,7 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
                                     {errors.items && (
                                         <div className="p-3 mb-4 border border-red-200 rounded-lg bg-red-50">
-                                            <p className="text-sm text-red-800">
-                                                {errors.items}
-                                            </p>
+                                            <p className="text-sm text-red-800">{errors.items}</p>
                                         </div>
                                     )}
 
@@ -673,13 +682,22 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                         <Package className="w-5 h-5 text-white" />
                                                     </div>
                                                     <div>
-                                                        <h3 className="text-lg font-bold text-white">Selected Items</h3>
-                                                        <p className="text-sm text-white/80">Manage your order items</p>
+                                                        <h3 className="text-lg font-bold text-white">
+                                                            Selected Items
+                                                        </h3>
+                                                        <p className="text-sm text-white/80">
+                                                            Manage your order items
+                                                        </p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right text-white">
-                                                    <span className="text-2xl font-bold">{formatCurrency(calculateOrderTotal())}</span>
-                                                    <p className="text-sm opacity-80">{orderItems.length} item{orderItems.length !== 1 ? 's' : ''}</p>
+                                                    <span className="text-2xl font-bold">
+                                                        {formatCurrency(calculateOrderTotal())}
+                                                    </span>
+                                                    <p className="text-sm opacity-80">
+                                                        {orderItems.length} item
+                                                        {orderItems.length !== 1 ? 's' : ''}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -687,11 +705,17 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                         {/* Collapsible Button for Mobile */}
                                         <div className="border-b border-gray-200 ">
                                             <button
-                                                onClick={() => setIsItemsCollapsed(!isItemsCollapsed)}
+                                                onClick={() =>
+                                                    setIsItemsCollapsed(!isItemsCollapsed)
+                                                }
                                                 className="flex items-center justify-between w-full px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
                                             >
                                                 <span>Order Items ({orderItems.length})</span>
-                                                {isItemsCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+                                                {isItemsCollapsed ? (
+                                                    <ChevronDown className="w-4 h-4" />
+                                                ) : (
+                                                    <ChevronUp className="w-4 h-4" />
+                                                )}
                                             </button>
                                         </div>
 
@@ -703,26 +727,42 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                         <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
                                                             <Package className="w-6 h-6 text-gray-400" />
                                                         </div>
-                                                        <p className="text-sm font-medium text-gray-900">No items added</p>
-                                                        <p className="text-xs text-gray-500 mt-1">Search or scan to add items</p>
+                                                        <p className="text-sm font-medium text-gray-900">
+                                                            No items added
+                                                        </p>
+                                                        <p className="text-xs text-gray-500 mt-1">
+                                                            Search or scan to add items
+                                                        </p>
                                                     </div>
                                                 ) : (
                                                     <div className="divide-y divide-gray-100">
                                                         {orderItems.map((item) => {
-                                                            const part = getPartDetails(item.partId);
+                                                            const part = getPartDetails(
+                                                                item.partId
+                                                            );
                                                             if (!part) return null;
 
-                                                            const itemTotal = calculateItemTotal(item);
+                                                            const itemTotal =
+                                                                calculateItemTotal(item);
                                                             const stockAvailable = part.quantity;
 
                                                             return (
-                                                                <div key={item.partId} className="p-4 hover:bg-gray-50 transition-colors">
+                                                                <div
+                                                                    key={item.partId}
+                                                                    className="p-4 hover:bg-gray-50 transition-colors"
+                                                                >
                                                                     <div className="flex gap-3">
                                                                         {/* Part Image */}
                                                                         <div className="flex-shrink-0">
-                                                                            {part.images && part.images.length > 0 ? (
+                                                                            {part.images &&
+                                                                            part.images.length >
+                                                                                0 ? (
                                                                                 <img
-                                                                                    src={part.images[0].url}
+                                                                                    src={
+                                                                                        part
+                                                                                            .images[0]
+                                                                                            .url
+                                                                                    }
                                                                                     alt={part.name}
                                                                                     className="w-12 h-12 rounded object-cover border border-gray-200"
                                                                                 />
@@ -742,11 +782,23 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                                                         {part.name}
                                                                                     </h4>
                                                                                     <p className="text-xs text-gray-500 mt-0.5">
-                                                                                        #{part.partNumber} • {part.category?.name || 'Uncategorized'}
+                                                                                        #
+                                                                                        {
+                                                                                            part.partNumber
+                                                                                        }{' '}
+                                                                                        •{' '}
+                                                                                        {part
+                                                                                            .category
+                                                                                            ?.name ||
+                                                                                            'Uncategorized'}
                                                                                     </p>
                                                                                 </div>
                                                                                 <button
-                                                                                    onClick={() => handleItemRemove(item.partId)}
+                                                                                    onClick={() =>
+                                                                                        handleItemRemove(
+                                                                                            item.partId
+                                                                                        )
+                                                                                    }
                                                                                     className="p-1 text-gray-400 hover:text-red-500 transition-colors"
                                                                                 >
                                                                                     <Trash2 className="w-3.5 h-3.5" />
@@ -755,17 +807,46 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
                                                                             {/* Stock Status */}
                                                                             <div className="flex items-center gap-2 mb-3 text-xs">
-                                                                                <span className="text-gray-500">Stock:</span>
-                                                                                <span className={`font-medium ${stockAvailable > 20 ? 'text-green-600' :
-                                                                                        stockAvailable > 5 ? 'text-yellow-600' : 'text-red-600'
-                                                                                    }`}>
-                                                                                    {stockAvailable} available
+                                                                                <span className="text-gray-500">
+                                                                                    Stock:
+                                                                                </span>
+                                                                                <span
+                                                                                    className={`font-medium ${
+                                                                                        stockAvailable >
+                                                                                        20
+                                                                                            ? 'text-green-600'
+                                                                                            : stockAvailable >
+                                                                                                5
+                                                                                              ? 'text-yellow-600'
+                                                                                              : 'text-red-600'
+                                                                                    }`}
+                                                                                >
+                                                                                    {stockAvailable}{' '}
+                                                                                    available
                                                                                 </span>
                                                                                 {part.vehicle && (
                                                                                     <>
-                                                                                        <span className="text-gray-400">•</span>
+                                                                                        <span className="text-gray-400">
+                                                                                            •
+                                                                                        </span>
                                                                                         <span className="text-gray-500">
-                                                                                            {part.vehicle.make} {part.vehicle.model} ({part.vehicle.year})
+                                                                                            {
+                                                                                                part
+                                                                                                    .vehicle
+                                                                                                    .make
+                                                                                            }{' '}
+                                                                                            {
+                                                                                                part
+                                                                                                    .vehicle
+                                                                                                    .model
+                                                                                            }{' '}
+                                                                                            (
+                                                                                            {
+                                                                                                part
+                                                                                                    .vehicle
+                                                                                                    .year
+                                                                                            }
+                                                                                            )
                                                                                         </span>
                                                                                     </>
                                                                                 )}
@@ -775,25 +856,58 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                                                             <div className="flex flex-wrap items-center gap-3">
                                                                                 {/* Quantity */}
                                                                                 <div className="flex items-center">
-                                                                                    <label className="text-xs text-gray-600 mr-2">Qty:</label>
+                                                                                    <label className="text-xs text-gray-600 mr-2">
+                                                                                        Qty:
+                                                                                    </label>
                                                                                     <div className="flex items-center border border-gray-200 rounded">
                                                                                         <button
-                                                                                            onClick={() => handleQuantityChange(item.partId, item.quantity - 1)}
+                                                                                            onClick={() =>
+                                                                                                handleQuantityChange(
+                                                                                                    item.partId,
+                                                                                                    item.quantity -
+                                                                                                        1
+                                                                                                )
+                                                                                            }
                                                                                             className="p-1 hover:bg-gray-50 transition-colors"
                                                                                         >
                                                                                             <Minus className="w-3 h-3 text-gray-500" />
                                                                                         </button>
                                                                                         <input
                                                                                             type="number"
-                                                                                            value={item.quantity}
-                                                                                            onChange={(e) => handleQuantityChange(item.partId, parseInt(e.target.value) || 0)}
+                                                                                            value={
+                                                                                                item.quantity
+                                                                                            }
+                                                                                            onChange={(
+                                                                                                e
+                                                                                            ) =>
+                                                                                                handleQuantityChange(
+                                                                                                    item.partId,
+                                                                                                    parseInt(
+                                                                                                        e
+                                                                                                            .target
+                                                                                                            .value
+                                                                                                    ) ||
+                                                                                                        0
+                                                                                                )
+                                                                                            }
                                                                                             min="1"
-                                                                                            max={stockAvailable}
+                                                                                            max={
+                                                                                                stockAvailable
+                                                                                            }
                                                                                             className="w-12 text-center text-sm border-0 focus:ring-0"
                                                                                         />
                                                                                         <button
-                                                                                            onClick={() => handleQuantityChange(item.partId, item.quantity + 1)}
-                                                                                            disabled={item.quantity >= stockAvailable}
+                                                                                            onClick={() =>
+                                                                                                handleQuantityChange(
+                                                                                                    item.partId,
+                                                                                                    item.quantity +
+                                                                                                        1
+                                                                                                )
+                                                                                            }
+                                                                                            disabled={
+                                                                                                item.quantity >=
+                                                                                                stockAvailable
+                                                                                            }
                                                                                             className="p-1 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                                                         >
                                                                                             <Plus className="w-3 h-3 text-gray-500" />
@@ -803,13 +917,31 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
                                                                                 {/* Unit Price */}
                                                                                 <div className="flex items-center">
-                                                                                    <label className="text-xs text-gray-600 mr-2">Price:</label>
+                                                                                    <label className="text-xs text-gray-600 mr-2">
+                                                                                        Price:
+                                                                                    </label>
                                                                                     <div className="relative">
-                                                                                        <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
+                                                                                        <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+                                                                                            $
+                                                                                        </span>
                                                                                         <input
                                                                                             type="number"
-                                                                                            value={item.unitPrice}
-                                                                                            onChange={(e) => handleUnitPriceChange(item.partId, parseFloat(e.target.value) || 0)}
+                                                                                            value={
+                                                                                                item.unitPrice
+                                                                                            }
+                                                                                            onChange={(
+                                                                                                e
+                                                                                            ) =>
+                                                                                                handleUnitPriceChange(
+                                                                                                    item.partId,
+                                                                                                    parseFloat(
+                                                                                                        e
+                                                                                                            .target
+                                                                                                            .value
+                                                                                                    ) ||
+                                                                                                        0
+                                                                                                )
+                                                                                            }
                                                                                             min="0"
                                                                                             step="0.01"
                                                                                             className="w-20 pl-4 pr-2 py-1 text-sm border border-gray-200 rounded focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
@@ -819,15 +951,37 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
                                                                                 {/* Discount */}
                                                                                 <div className="flex items-center">
-                                                                                    <label className="text-xs text-gray-600 mr-2">Disc:</label>
+                                                                                    <label className="text-xs text-gray-600 mr-2">
+                                                                                        Disc:
+                                                                                    </label>
                                                                                     <div className="relative">
-                                                                                        <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
+                                                                                        <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+                                                                                            $
+                                                                                        </span>
                                                                                         <input
                                                                                             type="number"
-                                                                                            value={item.discount || 0}
-                                                                                            onChange={(e) => handleDiscountChange(item.partId, parseFloat(e.target.value) || 0)}
+                                                                                            value={
+                                                                                                item.discount ||
+                                                                                                0
+                                                                                            }
+                                                                                            onChange={(
+                                                                                                e
+                                                                                            ) =>
+                                                                                                handleDiscountChange(
+                                                                                                    item.partId,
+                                                                                                    parseFloat(
+                                                                                                        e
+                                                                                                            .target
+                                                                                                            .value
+                                                                                                    ) ||
+                                                                                                        0
+                                                                                                )
+                                                                                            }
                                                                                             min="0"
-                                                                                            max={item.quantity * item.unitPrice}
+                                                                                            max={
+                                                                                                item.quantity *
+                                                                                                item.unitPrice
+                                                                                            }
                                                                                             step="0.01"
                                                                                             className="w-20 pl-4 pr-2 py-1 text-sm border border-gray-200 rounded focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
                                                                                         />
@@ -836,13 +990,19 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
                                                                                 {/* Item Total */}
                                                                                 <div className="flex items-center ml-auto">
-                                                                                    {item.discount > 0 && (
+                                                                                    {item.discount >
+                                                                                        0 && (
                                                                                         <span className="text-xs text-gray-400 line-through mr-2">
-                                                                                            {formatCurrency(item.quantity * item.unitPrice)}
+                                                                                            {formatCurrency(
+                                                                                                item.quantity *
+                                                                                                    item.unitPrice
+                                                                                            )}
                                                                                         </span>
                                                                                     )}
                                                                                     <span className="text-sm font-semibold text-gray-900">
-                                                                                        {formatCurrency(itemTotal)}
+                                                                                        {formatCurrency(
+                                                                                            itemTotal
+                                                                                        )}
                                                                                     </span>
                                                                                 </div>
                                                                             </div>
@@ -861,18 +1021,33 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
                                                 <div className="space-y-2 text-sm">
                                                     <div className="flex justify-between">
-                                                        <span className="text-gray-600">Subtotal:</span>
-                                                        <span className="font-medium text-gray-900">{formatCurrency(calculateSubtotal())}</span>
+                                                        <span className="text-gray-600">
+                                                            Subtotal:
+                                                        </span>
+                                                        <span className="font-medium text-gray-900">
+                                                            {formatCurrency(calculateSubtotal())}
+                                                        </span>
                                                     </div>
                                                     {calculateTotalDiscount() > 0 && (
                                                         <div className="flex justify-between">
-                                                            <span className="text-gray-600">Total Discount:</span>
-                                                            <span className="font-medium text-red-600">-{formatCurrency(calculateTotalDiscount())}</span>
+                                                            <span className="text-gray-600">
+                                                                Total Discount:
+                                                            </span>
+                                                            <span className="font-medium text-red-600">
+                                                                -
+                                                                {formatCurrency(
+                                                                    calculateTotalDiscount()
+                                                                )}
+                                                            </span>
                                                         </div>
                                                     )}
                                                     <div className="flex justify-between pt-2 border-t border-gray-200">
-                                                        <span className="font-semibold text-gray-900">Order Total:</span>
-                                                        <span className="text-lg font-bold text-purple-600">{formatCurrency(calculateOrderTotal())}</span>
+                                                        <span className="font-semibold text-gray-900">
+                                                            Order Total:
+                                                        </span>
+                                                        <span className="text-lg font-bold text-purple-600">
+                                                            {formatCurrency(calculateOrderTotal())}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -927,7 +1102,9 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                         </div>
                                         {formData.notes && (
                                             <div className="mt-3">
-                                                <span className="text-sm text-gray-500">Notes:</span>
+                                                <span className="text-sm text-gray-500">
+                                                    Notes:
+                                                </span>
                                                 <p className="mt-1 text-sm text-gray-700">
                                                     {formData.notes}
                                                 </p>
@@ -1020,10 +1197,11 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                                     <button
                                         onClick={handleSubmit}
                                         disabled={isSubmitting}
-                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${isSubmitting
-                                            ? 'bg-gray-400 cursor-not-allowed'
-                                            : 'bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600'
-                                            }`}
+                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${
+                                            isSubmitting
+                                                ? 'bg-gray-400 cursor-not-allowed'
+                                                : 'bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600'
+                                        }`}
                                     >
                                         {isSubmitting ? (
                                             <>
@@ -1047,7 +1225,6 @@ export const OrderFormModal: React.FC<OrderFormModalProps> = ({
                     </div>
                 </div>
             </div>
-
 
             {/* QR Scanner Modal */}
             <QRScannerModal

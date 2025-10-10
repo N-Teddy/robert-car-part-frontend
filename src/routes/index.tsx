@@ -20,7 +20,6 @@ import UnauthorizedRolePage from '../pages/UnauthorizedRole';
 export const AppRoutes = () => {
     return (
         <Routes>
-
             <Route element={<AuthLayout />}>
                 <Route path="login" element={<LoginPage />} />
                 <Route path="register" element={<RegisterPage />} />
@@ -28,7 +27,6 @@ export const AppRoutes = () => {
                 <Route path="reset-password" element={<ResetPasswordPage />} />
             </Route>
 
-            
             <Route path="/" element={<Navigate to="/login" replace />} />
 
             {/* Error Pages */}
@@ -53,7 +51,6 @@ export const AppRoutes = () => {
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/categories" element={<CategoriesPage />} />
             </Route>
-
         </Routes>
     );
 };

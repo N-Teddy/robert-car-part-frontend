@@ -26,14 +26,13 @@ interface NotificationDropdownProps {
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onClose }) => {
     const { markAsRead, markAllAsRead } = useNotificationContext();
     const { useGetNotifications } = useNotification();
-        const { user } = useAuthContext();
-
+    const { user } = useAuthContext();
 
     const { data, isLoading } = useGetNotifications({
         limit: 5,
         page: 1,
         userId: user.id,
-        isRead: false
+        isRead: false,
     });
 
     const notifications = data?.items || [];

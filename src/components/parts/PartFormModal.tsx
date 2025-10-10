@@ -15,7 +15,7 @@ import {
     Plus,
     Archive,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import type { Part } from '../../types/request/part';
@@ -182,12 +182,12 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
 
     const handleNext = () => {
         if (validateStep(currentStep)) {
-            setCurrentStep(prev => Math.min(prev + 1, steps.length));
+            setCurrentStep((prev) => Math.min(prev + 1, steps.length));
         }
     };
 
     const handleBack = () => {
-        setCurrentStep(prev => Math.max(prev - 1, 1));
+        setCurrentStep((prev) => Math.max(prev - 1, 1));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -245,10 +245,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
             <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
                 {/* Header */}
                 <div
-                    className={`relative overflow-hidden ${mode === 'create'
+                    className={`relative overflow-hidden ${
+                        mode === 'create'
                             ? 'bg-gradient-to-br from-green-600 via-green-500 to-emerald-500'
                             : 'bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500'
-                        }`}
+                    }`}
                 >
                     {/* Decorative Pattern */}
                     <div className="absolute inset-0 opacity-10">
@@ -314,10 +315,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             type="text"
                                             value={formData.name}
                                             onChange={(e) => handleChange('name', e.target.value)}
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.name
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.name
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="e.g., Brake Pad Set"
                                         />
                                         {errors.name && (
@@ -341,10 +343,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                                     e.target.value.toUpperCase()
                                                 )
                                             }
-                                            className={`w-full px-4 py-2.5 rounded-lg border font-mono ${errors.partNumber
+                                            className={`w-full px-4 py-2.5 rounded-lg border font-mono ${
+                                                errors.partNumber
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="e.g., BP-12345"
                                         />
                                         {errors.partNumber && (
@@ -364,10 +367,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             onChange={(e) =>
                                                 handleChange('vehicleId', e.target.value)
                                             }
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.vehicleId
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.vehicleId
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                         >
                                             <option value="">Select a vehicle</option>
                                             {vehicles.map((v) => (
@@ -393,10 +397,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             onChange={(e) =>
                                                 handleChange('categoryId', e.target.value)
                                             }
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.categoryId
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.categoryId
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                         >
                                             <option value="">Select a category</option>
                                             {categories.map((c) => (
@@ -450,10 +455,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                                 onChange={(e) =>
                                                     handleChange('price', e.target.value)
                                                 }
-                                                className={`w-full pl-12 pr-4 py-2.5 rounded-lg border ${errors.price
+                                                className={`w-full pl-12 pr-4 py-2.5 rounded-lg border ${
+                                                    errors.price
                                                         ? 'border-red-300 focus:ring-red-500'
                                                         : 'border-gray-300 focus:ring-green-500'
-                                                    } focus:ring-2 focus:border-transparent transition-all`}
+                                                } focus:ring-2 focus:border-transparent transition-all`}
                                                 placeholder="0"
                                             />
                                             <span className="absolute font-medium text-gray-500 -translate-y-1/2 left-3 top-1/2">
@@ -479,10 +485,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             onChange={(e) =>
                                                 handleChange('quantity', e.target.value)
                                             }
-                                            className={`w-full px-4 py-2.5 rounded-lg border ${errors.quantity
+                                            className={`w-full px-4 py-2.5 rounded-lg border ${
+                                                errors.quantity
                                                     ? 'border-red-300 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-green-500'
-                                                } focus:ring-2 focus:border-transparent transition-all`}
+                                            } focus:ring-2 focus:border-transparent transition-all`}
                                             placeholder="0"
                                         />
                                         {errors.quantity && (
@@ -508,10 +515,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                         {['New', 'Used', 'Refurbished'].map((condition) => (
                                             <label
                                                 key={condition}
-                                                className={`relative flex items-center justify-center px-4 py-3 border-2 rounded-lg cursor-pointer transition-all ${formData.condition === condition
+                                                className={`relative flex items-center justify-center px-4 py-3 border-2 rounded-lg cursor-pointer transition-all ${
+                                                    formData.condition === condition
                                                         ? 'border-green-500 bg-green-50'
                                                         : 'border-gray-200 hover:border-gray-300'
-                                                    }`}
+                                                }`}
                                             >
                                                 <input
                                                     type="radio"
@@ -524,10 +532,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                                     className="sr-only"
                                                 />
                                                 <span
-                                                    className={`text-sm font-medium ${formData.condition === condition
+                                                    className={`text-sm font-medium ${
+                                                        formData.condition === condition
                                                             ? 'text-green-700'
                                                             : 'text-gray-700'
-                                                        }`}
+                                                    }`}
                                                 >
                                                     {condition}
                                                 </span>
@@ -586,22 +595,25 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                 {canAddMore && (
                                     <div
                                         {...getRootProps()}
-                                        className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${isDragActive
+                                        className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
+                                            isDragActive
                                                 ? 'border-green-500 bg-green-50'
                                                 : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                                            }`}
+                                        }`}
                                     >
                                         <input {...getInputProps()} />
                                         <div className="flex flex-col items-center">
                                             <div
-                                                className={`p-3 rounded-full ${isDragActive ? 'bg-green-100' : 'bg-gray-100'
-                                                    }`}
+                                                className={`p-3 rounded-full ${
+                                                    isDragActive ? 'bg-green-100' : 'bg-gray-100'
+                                                }`}
                                             >
                                                 <Upload
-                                                    className={`w-8 h-8 ${isDragActive
+                                                    className={`w-8 h-8 ${
+                                                        isDragActive
                                                             ? 'text-green-600'
                                                             : 'text-gray-400'
-                                                        }`}
+                                                    }`}
                                                 />
                                             </div>
                                             <p className="mt-3 text-sm font-medium text-gray-700">
@@ -704,10 +716,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                     <button
                                         type="button"
                                         onClick={handleNext}
-                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${mode === 'create'
+                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${
+                                            mode === 'create'
                                                 ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600'
                                                 : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'
-                                            }`}
+                                        }`}
                                     >
                                         <span>Next</span>
                                         <ChevronRight className="w-4 h-4" />
@@ -717,10 +730,11 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                         type="button"
                                         onClick={handleSubmit}
                                         disabled={isSubmitting}
-                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${mode === 'create'
+                                        className={`px-5 py-2.5 rounded-lg font-medium text-white transition-all flex items-center space-x-2 ${
+                                            mode === 'create'
                                                 ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600'
                                                 : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600'
-                                            } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         {isSubmitting ? (
                                             <>
@@ -731,7 +745,9 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
                                             <>
                                                 <Check className="w-4 h-4" />
                                                 <span>
-                                                    {mode === 'create' ? 'Create Part' : 'Update Part'}
+                                                    {mode === 'create'
+                                                        ? 'Create Part'
+                                                        : 'Update Part'}
                                                 </span>
                                             </>
                                         )}

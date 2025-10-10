@@ -1,13 +1,6 @@
 // src/pages/orders/OrdersPage.tsx
 import React, { useState, useMemo } from 'react';
-import {
-    ShoppingCart,
-    Plus,
-    Download,
-    Clock,
-    CheckCircle,
-    DollarSign,
-} from 'lucide-react';
+import { ShoppingCart, Plus, Download, Clock, CheckCircle, DollarSign } from 'lucide-react';
 import { OrderFormModal } from '../../components/orders/OrderFormModal';
 import { OrderViewModal } from '../../components/orders/OrderViewModal';
 import { OrderDeleteModal } from '../../components/orders/OrderDeleteModal';
@@ -160,7 +153,7 @@ export const OrdersPage: React.FC = () => {
                     customerPhone: selectedOrder.customerPhone,
                     customerEmail: selectedOrder.customerEmail,
                     deliveryMethod: selectedOrder.deliveryMethod,
-                    items: selectedOrder.items.map(item => ({
+                    items: selectedOrder.items.map((item) => ({
                         partId: item.part.id,
                         quantity: item.quantity,
                         unitPrice: Number(item.unitPrice),
@@ -230,8 +223,6 @@ export const OrdersPage: React.FC = () => {
             .reduce((sum, order) => sum + Number(order.totalAmount), 0) || 0;
 
     console.log('Parts available:', partsData);
-
-
 
     return (
         <div className="px-4 py-8 sm:px-6 lg:px-8">

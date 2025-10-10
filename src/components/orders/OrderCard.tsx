@@ -9,7 +9,6 @@ import {
     DollarSign,
     Eye,
     Edit2,
-    Copy,
     XCircle,
     ChevronDown,
     ChevronUp,
@@ -34,7 +33,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     onView,
     onEdit,
     onDelete,
-    onComplete
+    onComplete,
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 

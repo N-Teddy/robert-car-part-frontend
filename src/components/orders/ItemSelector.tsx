@@ -1,15 +1,6 @@
 // src/components/orders/ItemSelector.tsx
 import React, { useState, useEffect } from 'react';
-import {
-    Search,
-    Plus,
-    Minus,
-    Package,
-    X,
-    ShoppingCart,
-    QrCode,
-    Loader2,
-} from 'lucide-react';
+import { Search, Plus, Minus, Package, X, ShoppingCart, QrCode, Loader2 } from 'lucide-react';
 import type { Part } from '../../types/request/part';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { QRScannerModal } from './QRScannerModal';
@@ -79,9 +70,9 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                 part.name.toLowerCase().includes(searchLower) ||
                 part.partNumber.toLowerCase().includes(searchLower) ||
                 part.description?.toLowerCase().includes(searchLower) ||
-                (part.vehicle?.make?.toLowerCase().includes(searchLower)) ||
-                (part.vehicle?.model?.toLowerCase().includes(searchLower)) ||
-                (part.category?.name?.toLowerCase().includes(searchLower));
+                part.vehicle?.make?.toLowerCase().includes(searchLower) ||
+                part.vehicle?.model?.toLowerCase().includes(searchLower) ||
+                part.category?.name?.toLowerCase().includes(searchLower);
 
             const matchesCategory =
                 selectedCategory === 'all' ||
@@ -156,7 +147,6 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
             setPendingPart(scannedPart);
             setShowQuantityDialog(true);
             setScanQuantity(1);
-
         } catch (error) {
             console.error('QR Scan error:', error);
             alert('Invalid QR code format. Expected JSON with partId.');
@@ -315,23 +305,27 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                             <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                             <p className="text-gray-500">No parts found</p>
                             <p className="mt-1 text-xs text-gray-400">
-                                {searchTerm ? 'Try adjusting your search term' : 'Try adjusting your filters'}
+                                {searchTerm
+                                    ? 'Try adjusting your search term'
+                                    : 'Try adjusting your filters'}
                             </p>
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-200">
                             {filteredParts.map((part) => {
                                 const selectedItem = getSelectedItem(part.id);
-                                const isMaxQuantity = (selectedItem?.quantity || 0) >= part.quantity;
+                                const isMaxQuantity =
+                                    (selectedItem?.quantity || 0) >= part.quantity;
                                 const isLastScanned = lastScannedId === part.id;
 
                                 return (
                                     <div
                                         key={part.id}
-                                        className={`p-4 transition-all ${isLastScanned
+                                        className={`p-4 transition-all ${
+                                            isLastScanned
                                                 ? 'bg-purple-50 ring-2 ring-purple-500'
                                                 : 'hover:bg-gray-50'
-                                            }`}
+                                        }`}
                                     >
                                         <div className="flex items-start space-x-4">
                                             {/* Part Image */}
@@ -388,10 +382,11 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                             <button
                                                                 onClick={() => onItemAdd(part)}
                                                                 disabled={part.quantity === 0}
-                                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${part.quantity === 0
+                                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                                                    part.quantity === 0
                                                                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                                                         : 'bg-purple-600 text-white hover:bg-purple-700'
-                                                                    }`}
+                                                                }`}
                                                             >
                                                                 Add
                                                             </button>
@@ -402,7 +397,11 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                                         onClick={() =>
                                                                             onItemUpdate(
                                                                                 part.id,
-                                                                                Math.max(0, selectedItem.quantity - 1)
+                                                                                Math.max(
+                                                                                    0,
+                                                                                    selectedItem.quantity -
+                                                                                        1
+                                                                                )
                                                                             )
                                                                         }
                                                                         className="p-1.5 hover:bg-gray-100 transition-colors"
@@ -411,18 +410,34 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                                     </button>
                                                                     <input
                                                                         type="number"
-                                                                        value={selectedItem.quantity}
+                                                                        value={
+                                                                            selectedItem.quantity
+                                                                        }
                                                                         onChange={(e) => {
-                                                                            const val = parseInt(e.target.value) || 0;
-                                                                            if (val <= part.quantity && val >= 0) {
-                                                                                onItemUpdate(part.id, val);
+                                                                            const val =
+                                                                                parseInt(
+                                                                                    e.target.value
+                                                                                ) || 0;
+                                                                            if (
+                                                                                val <=
+                                                                                    part.quantity &&
+                                                                                val >= 0
+                                                                            ) {
+                                                                                onItemUpdate(
+                                                                                    part.id,
+                                                                                    val
+                                                                                );
                                                                             }
                                                                         }}
                                                                         className="w-12 text-sm text-center border-0 focus:ring-0"
                                                                     />
                                                                     <button
                                                                         onClick={() =>
-                                                                            onItemUpdate(part.id, selectedItem.quantity + 1)
+                                                                            onItemUpdate(
+                                                                                part.id,
+                                                                                selectedItem.quantity +
+                                                                                    1
+                                                                            )
                                                                         }
                                                                         disabled={isMaxQuantity}
                                                                         className="p-1.5 hover:bg-gray-100 transition-colors disabled:opacity-50"
@@ -432,7 +447,9 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                                 </div>
 
                                                                 <button
-                                                                    onClick={() => onItemRemove(part.id)}
+                                                                    onClick={() =>
+                                                                        onItemRemove(part.id)
+                                                                    }
                                                                     className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
                                                                 >
                                                                     <X size={18} />
@@ -451,7 +468,10 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                         <input
                                                             type="number"
                                                             min="0"
-                                                            max={selectedItem.quantity * selectedItem.unitPrice}
+                                                            max={
+                                                                selectedItem.quantity *
+                                                                selectedItem.unitPrice
+                                                            }
                                                             value={selectedItem.discount || 0}
                                                             onChange={(e) =>
                                                                 onDiscountUpdate(
@@ -462,7 +482,10 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                                             className="w-20 px-2 py-1 text-sm border border-gray-300 rounded"
                                                         />
                                                         <span className="text-xs text-gray-500">
-                                                            Subtotal: {formatCurrency(calculateItemTotal(selectedItem))}
+                                                            Subtotal:{' '}
+                                                            {formatCurrency(
+                                                                calculateItemTotal(selectedItem)
+                                                            )}
                                                         </span>
                                                     </div>
                                                 )}
@@ -567,7 +590,9 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
                                 />
                                 <button
                                     onClick={() =>
-                                        setScanQuantity(Math.min(pendingPart.quantity, scanQuantity + 1))
+                                        setScanQuantity(
+                                            Math.min(pendingPart.quantity, scanQuantity + 1)
+                                        )
                                     }
                                     className="p-2 border border-gray-300 rounded-lg hover:bg-gray-100"
                                 >

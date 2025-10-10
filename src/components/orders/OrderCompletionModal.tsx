@@ -60,10 +60,12 @@ export const OrderCompletionModal: React.FC<OrderCompletionModalProps> = ({
                                     Customer: {order.customerName}
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                    Items: {order.items.length} • Total: {formatCurrency(order.totalAmount)}
+                                    Items: {order.items.length} • Total:{' '}
+                                    {formatCurrency(order.totalAmount)}
                                 </p>
                                 <p className="text-xs text-gray-500 mt-1">
-                                    Current Status: <span className="font-medium">{order.status}</span>
+                                    Current Status:{' '}
+                                    <span className="font-medium">{order.status}</span>
                                 </p>
                             </div>
                         </div>
@@ -75,7 +77,9 @@ export const OrderCompletionModal: React.FC<OrderCompletionModalProps> = ({
                                 <AlertCircle className="w-5 h-5 text-blue-600" />
                             </div>
                             <div className="ml-3">
-                                <h4 className="text-sm font-medium text-blue-800">What happens next?</h4>
+                                <h4 className="text-sm font-medium text-blue-800">
+                                    What happens next?
+                                </h4>
                                 <div className="mt-1 text-sm text-blue-700">
                                     <ul className="list-disc list-inside space-y-1">
                                         <li>Order status will change to COMPLETED</li>
