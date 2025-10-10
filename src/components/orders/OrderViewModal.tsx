@@ -35,7 +35,7 @@ interface OrderViewModalProps {
     onClose: () => void;
     onEdit: () => void;
     onDelete: () => void;
-    onDuplicate: () => void;
+    onComplete: () => void;
 }
 
 export const OrderViewModal: React.FC<OrderViewModalProps> = ({
@@ -44,7 +44,7 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
     onClose,
     onEdit,
     onDelete,
-    onDuplicate,
+    onComplete,
 }) => {
     const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
     const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
@@ -190,13 +190,6 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                         <Download className="w-4 h-4 mr-1.5" />
                                         {isGeneratingReceipt ? 'Generating...' : 'Download PDF'}
                                     </button>
-                                    <button
-                                        onClick={onDuplicate}
-                                        className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
-                                    >
-                                        <Copy className="w-4 h-4 mr-1.5" />
-                                        Duplicate
-                                    </button>
                                 </div>
                                 {canEdit && (
                                     <button
@@ -205,6 +198,15 @@ export const OrderViewModal: React.FC<OrderViewModalProps> = ({
                                     >
                                         <Edit2 className="w-4 h-4 mr-1.5" />
                                         Edit Order
+                                    </button>
+                                )}
+                                {canEdit && (
+                                    <button
+                                        onClick={onComplete}
+                                        className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex items-center"
+                                    >
+                                        <CheckCircle className="w-4 h-4 mr-1.5" />
+                                        Complete Order
                                     </button>
                                 )}
                             </div>

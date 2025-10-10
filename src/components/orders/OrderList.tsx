@@ -1,6 +1,6 @@
 // src/components/orders/OrdersList.tsx
 import React from 'react';
-import { Eye, Edit2, Trash2, Copy, ShoppingCart, MoreVertical } from 'lucide-react';
+import { Eye, Edit2, Trash2, Copy, ShoppingCart, MoreVertical, CheckCircle } from 'lucide-react';
 import type { OrderResponse } from '../../types/response/order';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { format } from 'date-fns';
@@ -12,7 +12,7 @@ interface OrdersListProps {
     onView: (order: OrderResponse) => void;
     onEdit: (order: OrderResponse) => void;
     onDelete: (order: OrderResponse) => void;
-    onDuplicate: (order: OrderResponse) => void;
+    onComplete: (order: OrderResponse) => void;
 }
 
 export const OrdersList: React.FC<OrdersListProps> = ({
@@ -21,7 +21,7 @@ export const OrdersList: React.FC<OrdersListProps> = ({
     onView,
     onEdit,
     onDelete,
-    onDuplicate,
+    onComplete,
 }) => {
     if (loading) {
         return (
@@ -124,11 +124,10 @@ export const OrdersList: React.FC<OrdersListProps> = ({
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span
-                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                            order.deliveryMethod === 'PICKUP'
+                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.deliveryMethod === 'PICKUP'
                                                 ? 'bg-blue-100 text-blue-800'
                                                 : 'bg-purple-100 text-purple-800'
-                                        }`}
+                                            }`}
                                     >
                                         {order.deliveryMethod === 'PICKUP'
                                             ? '🏪 Pickup'
@@ -161,13 +160,14 @@ export const OrdersList: React.FC<OrdersListProps> = ({
                                                 <Edit2 size={16} />
                                             </button>
                                         )}
-                                        <button
-                                            onClick={() => onDuplicate(order)}
-                                            className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded transition-colors"
-                                            title="Duplicate"
-                                        >
-                                            <Copy size={16} />
-                                        </button>
+                                        {onComplete && (
+                                            <button
+                                                onClick={() => onComplete(order)}
+                                                className="p-1.5 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                            >
+                                                <CheckCircle size={18} />
+                                            </button>
+                                        )}
                                         {order.status === 'PENDING' && (
                                             <button
                                                 onClick={() => onDelete(order)}
