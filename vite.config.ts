@@ -18,6 +18,7 @@ export default defineConfig({
     },
     build: {
         outDir: 'dist',
+        target: ['es2021', 'chrome100', 'safari13'],
     },
     base: './',
 });
