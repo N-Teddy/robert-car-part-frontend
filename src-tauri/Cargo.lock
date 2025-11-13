@@ -1737,6 +1737,7 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
+ "tauri-plugin-devtools",
 ]
 
 [[package]]
@@ -3302,6 +3303,12 @@ dependencies = [
  "tauri-codegen",
  "tauri-utils",
 ]
+
+[[package]]
+name = "tauri-plugin-devtools"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c58ec703485e22cae0beb6d53c389f755260593cb59c4a096e84ff54f1b6bb9e"
 
 [[package]]
 name = "tauri-runtime"
