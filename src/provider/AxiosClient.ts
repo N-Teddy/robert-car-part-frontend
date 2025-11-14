@@ -13,7 +13,8 @@ export const apiClient = axios.create({
     timeout: 1000000, // Slightly longer timeout for desktop
     headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'AutoCar-Desktop/1.0.0' // Identify as desktop app
+        'User-Agent': 'AutoCar-Desktop/1.0.0', // Identify as desktop app
+        'Origin': 'https://robert-car-part-backend.vercel.app'
     },
 });
 
