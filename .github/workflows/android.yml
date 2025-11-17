@@ -25,7 +25,6 @@ jobs:
       - name: Install Capacitor and build Android
         run: |
           pnpm add @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init RobertCarPart com.yourcompany.robertcarpart --web-dir dist
           npx cap add android
           npx cap sync
 
