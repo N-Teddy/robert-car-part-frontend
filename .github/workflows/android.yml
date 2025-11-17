@@ -23,7 +23,7 @@ jobs:
         run: pnpm build
 
       - name: Remove existing Android platform
-        run: rm -rf ../../android
+        run: rm -rf ./android
 
       - name: Install Capacitor and build Android
         run: |
