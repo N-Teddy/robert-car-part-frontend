@@ -37,7 +37,7 @@ jobs:
         run: pnpm run build # Use pnpm run command
 
       - name: Copy web assets to Android
-        run: npx cap copy android
+        run: npx cap sync android
 
       - name: Build Android debug APK
         run: |
