@@ -27,7 +27,7 @@ jobs:
           java-version: '17'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile # Use pnpm install command
+        run: pnpm install --no-frozen-lockfile # Use pnpm install command
 
       - name: Add Android platform (if not already in repo)
         # Assuming you have @capacitor/android as a dev dependency
