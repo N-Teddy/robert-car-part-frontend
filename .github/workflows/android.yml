@@ -1,56 +1,51 @@
-name: Build Android APK
-on: [push, workflow_dispatch]
+name: Build Capacitor Android APK with PNPM
+
+on: [push]
 
 jobs:
-  build:
+  build_android:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Setup Node.js and pnpm
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8 # Specify your pnpm version if needed, or omit for latest
+          # run_install: false # We will run install manually for more control
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile # Use pnpm install command
 
-      - name: Build web app
-        run: pnpm build
+      - name: Add Android platform (if not already in repo)
+        # Assuming you have @capacitor/android as a dev dependency
+        run: npx cap add android
 
-      - name: Remove existing Android platform
-        run: rm -rf ./android
+      - name: Build React web app
+        run: pnpm run build # Use pnpm run command
 
-      - name: Install Capacitor and build Android
-        run: |
-          pnpm add @capacitor/core @capacitor/cli @capacitor/android
-          npx cap add android
-          npx cap sync
+      - name: Copy web assets to Android
+        run: npx cap copy android
 
-      - name: Set Java 17 for Gradle
-        run: |
-          echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
-          echo "ORG_GRADLE_JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
-
-      - name: Build Android APK
+      - name: Build Android debug APK
         run: |
           cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug -Dorg.gradle.java.home=$JAVA_HOME_17_X64
+          ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: RobertCarPart-APK
+          name: android-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 30
