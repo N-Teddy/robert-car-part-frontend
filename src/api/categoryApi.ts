@@ -1,17 +1,13 @@
 import { apiClient } from '../provider/AxiosClient';
-import type {
-    Category,
-    CategoryWithParent,
-    CategoryWithChildren,
-    CreateCategoryRequest,
-    UpdateCategoryRequest,
-} from '../types/request/category';
+import type { Category, CategoryWithParent } from '../types/request/category';
 import type {
     SingleCategoryResponse,
     CategoryListResponse,
     CategoryTreeResponse,
     CategoryChildrenResponse,
     CategoryFilterDto,
+    ResponseMeta,
+    CategoryTreeNode,
 } from '../types/response/category';
 
 // Category API functions
@@ -27,7 +23,7 @@ export const categoryApi = {
     // Get all categories as a tree structure
     getTree: async (
         filters?: CategoryFilterDto
-    ): Promise<{ items: CategoryWithChildren[]; meta: any }> => {
+    ): Promise<{ items: CategoryTreeNode[]; meta: ResponseMeta }> => {
         const response = await apiClient.get<CategoryTreeResponse>('/categories/tree', {
             params: filters,
         });
@@ -35,7 +31,7 @@ export const categoryApi = {
     },
 
     // Get children of a specific category
-    getChildren: async (id: string): Promise<CategoryWithChildren[]> => {
+    getChildren: async (id: string): Promise<CategoryTreeNode[]> => {
         const response = await apiClient.get<CategoryChildrenResponse>(
             `/categories/${id}/children`
         );
@@ -43,11 +39,14 @@ export const categoryApi = {
     },
 
     // Get paginated list of categories
-    getAll: async (filters?: CategoryFilterDto): Promise<{ items: Category[]; meta: any }> => {
+    getAll: async (
+        filters?: CategoryFilterDto
+    ): Promise<{ items: Category[]; meta: ResponseMeta }> => {
         const response = await apiClient.get<CategoryListResponse>('/categories', {
             params: filters,
         });
-        return response.data.data;
+        const { items, meta } = response.data.data;
+        return { items, meta };
     },
 
     // Get a specific category
@@ -70,7 +69,7 @@ export const categoryApi = {
 
     // Delete a category
     delete: async (id: string): Promise<{ success: true }> => {
-        const response = await apiClient.delete(`/categories/${id}`);
+        const response = await apiClient.delete<{ success: true }>(`/categories/${id}`);
         return response.data;
     },
 };

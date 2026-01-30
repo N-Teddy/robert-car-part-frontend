@@ -1,26 +1,3 @@
-export interface PartImage {
-    id: string;
-    url: string;
-    publicId: string;
-    format: string;
-}
-
-export interface Part {
-    id: string;
-    name: string;
-    description: string;
-    price: string; // Stored as string in response
-    quantity: number;
-    condition: string | null;
-    partNumber: string;
-    vehicleId: string;
-    categoryId: string;
-    createdAt: string;
-    updatedAt: string;
-    qrCodeUrl: string;
-    images: PartImage[];
-}
-
 export interface CreatePartRequest {
     images?: File[] | Blob[];
     name: string;

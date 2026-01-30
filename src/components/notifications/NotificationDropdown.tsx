@@ -28,14 +28,19 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
     const { useGetNotifications } = useNotification();
     const { user } = useAuthContext();
 
-    const { data, isLoading } = useGetNotifications({
-        limit: 5,
-        page: 1,
-        userId: user.id,
-        isRead: false,
-    });
+    const { data, isLoading } = useGetNotifications(
+        {
+            limit: 5,
+            page: 1,
+            userId: user?.id,
+            isRead: false,
+        },
+        {
+            enabled: Boolean(user?.id),
+        }
+    );
 
-    const notifications = data?.items || [];
+    const notifications: Notification[] = data?.items ?? [];
 
     const getNotificationIcon = (type: string) => {
         const iconClass = 'w-5 h-5';
@@ -54,18 +59,19 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
         return iconMap[type] || <Bell className={`${iconClass} text-gray-500`} />;
     };
 
-    const handleNotificationClick = async (notification: Notification) => {
+    const handleNotificationClick = (notification: Notification) => {
         if (!notification.isRead) {
-            await markAsRead([notification.id]);
+            void markAsRead([notification.id]);
         }
         onClose();
     };
 
     const getNotificationLink = (notification: Notification): string => {
-        if (notification.metadata?.orderId) return `/orders/${notification.metadata.orderId}`;
-        if (notification.metadata?.partId) return `/inventory/${notification.metadata.partId}`;
-        if (notification.metadata?.userId) return `/users/${notification.metadata.userId}`;
-        if (notification.metadata?.reportId) return `/reports/${notification.metadata.reportId}`;
+        const meta = notification.metadata;
+        if (meta?.orderId) return `/orders/${meta.orderId}`;
+        if (meta?.partId) return `/inventory/${meta.partId}`;
+        if (meta?.userId) return `/users/${meta.userId}`;
+        if (meta?.reportId) return `/reports/${meta.reportId}`;
         return '/notifications';
     };
 
@@ -81,7 +87,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
                     <div className="flex items-center space-x-2">
                         {notifications.some((n) => !n.isRead) && (
                             <button
-                                onClick={markAllAsRead}
+                                onClick={() => void markAllAsRead()}
                                 className="flex items-center space-x-1 text-xs font-medium text-red-600 hover:text-red-700"
                             >
                                 <CheckCheck size={14} />

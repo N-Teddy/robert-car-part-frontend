@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '../ui/Button';
-import type { CategoryWithChildren } from '../../types/request/category';
+import type { CategoryTreeNode } from '../../types/response/category';
 import { useCategory } from '../../hooks/categoryHook';
 
 const categorySchema = z.object({
@@ -22,7 +22,7 @@ type CategoryFormData = z.infer<typeof categorySchema>;
 interface CategoryFormModalProps {
     isOpen: boolean;
     mode: 'create' | 'edit';
-    category?: CategoryWithChildren | null;
+    category?: CategoryTreeNode | null;
     parentId?: string | null;
     onClose: () => void;
     onSuccess: () => void;
@@ -91,7 +91,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
         if (mode === 'edit' && category) {
             setValue('name', category.name);
             setValue('description', category.description || '');
-            setValue('parentId', (category as any).parentId || '');
+            setValue('parentId', category.parentId || '');
             if (category.image) {
                 setImagePreview(category.image.url);
             }
@@ -198,11 +198,11 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
             }
 
             if (mode === 'create') {
-                await createMutation.mutateAsync(formData as any);
+                await createMutation.mutateAsync(formData);
             } else if (category) {
                 await updateMutation.mutateAsync({
                     id: category.id,
-                    data: formData as any,
+                    data: formData,
                 });
             }
 
@@ -230,7 +230,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
         if (mode === 'edit' && category) {
             // Filter out current category and its children
             const excludeIds = new Set<string>([category.id]);
-            const addChildrenIds = (cat: CategoryWithChildren) => {
+            const addChildrenIds = (cat: CategoryTreeNode) => {
                 if (cat.children) {
                     cat.children.forEach((child) => {
                         excludeIds.add(child.id);
@@ -238,7 +238,7 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                     });
                 }
             };
-            addChildrenIds(category);
+            addChildrenIds(category as unknown as CategoryTreeNode);
 
             return categoriesData.items.filter((cat) => !excludeIds.has(cat.id));
         }
@@ -294,7 +294,11 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
                     </div>
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                    <form
+                        onSubmit={(e) => {
+                            void handleSubmit(onSubmit)(e);
+                        }}
+                    >
                         <div className="px-6 py-6 space-y-6">
                             {/* Category Name */}
                             <div>

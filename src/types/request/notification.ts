@@ -1,6 +1,12 @@
 import type { NotificationTypeEnum } from '../enum';
 
-export type NotificationMetadata = Record<string, any> | null;
+export type NotificationMetadata = {
+    orderId?: string;
+    partId?: string;
+    userId?: string;
+    reportId?: string;
+    [key: string]: unknown;
+} | null;
 
 export interface Notification {
     id?: string;

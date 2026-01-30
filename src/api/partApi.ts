@@ -50,11 +50,10 @@ export const partApi = {
         const params = new URLSearchParams();
 
         if (filters) {
-            Object.entries(filters).forEach(([key, value]) => {
-                if (value !== undefined && value !== null && value !== '') {
-                    params.append(key, value.toString());
-                }
-            });
+            for (const [key, value] of Object.entries(filters)) {
+                if (value === undefined || value === null || value === '') continue;
+                params.append(key, String(value));
+            }
         }
 
         const response = await apiClient.get<PartListResponse>(`/parts?${params}`);

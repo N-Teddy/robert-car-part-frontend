@@ -1,79 +1,110 @@
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+type Tokens = {
+    accessToken: string;
+    refreshToken?: string;
+};
 
-// Debug info
-console.log('🚀 Electron App Starting...');
-console.log('🌐 API Base URL:', BASE_URL);
-console.log('🔧 Environment:', import.meta.env.MODE);
-console.log('💻 User Agent:', navigator.userAgent);
+const rawBaseUrl: unknown = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = typeof rawBaseUrl === 'string' ? rawBaseUrl : undefined;
+const isDev: boolean = import.meta.env.DEV;
+const AUTH_STORAGE_KEY = 'autocar_auth';
+
+const log = (...args: unknown[]) => {
+    if (isDev) console.log(...args);
+};
 
 export const apiClient = axios.create({
     baseURL: BASE_URL,
-    timeout: 1000000, // Slightly longer timeout for desktop
+    timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
-        // 'User-Agent': 'AutoCar-Desktop/1.0.0', // Identify as desktop app
-        // 'Origin': 'https://robert-car-part-backend.vercel.app'
     },
 });
 
-// Enhanced request interceptor with better debugging
+const isTokens = (value: unknown): value is Tokens => {
+    return (
+        !!value &&
+        typeof value === 'object' &&
+        typeof (value as Record<string, unknown>).accessToken === 'string' &&
+        (typeof (value as Record<string, unknown>).refreshToken === 'string' ||
+            (value as Record<string, unknown>).refreshToken === undefined)
+    );
+};
+
+const parseTokens = (stored: string): Tokens | null => {
+    try {
+        const parsed = JSON.parse(stored) as unknown;
+        if (isTokens(parsed)) {
+            return {
+                accessToken: parsed.accessToken,
+                refreshToken: parsed.refreshToken,
+            };
+        }
+    } catch (err) {
+        if (isDev) console.error('Failed to parse auth token', err);
+    }
+    return null;
+};
+
+// Request interceptor
 apiClient.interceptors.request.use(
     (config) => {
-        const stored = localStorage.getItem('authToken');
+        const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+        const tokens = stored ? parseTokens(stored) : null;
 
-        if (stored) {
-            try {
-                const tokens = JSON.parse(stored);
-                if (tokens?.accessToken) {
-                    config.headers.Authorization = `Bearer ${tokens.accessToken}`;
-                    console.log('🔑 Auth token added to request');
-                }
-            } catch (err) {
-                console.error('Failed to parse auth token', err);
-            }
+        if (tokens?.accessToken) {
+            config.headers = config.headers ?? {};
+            config.headers.Authorization = `Bearer ${tokens.accessToken}`;
+            log('🔑 Auth token added to request');
         }
 
-        console.log('📤 Outgoing Request:', {
+        log('📤 Outgoing Request:', {
             method: config.method?.toUpperCase(),
             url: config.url,
-            headers: config.headers
         });
 
         return config;
     },
-    (error) => {
-        console.error('❌ Request interceptor error:', error);
-        return Promise.reject(error);
+    (error: unknown) => {
+        if (isDev) console.error('❌ Request interceptor error:', error);
+        return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
 );
 
-// Enhanced response interceptor
+// Response interceptor
 apiClient.interceptors.response.use(
     (response) => {
-        console.log('✅ Response Success:', {
+        log('✅ Response Success:', {
             url: response.config.url,
             status: response.status,
-            data: response.data
         });
         return response;
     },
-    (error) => {
-        console.error('❌ Response Error:', {
-            url: error.config?.url,
-            status: error.response?.status,
-            data: error.response?.data,
-            message: error.message
-        });
+    (error: unknown) => {
+        if (isDev) {
+            if (isAxiosError(error)) {
+                console.error('❌ Response Error:', {
+                    url: error.config?.url,
+                    status: error.response?.status,
+                    data: error.response?.data,
+                    message: error.message,
+                });
+            } else {
+                console.error('❌ Response Error (non-axios):', error);
+            }
+        }
 
-        if (error.response?.status === 401) {
-            console.log('🔐 Unauthorized - clearing auth data');
-            localStorage.removeItem('authToken');
-            // You can dispatch an event or redirect to login
+        if (isAxiosError(error) && error.response?.status === 401) {
+            log('🔐 Unauthorized - clearing auth data');
+            localStorage.removeItem(AUTH_STORAGE_KEY);
             window.dispatchEvent(new Event('unauthorized'));
         }
 
-        return Promise.reject(error);
+        if (isAxiosError(error)) {
+            return Promise.reject(error);
+        }
+
+        return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
 );

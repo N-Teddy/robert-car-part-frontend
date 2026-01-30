@@ -1,69 +1,55 @@
-# React + TypeScript + Vite
+# AutoParts Pro — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Vite + React + TypeScript app for AutoParts Pro with React Query, Tailwind, and multi-target support (web, Capacitor, Tauri).
 
-Currently, two official plugins are available:
+## Prerequisites
+- Node 20.x
+- pnpm 8+
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Environment
+Create `frontend/.env` (or `.env.local`):
+```
+# Production API (Vercel)
+VITE_API_BASE_URL=https://robert-car-part-backend.vercel.app/api
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
-
-            // Remove tseslint.configs.recommended and replace with this
-            ...tseslint.configs.recommendedTypeChecked,
-            // Alternatively, use this for stricter rules
-            ...tseslint.configs.strictTypeChecked,
-            // Optionally, add this for stylistic rules
-            ...tseslint.configs.stylisticTypeChecked,
-
-            // Other configs...
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-]);
+# Local development API (uncomment to use local backend)
+# VITE_API_BASE_URL=https://localhost:3000/api
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
-
-export default tseslint.config([
-    globalIgnores(['dist']),
-    {
-        files: ['**/*.{ts,tsx}'],
-        extends: [
-            // Other configs...
-            // Enable lint rules for React
-            reactX.configs['recommended-typescript'],
-            // Enable lint rules for React DOM
-            reactDom.configs.recommended,
-        ],
-        languageOptions: {
-            parserOptions: {
-                project: ['./tsconfig.node.json', './tsconfig.app.json'],
-                tsconfigRootDir: import.meta.dirname,
-            },
-            // other options...
-        },
-    },
-]);
+## Install
 ```
+pnpm install
+```
+
+## Run (web)
+```
+pnpm dev
+```
+
+## Build (web)
+```
+pnpm build
+```
+
+## Lint & Format
+```
+pnpm lint
+pnpm format:check
+pnpm format
+```
+
+## Capacitor (Android/iOS)
+- Build assets: `pnpm build`
+- Sync: `npx cap sync android` (or `ios`)
+- Android debug APK: `cd android && ./gradlew assembleDebug`
+
+## Tauri (desktop)
+```
+pnpm tauri:dev
+pnpm tauri:build
+```
+
+## Notes
+- React Query is configured in `src/provider/QueryProvider.tsx` with 5m stale time and devtools.
+- Auth and notification contexts wrap the app; routes defined in `src/routes/index.tsx`.
+- Tailwind v4 enabled via `@tailwindcss/vite`.

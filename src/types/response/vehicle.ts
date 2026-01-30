@@ -1,5 +1,14 @@
 import type { Vehicle } from '../request/vehicle';
 
+export interface ResponseMeta {
+    total: number;
+    page: string;
+    limit: string;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+}
+
 export interface SingleVehicleResponse {
     message: string;
     data: Vehicle;

@@ -2,11 +2,11 @@
 import React from 'react';
 import { AlertTriangle, X, Trash2, Folder } from 'lucide-react';
 import { Button } from '../ui/Button';
-import type { CategoryWithChildren } from '../../types/request/category';
+import type { CategoryTreeNode } from '../../types/response/category';
 
 interface CategoryDeleteModalProps {
     isOpen: boolean;
-    category: CategoryWithChildren | null;
+    category: CategoryTreeNode | null;
     onClose: () => void;
     onConfirm: () => void;
 }
@@ -20,7 +20,7 @@ export const CategoryDeleteModal: React.FC<CategoryDeleteModalProps> = ({
     if (!isOpen || !category) return null;
 
     const hasChildren = category.children && category.children.length > 0;
-    const productsCount = (category as any).productsCount || 0;
+    const productsCount = category.productsCount ?? 0;
 
     // This shouldn't happen based on our logic, but just in case
     if (hasChildren || productsCount > 0) {

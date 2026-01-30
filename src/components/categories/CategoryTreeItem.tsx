@@ -14,17 +14,17 @@ import {
     FolderOpen,
     Package,
 } from 'lucide-react';
-import type { CategoryWithChildren } from '../../types/request/category';
+import type { CategoryTreeNode } from '../../types/response/category';
 
 interface CategoryTreeItemProps {
-    category: CategoryWithChildren;
+    category: CategoryTreeNode;
     level: number;
     isExpanded: boolean;
     expandedNodes: string[];
     onToggleExpand: (nodeId: string) => void;
-    onView: (category: CategoryWithChildren) => void;
-    onEdit: (category: CategoryWithChildren) => void;
-    onDelete: (category: CategoryWithChildren) => void;
+    onView: (category: CategoryTreeNode) => void;
+    onEdit: (category: CategoryTreeNode) => void;
+    onDelete: (category: CategoryTreeNode) => void;
     onAddSubcategory: (parentId: string) => void;
 }
 
@@ -50,7 +50,7 @@ export const CategoryTreeItem: React.FC<CategoryTreeItemProps> = ({
     };
 
     const hasChildren = category.children && category.children.length > 0;
-    const productsCount = (category as any).productsCount || 0;
+    const productsCount = category.productsCount ?? 0;
 
     const getCategoryIcon = () => {
         if (hasChildren) {

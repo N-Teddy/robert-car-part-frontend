@@ -47,7 +47,9 @@ export const vehicleApi = {
     },
 
     // Get paginated list of vehicles with filters
-    getAll: async (filters?: VehicleFilterDto): Promise<{ items: Vehicle[]; meta: any }> => {
+    getAll: async (
+        filters?: VehicleFilterDto
+    ): Promise<{ items: Vehicle[]; meta: ResponseMeta }> => {
         const response = await apiClient.get<VehicleListResponse>('/vehicles', {
             params: filters,
         });
@@ -103,8 +105,8 @@ export const vehicleApi = {
     },
 
     // Get vehicle statistics summary
-    getStatistics: async (): Promise<any> => {
-        const response = await apiClient.get('/vehicles/stats/summary');
+    getStatistics: async (): Promise<VehicleStatsResponse['data']> => {
+        const response = await apiClient.get<VehicleStatsResponse>('/vehicles/stats/summary');
         return response.data.data;
     },
 

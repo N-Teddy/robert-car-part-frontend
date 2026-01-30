@@ -1,8 +1,10 @@
 // src/utils/ExportCSV.tsx
 import React from 'react';
 
+type Row = Record<string, unknown>;
+
 interface ExportCSVProps {
-    data: any[];
+    data: Row[];
     filename: string;
     children: React.ReactNode;
 }
@@ -10,12 +12,19 @@ interface ExportCSVProps {
 export const ExportCSV: React.FC<ExportCSVProps> = ({ data, filename, children }) => {
     const handleExport = () => {
         if (!data || data.length === 0) return;
-        const csvRows = [];
+        const csvRows: string[] = [];
         const headers = Object.keys(data[0]);
         csvRows.push(headers.join(','));
         for (const row of data) {
             const values = headers.map((header) => {
-                const escaped = ('' + row[header]).replace(/"/g, '""');
+                const value = row[header];
+                const normalized =
+                    value === null || value === undefined
+                        ? ''
+                        : typeof value === 'object'
+                          ? JSON.stringify(value)
+                          : String(value);
+                const escaped = normalized.replace(/"/g, '""');
                 return `"${escaped}"`;
             });
             csvRows.push(values.join(','));

@@ -23,7 +23,7 @@ export interface CategoryWithChildren extends Category {
 }
 
 export interface CreateCategoryRequest {
-    image?: File | Blob | any;
+    image?: File | Blob;
     name: string;
     description?: string;
     parentId?: string;

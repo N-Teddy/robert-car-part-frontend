@@ -18,11 +18,11 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
     const navigate = useNavigate();
 
     useEffect(() => {
-        const timer = setTimeout(() => {
+        const timer = window.setTimeout(() => {
             onClose();
         }, 5000);
 
-        return () => clearTimeout(timer);
+        return () => window.clearTimeout(timer);
     }, [onClose]);
 
     const getIcon = () => {
@@ -48,15 +48,15 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
     const handleAction = () => {
         onAction?.();
 
-        // Navigate based on notification type
-        if (notification.metadata?.orderId) {
-            navigate(`/orders/${notification.metadata.orderId}`);
-        } else if (notification.metadata?.partId) {
-            navigate(`/inventory/${notification.metadata.partId}`);
-        } else if (notification.metadata?.reportId) {
-            navigate(`/reports/${notification.metadata.reportId}`);
-        } else if (notification.metadata?.userId) {
-            navigate(`/users/${notification.metadata.userId}`);
+        const meta = notification.metadata;
+        if (meta?.orderId) {
+            navigate(`/orders/${meta.orderId}`);
+        } else if (meta?.partId) {
+            navigate(`/inventory/${meta.partId}`);
+        } else if (meta?.reportId) {
+            navigate(`/reports/${meta.reportId}`);
+        } else if (meta?.userId) {
+            navigate(`/users/${meta.userId}`);
         }
 
         onClose();

@@ -1,14 +1,14 @@
 // src/components/categories/CategoryCard.tsx
 import React from 'react';
 import { Eye, Edit2, Trash2, Plus, Package, Folder } from 'lucide-react';
-import type { CategoryWithChildren } from '../../types/request/category';
+import type { CategoryTreeNode } from '../../types/response/category';
 
 interface CategoryCardProps {
-    category: CategoryWithChildren & { level: number };
+    category: CategoryTreeNode & { level: number; productsCount?: number };
     level: number;
-    onView: (category: CategoryWithChildren) => void;
-    onEdit: (category: CategoryWithChildren) => void;
-    onDelete: (category: CategoryWithChildren) => void;
+    onView: (category: CategoryTreeNode) => void;
+    onEdit: (category: CategoryTreeNode) => void;
+    onDelete: (category: CategoryTreeNode) => void;
     onAddSubcategory: (parentId: string) => void;
 }
 
@@ -21,7 +21,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
     onAddSubcategory,
 }) => {
     const hasChildren = category.children && category.children.length > 0;
-    const productsCount = (category as any).productsCount || 0;
+    const productsCount = category.productsCount ?? 0;
 
     return (
         <div

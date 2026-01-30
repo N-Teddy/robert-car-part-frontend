@@ -11,15 +11,15 @@ import {
     FolderOpen,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
-import type { CategoryWithChildren } from '../../types/request/category';
+import type { CategoryTreeNode } from '../../types/response/category';
 import { formatDistanceToNow } from 'date-fns';
 
 interface CategoryViewModalProps {
     isOpen: boolean;
-    category: CategoryWithChildren | null;
+    category: CategoryTreeNode | null;
     onClose: () => void;
-    onEdit: (category: CategoryWithChildren) => void;
-    onDelete: (category: CategoryWithChildren) => void;
+    onEdit: (category: CategoryTreeNode) => void;
+    onDelete: (category: CategoryTreeNode) => void;
 }
 
 export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
@@ -32,7 +32,7 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
     if (!isOpen || !category) return null;
 
     const hasChildren = category.children && category.children.length > 0;
-    const productsCount = (category as any).productsCount || 0;
+    const productsCount = category.productsCount ?? 0;
 
     // Build breadcrumb path
     const getBreadcrumb = () => {
@@ -193,10 +193,8 @@ export const CategoryViewModal: React.FC<CategoryViewModalProps> = ({
                                                 </div>
                                             </div>
                                             <div className="flex items-center space-x-2 text-xs text-gray-500">
-                                                {(child as any).productsCount > 0 && (
-                                                    <span>
-                                                        {(child as any).productsCount} items
-                                                    </span>
+                                                {child.productsCount && child.productsCount > 0 && (
+                                                    <span>{child.productsCount} items</span>
                                                 )}
                                                 {child.children && child.children.length > 0 && (
                                                     <span>{child.children.length} subs</span>

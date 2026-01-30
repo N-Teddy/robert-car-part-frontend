@@ -10,15 +10,15 @@ import {
 } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CategoryTreeItem } from './CategoryTreeItem';
-import type { CategoryWithChildren } from '../../types/request/category';
+import type { CategoryTreeNode } from '../../types/response/category';
 
 interface CategoryTreeProps {
-    categories: CategoryWithChildren[];
+    categories: CategoryTreeNode[];
     expandedNodes: string[];
     onToggleExpand: (nodeId: string) => void;
-    onView: (category: CategoryWithChildren) => void;
-    onEdit: (category: CategoryWithChildren) => void;
-    onDelete: (category: CategoryWithChildren) => void;
+    onView: (category: CategoryTreeNode) => void;
+    onEdit: (category: CategoryTreeNode) => void;
+    onDelete: (category: CategoryTreeNode) => void;
     onAddSubcategory: (parentId: string) => void;
 }
 
@@ -35,10 +35,10 @@ export const CategoryTree: React.FC<CategoryTreeProps> = ({
 
     const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
-    const handleDragEnd = (event: any) => {
+    const handleDragEnd = (event: { active: { id: string }; over: { id: string } | null }) => {
         const { active, over } = event;
 
-        if (active.id !== over.id) {
+        if (over && active.id !== over.id) {
             setItems((items) => {
                 const oldIndex = items.findIndex((item) => item.id === active.id);
                 const newIndex = items.findIndex((item) => item.id === over.id);

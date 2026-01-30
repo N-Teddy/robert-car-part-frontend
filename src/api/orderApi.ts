@@ -50,7 +50,7 @@ export const orderApi = {
 
     // Generate order receipt
     generateReceipt: async (id: string): Promise<Blob> => {
-        const response = await apiClient.get(`/orders/${id}/receipt`, {
+        const response = await apiClient.get<Blob>(`/orders/${id}/receipt`, {
             responseType: 'blob',
         });
         return response.data;

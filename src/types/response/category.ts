@@ -1,5 +1,11 @@
 import type { Category, CategoryWithChildren, CategoryWithParent } from '../request/category';
 
+export interface CategoryTreeNode extends CategoryWithChildren {
+    productsCount?: number;
+    parentId?: string;
+    children: CategoryTreeNode[];
+}
+
 export interface SingleCategoryResponse {
     message: string;
     data: CategoryWithParent;
@@ -16,14 +22,14 @@ export interface CategoryListResponse {
 export interface CategoryTreeResponse {
     message: string;
     data: {
-        items: CategoryWithChildren[];
+        items: CategoryTreeNode[];
         meta: ResponseMeta;
     };
 }
 
 export interface CategoryChildrenResponse {
     message: string;
-    data: CategoryWithChildren[];
+    data: CategoryTreeNode[];
 }
 
 export interface ResponseMeta {

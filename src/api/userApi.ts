@@ -37,7 +37,7 @@ export const userApi = {
     },
 
     // Get all users with filters
-    getAllUsers: async (filters: UserFilter): Promise<{ items: User[]; meta: any }> => {
+    getAllUsers: async (filters: UserFilter): Promise<GetUsersResponse['data']> => {
         const response = await apiClient.get<GetUsersResponse>('/users', { params: filters });
         return response.data.data;
     },
