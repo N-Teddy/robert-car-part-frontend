@@ -1,9 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable @typescript-eslint/await-thenable */
 // src/components/orders/ItemSelector.tsx
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Minus, Package, X, ShoppingCart, QrCode, Loader2 } from 'lucide-react';
@@ -630,8 +624,3 @@ export const ItemSelector: React.FC<ItemSelectorProps> = ({
         </>
     );
 };
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-misused-promises */

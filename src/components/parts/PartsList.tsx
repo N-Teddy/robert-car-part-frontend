@@ -1,6 +1,6 @@
 // src/components/parts/PartsList.tsx
 import React from 'react';
-import { Eye, Edit2, Trash2, Package, QrCode } from 'lucide-react';
+import { Eye, Edit2, Trash2, Package } from 'lucide-react';
 import type { Part } from '../../types/request/part';
 import type { Vehicle } from '../../types/request/vehicle';
 import type { Category } from '../../types/request/category';
@@ -220,7 +220,3 @@ export const PartsList: React.FC<PartsListProps> = ({
         </div>
     );
 };
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-misused-promises */

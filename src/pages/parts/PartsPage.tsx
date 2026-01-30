@@ -14,7 +14,6 @@ import { PartsList } from '../../components/parts/PartsList';
 import { PartFormModal } from '../../components/parts/PartFormModal';
 import { PartViewModal } from '../../components/parts/PartViewModal';
 import { PartDeleteModal } from '../../components/parts/PartDeleteModal';
-import { PartStats } from '../../components/parts/PartStats';
 import { LowStockAlert } from '../../components/parts/LowStockAlert';
 import { QRScannerModal } from '../../components/parts/QRScannerModal';
 import { Button } from '../../components/ui/Button';
@@ -55,12 +54,10 @@ export const PartsPage: React.FC = () => {
     // Hooks
     const {
         useGetAllParts,
-        useGetPartById,
         useCreatePart,
         useUpdatePart,
         useDeletePart,
         useGetPartStatistics,
-        useGetCategoryStatistics,
         useGetLowStockParts,
     } = usePart();
 
@@ -70,7 +67,6 @@ export const PartsPage: React.FC = () => {
     // Queries
     const { data: partsData, isLoading, refetch } = useGetAllParts(filters);
     const { data: stats } = useGetPartStatistics();
-    const { data: categoryStats } = useGetCategoryStatistics();
     const { data: lowStockParts } = useGetLowStockParts();
     const { data: vehiclesData } = useGetAllVehicles({ limit: 100, page: 1 });
     const { data: categoriesData } = useGetAllCategories({ limit: 100 });

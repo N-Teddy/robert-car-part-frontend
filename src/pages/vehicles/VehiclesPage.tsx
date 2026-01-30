@@ -6,7 +6,6 @@ import { VehicleTable } from '../../components/vehicles/VehicleTable';
 import { VehicleFormModal } from '../../components/vehicles/VehicleFormModal';
 import { VehicleViewModal } from '../../components/vehicles/VehicleViewModal';
 import { VehicleDeleteModal } from '../../components/vehicles/VehicleDeleteModal';
-import { VehicleStats } from '../../components/vehicles/VehicleStats';
 import { VehicleFilters } from '../../components/vehicles/VehicleFilters';
 import { Button } from '../../components/ui/Button';
 import type { Vehicle, VehicleFilterDto } from '../../types/request/vehicle';
@@ -44,13 +43,11 @@ export const VehiclesPage: React.FC = () => {
         useDeleteVehicle,
         useMarkAsPartedOut,
         useGetVehicleStatistics,
-        useGetMakeModelStatistics,
     } = useVehicle();
 
     // Queries
     const { data: vehiclesData, isLoading, refetch } = useGetAllVehicles(filters);
     const { data: stats } = useGetVehicleStatistics();
-    const { data: makeModelStats } = useGetMakeModelStatistics();
 
     // Mutations
     const createMutation = useCreateVehicle();

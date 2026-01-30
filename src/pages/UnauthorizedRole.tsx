@@ -1,7 +1,7 @@
 // src/pages/UnauthorizedRole.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, LogOut, Clock, AlertTriangle, Lock, UserX, Info, CheckCircle } from 'lucide-react';
+import { LogOut, Clock, AlertTriangle, Lock, UserX, Info, CheckCircle } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext';
 
 interface UnauthorizedRolePageProps {

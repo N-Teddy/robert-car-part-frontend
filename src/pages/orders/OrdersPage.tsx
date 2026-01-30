@@ -5,7 +5,6 @@ import { OrderFormModal } from '../../components/orders/OrderFormModal';
 import { OrderViewModal } from '../../components/orders/OrderViewModal';
 import { OrderDeleteModal } from '../../components/orders/OrderDeleteModal';
 import { OrderFilters } from '../../components/orders/OrderFilters';
-import { OrderStats } from '../../components/orders/OrderStats';
 import { Button } from '../../components/ui/Button';
 import { Toast } from '../../components/ui/Toast';
 import type { OrderQueryDto } from '../../types/request/order';
@@ -48,12 +47,10 @@ export const OrdersPage: React.FC = () => {
     // Hooks
     const {
         useGetAllOrders,
-        useGetOrderById,
         useCreateOrder,
         useUpdateOrder,
         useDeleteOrder,
         useGetOrderStats,
-        useGenerateReceipt,
     } = useOrder();
 
     const { useGetAllParts } = usePart();
@@ -67,7 +64,6 @@ export const OrdersPage: React.FC = () => {
     const createMutation = useCreateOrder();
     const updateMutation = useUpdateOrder();
     const deleteMutation = useDeleteOrder();
-    const receiptMutation = useGenerateReceipt();
 
     // Extract unique customers from orders for autocomplete
     useMemo(() => {

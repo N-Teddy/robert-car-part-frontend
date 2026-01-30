@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { CreateCategoryRequest, UpdateCategoryRequest } from '../types/request/category';
 import type { Category, CategoryWithParent, CategoryWithChildren } from '../types/request/category';
 import { categoryApi } from '../api/categoryApi';
 import type { CategoryFilterDto } from '../types/response/category';

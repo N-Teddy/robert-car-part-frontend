@@ -26,7 +26,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose,
                             onScan(data.partId);
                             qrScanner.stop();
                         }
-                    } catch (e) {
+                    } catch {
                         setError('Invalid QR code format');
                     }
                 },

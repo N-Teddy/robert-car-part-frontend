@@ -13,15 +13,7 @@ export default tseslint.config([
     globalIgnores(['dist', 'node_modules', 'build', '.turbo', '.next', '.cache']),
     {
         files: ['**/*.{ts,tsx}'],
-        ignores: [
-            'node_modules',
-            'dist',
-            'src/components/**',
-            'src/context/**',
-            'src/hooks/**',
-            'src/pages/**',
-            'src/layouts/**',
-        ],
+        ignores: ['node_modules', 'dist'],
         extends: [
             js.configs.recommended,
             ...tseslint.configs.recommendedTypeChecked,
@@ -35,6 +27,19 @@ export default tseslint.config([
                 project: ['./tsconfig.app.json', './tsconfig.node.json'],
                 tsconfigRootDir: import.meta.dirname,
             },
+        },
+        rules: {
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-member-access': 'off',
+            '@typescript-eslint/no-unsafe-argument': 'off',
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unsafe-return': 'off',
+            '@typescript-eslint/no-floating-promises': 'off',
+            '@typescript-eslint/no-misused-promises': 'off',
+            '@typescript-eslint/await-thenable': 'off',
+            '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+            'react-refresh/only-export-components': 'off',
+            'react-hooks/exhaustive-deps': 'off',
         },
         settings: {
             react: {

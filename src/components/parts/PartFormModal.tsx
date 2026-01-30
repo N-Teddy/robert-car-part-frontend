@@ -217,8 +217,8 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
             };
 
             await onSubmit(submitData);
-        } catch (error) {
-            // Error handled in parent
+        } catch (err) {
+            console.error('Failed to submit part form', err);
         } finally {
             setIsSubmitting(false);
         }
@@ -761,9 +761,3 @@ export const PartFormModal: React.FC<PartFormModalProps> = ({
         </div>
     );
 };
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable @typescript-eslint/await-thenable */

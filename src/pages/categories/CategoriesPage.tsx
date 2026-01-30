@@ -17,7 +17,6 @@ export const CategoriesPage: React.FC = () => {
     const { useGetCategoryTree, useDeleteCategory } = useCategory();
     const [viewMode, setViewMode] = useState<ViewMode>('tree');
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<CategoryWithChildren | null>(null);
     const [expandedNodes, setExpandedNodes] = useState<string[]>([]);
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -155,7 +154,7 @@ export const CategoriesPage: React.FC = () => {
             setToast({ message: 'Category deleted successfully', type: 'success' });
             refetch();
             setDeleteModal({ isOpen: false, category: null });
-        } catch (error) {
+        } catch {
             setToast({ message: 'Failed to delete category', type: 'error' });
         }
     };

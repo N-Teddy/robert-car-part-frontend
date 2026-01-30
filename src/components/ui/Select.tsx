@@ -37,15 +37,22 @@ interface SelectValueProps {
 }
 
 // Type guards to check if a React element is a specific component
-const isSelectContent = (
-    element: React.ReactNode
-): element is React.ReactElement<SelectContentProps> => {
-    return React.isValidElement(element) && (element.type as any).displayName === 'SelectContent';
+const hasDisplayName = <P,>(
+    element: React.ReactNode,
+    name: string
+): element is React.ReactElement<P> => {
+    return (
+        React.isValidElement(element) &&
+        typeof (element.type as { displayName?: unknown }).displayName === 'string' &&
+        (element.type as { displayName?: string }).displayName === name
+    );
 };
 
-const isSelectItem = (element: React.ReactNode): element is React.ReactElement<SelectItemProps> => {
-    return React.isValidElement(element) && (element.type as any).displayName === 'SelectItem';
-};
+const isSelectContent = (element: React.ReactNode): element is React.ReactElement<SelectContentProps> =>
+    hasDisplayName<SelectContentProps>(element, 'SelectContent');
+
+const isSelectItem = (element: React.ReactNode): element is React.ReactElement<SelectItemProps> =>
+    hasDisplayName<SelectItemProps>(element, 'SelectItem');
 
 // Add display names to components for easier identification
 export const Select: React.FC<SelectProps> & { displayName: string } = ({
@@ -190,7 +197,7 @@ export const SelectContent: React.FC<SelectContentProps> & { displayName: string
 SelectContent.displayName = 'SelectContent';
 
 export const SelectItem: React.FC<SelectItemProps> & { displayName: string } = ({
-    value,
+    value: _value,
     children,
     className = '',
     onClick,

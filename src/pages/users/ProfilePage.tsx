@@ -40,7 +40,7 @@ export const ProfilePage: React.FC = () => {
             setToast({ message: 'Profile updated successfully', type: 'success' });
             setIsEditing(false);
             refetch();
-        } catch (error) {
+        } catch {
             setToast({ message: 'Failed to update profile', type: 'error' });
         }
     };

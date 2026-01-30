@@ -46,7 +46,7 @@ export const RegisterPage: React.FC = () => {
 
         setIsLoading(true);
         try {
-            const { confirmPassword, ...registerData } = data;
+            const { confirmPassword: _confirmPassword, ...registerData } = data;
             await registerUser(registerData);
             setToast({ message: 'Account created successfully!', type: 'success' });
             setTimeout(() => {

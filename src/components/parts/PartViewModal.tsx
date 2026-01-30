@@ -1,26 +1,6 @@
 // src/components/parts/PartViewModal.tsx
 import React, { useState } from 'react';
-import {
-    X,
-    Package,
-    DollarSign,
-    Hash,
-    Edit2,
-    Trash2,
-    Car,
-    FolderOpen,
-    Archive,
-    AlertTriangle,
-    ChevronLeft,
-    ChevronRight,
-    ZoomIn,
-    Download,
-    Printer,
-    QrCode,
-    Clock,
-    FileText,
-    Info,
-} from 'lucide-react';
+import { X, Package, DollarSign, Edit2, Trash2, AlertTriangle, ZoomIn, QrCode, Clock, FileText, Info } from 'lucide-react';
 import type { Part } from '../../types/request/part';
 import type { Vehicle } from '../../types/request/vehicle';
 import type { Category } from '../../types/request/category';
@@ -97,19 +77,6 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
     };
 
     const stockStatus = getStockStatus();
-
-    const getConditionBadge = () => {
-        switch (part.condition) {
-            case 'New':
-                return 'bg-blue-100 text-blue-700 border-blue-200';
-            case 'Used':
-                return 'bg-gray-100 text-gray-700 border-gray-200';
-            case 'Refurbished':
-                return 'bg-purple-100 text-purple-700 border-purple-200';
-            default:
-                return 'bg-gray-100 text-gray-700 border-gray-200';
-        }
-    };
 
     return (
         <>
@@ -578,9 +545,3 @@ export const PartViewModal: React.FC<PartViewModalProps> = ({
         </>
     );
 };
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-misused-promises */

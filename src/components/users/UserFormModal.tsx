@@ -20,19 +20,18 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
-import type { User, ProfileImage } from '../../types/request/user';
+import type { User } from '../../types/request/user';
 import {
     createUserSchema,
     updateUserSchema,
     type CreateUserFormData,
-    type UpdateUserFormData,
     validateImageFile,
 } from '../../validation/user.validation';
 
 interface UserFormModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: any) => Promise<void>;
+    onSubmit: (data: FormData) => Promise<void>;
     user?: User | null;
     mode: 'create' | 'edit';
     selectedImage: File | null;
@@ -54,6 +53,8 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     const [isDragging, setIsDragging] = useState(false);
     const [isImageRemoved, setIsImageRemoved] = useState(false);
 
+    type FormValues = CreateUserFormData | (CreateUserFormData & { isActive?: boolean });
+
     const {
         register,
         handleSubmit,
@@ -63,7 +64,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
         watch,
         setError,
         clearErrors,
-    } = useForm<CreateUserFormData | UpdateUserFormData>({
+    } = useForm<FormValues>({
         resolver: zodResolver(isEditMode ? updateUserSchema : createUserSchema),
         mode: 'onChange',
     });
@@ -303,7 +304,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
         }
     }, [selectedImage, user]);
 
-    const handleFormSubmit = async (data: any) => {
+    const handleFormSubmit = async (data: FormValues) => {
         try {
             console.log('Form data before submission:', data);
             console.log('Selected image:', selectedImage);
@@ -323,7 +324,9 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
             }
 
             formData.append('role', data.role);
-            formData.append('isActive', data.isActive.toString());
+
+            const isActiveValue = 'isActive' in data ? data.isActive ?? true : true;
+            formData.append('isActive', String(isActiveValue));
 
             // Handle image based on mode and actions - LIKE CATEGORY FORM
             if (mode === 'create') {
@@ -347,7 +350,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
             // Log the form data for debugging
             console.log('FormData contents:');
-            for (let [key, value] of formData.entries()) {
+            for (const [key, value] of formData.entries()) {
                 console.log(key, value);
             }
 
@@ -367,8 +370,6 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
     };
 
     // Check if form can be submitted
-    const canSubmit = mode === 'create' ? true : true; // Always enabled for both modes like CategoryFormModal
-
     if (!isOpen) return null;
 
     return (

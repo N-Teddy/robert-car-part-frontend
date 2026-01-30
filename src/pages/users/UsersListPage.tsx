@@ -74,7 +74,7 @@ export const UsersListPage: React.FC = () => {
             console.log('FormData received in parent:', formData);
 
             // Log all FormData entries for debugging
-            for (let [key, value] of formData.entries()) {
+            for (const [key, value] of formData.entries()) {
                 console.log(key, value);
             }
 
@@ -108,7 +108,7 @@ export const UsersListPage: React.FC = () => {
         }
     };
 
-    const handleDelete = async (user: User) => {
+    const handleDelete = (user: User) => {
         setDeleteConfirm(user);
     };
 
@@ -122,7 +122,7 @@ export const UsersListPage: React.FC = () => {
                 title: 'User Deleted',
             });
             refetch();
-        } catch (error) {
+        } catch {
             setToast({
                 message: 'Failed to delete user',
                 title: 'Deletion Error',
@@ -143,7 +143,7 @@ export const UsersListPage: React.FC = () => {
                 title: 'User Updated',
             });
             refetch();
-        } catch (error) {
+        } catch {
             setToast({
                 message: 'Failed to update user status',
                 title: 'Update Error',

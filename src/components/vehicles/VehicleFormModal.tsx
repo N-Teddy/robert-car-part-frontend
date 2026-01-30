@@ -27,11 +27,24 @@ interface VehicleFormModalProps {
     mode: 'create' | 'edit';
     vehicle?: Vehicle | null;
     onClose: () => void;
-    onSubmit: (data: any) => void;
+    onSubmit: (data: VehicleSubmitData) => void;
 }
 
 const MAX_IMAGES = 5;
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+
+type VehicleSubmitData = {
+    make: string;
+    model: string;
+    year: number;
+    vin: string;
+    description: string;
+    purchasePrice: number;
+    purchaseDate: string;
+    auctionName?: string;
+    isPartedOut: boolean;
+    images?: File[];
+};
 
 export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
     isOpen,
@@ -52,7 +65,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
         isPartedOut: false,
     });
     const [images, setImages] = useState<File[]>([]);
-    const [existingImages, setExistingImages] = useState<any[]>([]);
+    const [existingImages, setExistingImages] = useState<{ url: string; id?: string }[]>([]);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
@@ -178,7 +191,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleChange = (field: keyof typeof formData, value: any) => {
+    const handleChange = (field: keyof typeof formData, value: string | number | boolean) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
         setErrors((prev) => ({ ...prev, [field]: '' }));
     };
@@ -207,7 +220,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
         setIsSubmitting(true);
 
         try {
-            const submitData: any = {
+            const submitData: VehicleSubmitData = {
                 make: formData.make.trim(),
                 model: formData.model.trim(),
                 year: Number(formData.year),
@@ -221,7 +234,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
             };
 
             await onSubmit(submitData);
-        } catch (error) {
+        } catch {
             // Error handled in parent
         } finally {
             setIsSubmitting(false);
