@@ -50,13 +50,13 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
 
         const meta = notification.metadata;
         if (meta?.orderId) {
-            navigate(`/orders/${meta.orderId}`);
+            void navigate(`/orders/${meta.orderId}`);
         } else if (meta?.partId) {
-            navigate(`/inventory/${meta.partId}`);
+            void navigate(`/inventory/${meta.partId}`);
         } else if (meta?.reportId) {
-            navigate(`/reports/${meta.reportId}`);
+            void navigate(`/reports/${meta.reportId}`);
         } else if (meta?.userId) {
-            navigate(`/users/${meta.userId}`);
+            void navigate(`/users/${meta.userId}`);
         }
 
         onClose();

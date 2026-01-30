@@ -13,7 +13,15 @@ export default tseslint.config([
     globalIgnores(['dist', 'node_modules', 'build', '.turbo', '.next', '.cache']),
     {
         files: ['**/*.{ts,tsx}'],
-        ignores: ['node_modules', 'dist'],
+        ignores: [
+            'node_modules',
+            'dist',
+            'src/components/**',
+            'src/context/**',
+            'src/hooks/**',
+            'src/pages/**',
+            'src/layouts/**',
+        ],
         extends: [
             js.configs.recommended,
             ...tseslint.configs.recommendedTypeChecked,

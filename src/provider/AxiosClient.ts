@@ -84,10 +84,11 @@ apiClient.interceptors.response.use(
     (error: unknown) => {
         if (isDev) {
             if (isAxiosError(error)) {
+                const responseData = error.response?.data as unknown;
                 console.error('❌ Response Error:', {
                     url: error.config?.url,
                     status: error.response?.status,
-                    data: error.response?.data,
+                    data: responseData,
                     message: error.message,
                 });
             } else {

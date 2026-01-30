@@ -1,6 +1,6 @@
 // src/components/parts/PartFilters.tsx
 import React, { useState } from 'react';
-import { Search, Grid3x3, List, Filter, X, Package, Car, FolderOpen, Layers } from 'lucide-react';
+import { Search, Grid3x3, List, Filter, Car, FolderOpen, Layers } from 'lucide-react';
 import { Button } from '../ui/Button';
 import type { PartFilterDto } from '../../types/request/part';
 import type { Vehicle } from '../../types/request/vehicle';

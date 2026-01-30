@@ -1,6 +1,6 @@
 // src/components/parts/PartStats.tsx
 import React from 'react';
-import { Package, TrendingUp, DollarSign, BarChart3 } from 'lucide-react';
+import { DollarSign, BarChart3 } from 'lucide-react';
 import type { CategoryStats } from '../../types/response/part';
 import { formatCurrency } from '../../utils/formatCurrency';
 

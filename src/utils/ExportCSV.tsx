@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 // src/utils/ExportCSV.tsx
 import React from 'react';
 
-type Row = Record<string, unknown>;
+type Primitive = string | number | boolean | null | undefined;
+type Row = Record<string, Primitive>;
 
 interface ExportCSVProps {
     data: Row[];
@@ -10,6 +12,12 @@ interface ExportCSVProps {
 }
 
 export const ExportCSV: React.FC<ExportCSVProps> = ({ data, filename, children }) => {
+    const stringifyCell = (value: unknown): string => {
+        if (value === null || value === undefined) return '';
+        if (typeof value === 'object') return JSON.stringify(value);
+        return String(value);
+    };
+
     const handleExport = () => {
         if (!data || data.length === 0) return;
         const csvRows: string[] = [];
@@ -17,14 +25,8 @@ export const ExportCSV: React.FC<ExportCSVProps> = ({ data, filename, children }
         csvRows.push(headers.join(','));
         for (const row of data) {
             const values = headers.map((header) => {
-                const value = row[header];
-                const normalized =
-                    value === null || value === undefined
-                        ? ''
-                        : typeof value === 'object'
-                          ? JSON.stringify(value)
-                          : String(value);
-                const escaped = normalized.replace(/"/g, '""');
+                const value = stringifyCell(row[header]);
+                const escaped = value.replace(/"/g, '""');
                 return `"${escaped}"`;
             });
             csvRows.push(values.join(','));

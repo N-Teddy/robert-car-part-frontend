@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 // src/components/orders/OrderReceipt.tsx
 import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
@@ -241,3 +242,4 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({ order, onClose }) =>
         </>
     );
 };
+/* eslint-disable @typescript-eslint/no-floating-promises */

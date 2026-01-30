@@ -1,6 +1,6 @@
 // src/components/orders/OrderStats.tsx
 import React from 'react';
-import { TrendingUp, Package, DollarSign, BarChart3, PieChart } from 'lucide-react';
+import { DollarSign, BarChart3, PieChart } from 'lucide-react';
 import type { OrderStatsResponse } from '../../types/response/order';
 import { formatCurrency } from '../../utils/formatCurrency';
 

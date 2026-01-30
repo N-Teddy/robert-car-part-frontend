@@ -40,7 +40,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
         }
     );
 
-    const notifications: Notification[] = data?.items ?? [];
+    const notifications = Array.isArray(data?.items) ? data.items : [];
 
     const getNotificationIcon = (type: string) => {
         const iconClass = 'w-5 h-5';
@@ -109,7 +109,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ onCl
             <div className="overflow-y-auto max-h-96">
                 {isLoading ? (
                     <div className="p-4">
-                        {[...Array(3)].map((_, i) => (
+                        {Array.from({ length: 3 }).map((_, i) => (
                             <div key={i} className="mb-3 animate-pulse">
                                 <div className="flex space-x-3">
                                     <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
